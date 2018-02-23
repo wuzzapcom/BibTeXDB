@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 
+	"wuzzapcom.io/Coursework/src/database"
+
 	"wuzzapcom.io/Coursework/src/fetchers"
 )
 
@@ -22,4 +24,6 @@ func main() {
 		return
 	}
 	fmt.Println(result)
+
+	database.TestConn()
 }
