@@ -1,7 +1,7 @@
-package fetchers
+package bibtex
 
-//BibTexItem ..
-type BibTexItem struct {
+//Item ..
+type Item struct {
 	Ident     string
 	Title     string
 	Author    string
@@ -12,7 +12,7 @@ type BibTexItem struct {
 	URL       string
 }
 
-func (b BibTexItem) String() string {
+func (b Item) String() string {
 	return "@Book{" + b.Ident + ",\n" +
 		"\ttitle = {" + b.Title + "},\n" +
 		"\tauthor = {" + b.Author + "},\n" +

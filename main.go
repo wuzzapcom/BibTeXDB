@@ -4,9 +4,9 @@ import (
 	"flag"
 	"fmt"
 
-	"wuzzapcom.io/Coursework/src/database"
+	"wuzzapcom.io/Coursework/pkg/database"
 
-	"wuzzapcom.io/Coursework/src/fetchers"
+	"wuzzapcom.io/Coursework/pkg/fetchers"
 )
 
 func main() {
