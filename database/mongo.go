@@ -2,48 +2,116 @@ package database
 
 import (
 	"fmt"
+	"log"
+	"os"
+
+	"wuzzapcom.io/Coursework/pkg/bibtex"
 
 	"gopkg.in/mgo.v2"
 )
 
-type Person struct {
-	Name string
-	Age  int
+var (
+	databaseName               = "BibTex"
+	textbookCollectionName     = "Textbooks"
+	courcesCollectionName      = "Cources"
+	bibliographyCollectionName = "Bibliography"
+)
+
+//MongoConfiguration ..
+type MongoConfiguration struct {
+	ServerAddress string
 }
 
-func TestConn() {
+func (config MongoConfiguration) String() string {
+	return fmt.Sprintf("MongoConfiguration: \n\tServerAddress: %s", config.ServerAddress)
+}
 
-	fmt.Println("fuck")
+//Mongo ..
+type Mongo struct {
+	Configuration *MongoConfiguration
+	session       *mgo.Session
+}
 
-	session, err := mgo.Dial("127.0.0.1")
+//Connect ..
+func (mongo *Mongo) Connect() {
+
+	if mongo.Configuration != nil {
+		log.Println("Connect to MongoDB with" + mongo.Configuration.String())
+	}
+
+	var url string
+	var err error
+	if mongo.Configuration != nil {
+		url = mongo.Configuration.ServerAddress
+	} else {
+		url = "127.0.0.1"
+	}
+
+	mongo.session, err = mgo.Dial(url)
 	if err != nil {
-		panic(err)
+		mongo.exitWithMessage(err.Error())
 	}
-	defer session.Close()
 
-	session.SetMode(mgo.Monotonic, true)
+	log.Println("Successfull connection")
+}
 
-	collection := session.DB("Test").C("collection")
+//InsertTextbook ..
+func (mongo *Mongo) InsertTextbook(textbook bibtex.Item) error {
 
-	// err = collection.DropCollection()
-	// if err != nil {
-	// 	panic(err)
-	// }
+	collection := mongo.session.DB(databaseName).C(textbookCollectionName)
 
-	err = collection.Insert(&Person{Name: "Vladimir", Age: 21})
+	return collection.Insert(textbook)
+
+}
+
+//InsertTextbooks ..
+func (mongo *Mongo) InsertTextbooks(textbooks bibtex.Items) error {
+
+	for _, textbook := range textbooks {
+		err := mongo.InsertTextbook(textbook)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+
+}
+
+//FindAllTextbooks ..
+func (mongo *Mongo) FindAllTextbooks() (bibtex.Items, error) {
+
+	collection := mongo.session.DB(databaseName).C(textbookCollectionName)
+
+	var items bibtex.Items
+	err := collection.Find(nil).All(&items)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	var results []Person
+	return items, nil
 
-	err = collection.Find(nil).All(&results)
-	if err != nil {
-		panic(err)
+}
+
+//DropTextbooks ..
+func (mongo *Mongo) DropTextbooks() {
+
+	collection := mongo.session.DB(databaseName).C(textbookCollectionName)
+
+	collection.DropCollection()
+
+}
+
+func (mongo Mongo) exitWithMessage(message string) {
+	if mongo.session != nil {
+		mongo.session.Close()
 	}
+	fmt.Println(message)
+	log.Println(message)
+	os.Exit(-1)
+}
 
-	for _, person := range results {
-		fmt.Println(person)
-	}
-
+//Disconnect ..
+func (mongo Mongo) Disconnect() {
+	mongo.session.Close()
 }

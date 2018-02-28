@@ -1,22 +1,27 @@
 package main
 
 import (
-	"flag"
+	// "flag"
 	"fmt"
 
-	"wuzzapcom.io/Coursework/pkg/database"
-
+	"wuzzapcom.io/Coursework/pkg/cli"
 	"wuzzapcom.io/Coursework/pkg/fetchers"
 )
 
 func main() {
 
-	googleAPIToken := flag.String("googleAPIToken", "", "API token for search in Google Books.")
+	cliParser := cli.CLI{}
 
-	flag.Parse()
+	cliParser.ParseCLIArguments()
+
+	cliParser.ApplyCommand()
+
+}
+
+func testFetch(googleAPIToken string) {
 
 	fetcher := fetchers.GoogleFetcher{
-		APIToken: *googleAPIToken,
+		APIToken: googleAPIToken,
 	}
 	result, err := fetcher.FetchWithString("канатников")
 	if err != nil {
@@ -25,5 +30,4 @@ func main() {
 	}
 	fmt.Println(result)
 
-	database.TestConn()
 }

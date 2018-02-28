@@ -17,7 +17,7 @@ type GoogleFetcher struct {
 }
 
 //FetchWithTitleAndAuthor ..
-func (fetcher *GoogleFetcher) FetchWithTitleAndAuthor(title string, author string) ([]bibtex.Item, error) {
+func (fetcher *GoogleFetcher) FetchWithTitleAndAuthor(title string, author string) (bibtex.Items, error) {
 
 	if fetcher.APIToken == "" {
 		return nil, errors.New("Provided no API Token for Google Books")
@@ -34,7 +34,7 @@ func (fetcher *GoogleFetcher) FetchWithTitleAndAuthor(title string, author strin
 }
 
 //FetchWithString ..
-func (fetcher *GoogleFetcher) FetchWithString(text string) ([]bibtex.Item, error) {
+func (fetcher *GoogleFetcher) FetchWithString(text string) (bibtex.Items, error) {
 
 	if fetcher.APIToken == "" {
 		return nil, errors.New("Provided no API Token for Google Books")
@@ -48,7 +48,7 @@ func (fetcher *GoogleFetcher) FetchWithString(text string) ([]bibtex.Item, error
 	return fetcher.fetch(url)
 }
 
-func (fetcher *GoogleFetcher) fetch(url string) ([]bibtex.Item, error) {
+func (fetcher *GoogleFetcher) fetch(url string) (bibtex.Items, error) {
 
 	resp, err := http.Get(url)
 	if err != nil {
@@ -67,9 +67,9 @@ func (fetcher *GoogleFetcher) fetch(url string) ([]bibtex.Item, error) {
 
 	json.Unmarshal(body, &googleResponse)
 
-	fmt.Println(googleResponse)
+	// fmt.Println(googleResponse)
 
-	var result []bibtex.Item
+	var result bibtex.Items
 
 	for _, item := range googleResponse.Items {
 
