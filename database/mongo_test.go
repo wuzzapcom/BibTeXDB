@@ -40,7 +40,6 @@ func TestTextbookInsert(t *testing.T) {
 }
 
 func TestFindAllTextbooks(t *testing.T) {
-	t.Log("args ...interface{}")
 	mongo := database.Mongo{}
 	mongo.Connect()
 	defer mongo.Disconnect()
