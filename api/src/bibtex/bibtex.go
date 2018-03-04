@@ -1,5 +1,7 @@
 package bibtex
 
+import "encoding/json"
+
 //Item represents legal BibTeX object. Author may contain many authors with \"and\" separator
 type Item struct {
 	Ident     string
@@ -20,7 +22,7 @@ func (items Items) String() string {
 	result := ""
 
 	for _, val := range items {
-		result += val.String()
+		result += val.JSONString()
 		result += "\n"
 	}
 
@@ -43,6 +45,11 @@ func (b Item) String() string {
 		"\turl = " + b.URL + ",\n" +
 		"\tisbn = " + b.ISBN + "\n" +
 		"}"
+}
+
+func (b Item)JSONString() string {
+	data, _ := json.MarshalIndent(b, "", "\t")
+	return string(data)
 }
 
 //GetRandomItems returns few filled and real BibTeX structures

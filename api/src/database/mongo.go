@@ -57,6 +57,8 @@ func (mongo *Mongo) Connect() {
 //InsertTextbook ..
 func (mongo *Mongo) InsertTextbook(textbook bibtex.Item) error {
 
+	fmt.Println(textbook)
+
 	collection := mongo.session.DB(databaseName).C(textbookCollectionName)
 
 	return collection.Insert(textbook)

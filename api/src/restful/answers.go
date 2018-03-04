@@ -10,6 +10,10 @@ type Search struct {
 	Results bibtex.Items `json:"results"`
 }
 
+type Success struct {
+	Message string `json:"successMessage"`
+}
+
 func (search Search) String() string {
 
 	return search.Results.String()

@@ -19,35 +19,40 @@ func searchHandler(w http.ResponseWriter, r *http.Request){
 }
 
 func addBookHandler(w http.ResponseWriter, r *http.Request){
-	internalServerError(w, "Not implemented")
+	body, err := addBookCheckInput(w, r)
+	if err != nil{
+		fmt.Println(err)
+		return
+	}
+	addBook(w, body)
 }
 
 func addCourseHandler(w http.ResponseWriter, r *http.Request){
-	internalServerError(w, "Not implemented")
+	returnError(w, 501, "Not implemented")
 }
 
 func addCourseLiterature(w http.ResponseWriter, r *http.Request){
-	internalServerError(w, "Not implemented")
+	returnError(w, 501, "Not implemented")
 
 }
 
 func getCoursesHandler(w http.ResponseWriter, r *http.Request){
-	internalServerError(w, "Not implemented")
+	returnError(w, 501, "Not implemented")
 
 }
 
 func getCourseLiteratureHandler(w http.ResponseWriter, r *http.Request){
-	internalServerError(w, "Not implemented")
+	returnError(w, 501, "Not implemented")
 }
 
-func internalServerError(w http.ResponseWriter, message string){
+func returnError(w http.ResponseWriter, code int, message string){
 	answer, err := json.Marshal(Error{message})
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	w.WriteHeader(500)
+	w.WriteHeader(code)
 	w.Write(answer)
 }
 

@@ -16,8 +16,14 @@ var searchCommand = &cobra.Command{
 	Run: runSearch,
 }
 
+var resultFilePath = "searchResults.txt"
+
+const requestFlag = "request"
+const outputFileFlag = "outputFile"
+
 func runSearch(cmd *cobra.Command, args []string){
-	encodedRequest := url.QueryEscape(cmd.Flag("request").Value.String())
+	resultFilePath = cmd.Flag(outputFileFlag).Value.String()
+	encodedRequest := url.QueryEscape(cmd.Flag(requestFlag).Value.String())
 	url := "http://localhost:8080/search?request=" + encodedRequest
 	response, err := http.Get(url)
 	if err != nil{
@@ -27,12 +33,16 @@ func runSearch(cmd *cobra.Command, args []string){
 	if err != nil{
 		fmt.Println(err)
 	}
+	if response.StatusCode != 200 {
+		handleError(answer)
+		return
+	}
 	var search restful.Search
 	err = json.Unmarshal(answer, &search)
 	if err != nil{
 		fmt.Println(err)
 	}
-	resultFile, err := os.Create("searchResults.txt")
+	resultFile, err := os.Create(resultFilePath)
 	if err != nil{
 		fmt.Println(err)
 	}
@@ -44,5 +54,6 @@ func runSearch(cmd *cobra.Command, args []string){
 }
 
 func init(){
-	searchCommand.Flags().String("request", "Compilers", "Insert request for searching")
+	searchCommand.Flags().String(requestFlag, "Compilers", "Insert request for searching")
+	searchCommand.Flags().String(outputFileFlag, resultFilePath, "Set output file")
 }
