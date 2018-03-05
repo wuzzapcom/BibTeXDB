@@ -2,38 +2,38 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+	"io/ioutil"
 	"fmt"
-	"encoding/json"
 	"wuzzapcom/Coursework/api/src/common"
+	"encoding/json"
 	"net/http"
 	"bytes"
-	"io/ioutil"
 	"wuzzapcom/Coursework/api/src/restful"
 )
 
-var addBooksCommand = &cobra.Command{
-	Use: "addBooks",
-	Run: addBooks,
+var addCourseCommand = &cobra.Command{
+	Use: "addCourse",
+	Run: addCourse,
 }
 
-const inputFileFlag = "inputFile"
+const inputFileCourseFlag = "inputFile"
 
-func addBooks(cmd *cobra.Command, args []string) {
-	resultFilePath = cmd.Flag(inputFileFlag).Value.String()
-	data, err := ioutil.ReadFile(resultFilePath)
+func addCourse(cmd *cobra.Command, args []string){
+	inputFile := cmd.Flag(inputFileFlag).Value.String()
+	data, err := ioutil.ReadFile(inputFile)
 	if err != nil{
 		fmt.Println(err)
 		return
 	}
 
-	var items common.Item
+	var items common.Course
 	err = json.Unmarshal(data, &items)
 	if err != nil{
 		fmt.Println(err)
 		return
 	}
 
-	url := "http://localhost:8080/addBook"
+	url := "http://localhost:8080/addCourse"
 	response, err := http.Post(url, "application/json", bytes.NewReader(data))
 
 	answer, err := ioutil.ReadAll(response.Body)
@@ -53,9 +53,12 @@ func addBooks(cmd *cobra.Command, args []string) {
 	}
 
 	fmt.Println(success)
-
 }
 
 func init(){
-	addBooksCommand.Flags().String(inputFileFlag, resultFilePath, "Set input file")
+	addCourseCommand.Flags().String(
+		inputFileFlag,
+		courseDefaultPath,
+		"Set input file for course",
+		)
 }

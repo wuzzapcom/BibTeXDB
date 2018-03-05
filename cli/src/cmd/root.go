@@ -23,10 +23,12 @@ var rootCommand = &cobra.Command{
 	},
 }
 
-
 func init(){
 	rootCommand.AddCommand(searchCommand)
 	rootCommand.AddCommand(addBooksCommand)
+	rootCommand.AddCommand(addCourseCommand)
+	rootCommand.AddCommand(getCoursePrototypeCommand)
+	rootCommand.AddCommand(getCoursesCommand)
 }
 
 func Execute(){

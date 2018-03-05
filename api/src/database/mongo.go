@@ -6,13 +6,13 @@ import (
 	"os"
 
 	"gopkg.in/mgo.v2"
-	"wuzzapcom/Coursework/api/src/bibtex"
+	"wuzzapcom/Coursework/api/src/common"
 )
 
 var (
 	databaseName               = "BibTex"
 	textbookCollectionName     = "Textbooks"
-	courcesCollectionName      = "Cources"
+	coursesCollectionName      = "Courses"
 	bibliographyCollectionName = "Bibliography"
 )
 
@@ -54,8 +54,27 @@ func (mongo *Mongo) Connect() {
 	log.Println("Successfull connection")
 }
 
+func (mongo *Mongo) InsertCourse(course common.Course) error {
+	fmt.Println(course)
+	collection := mongo.session.DB(databaseName).C(coursesCollectionName)
+
+	return collection.Insert(course)
+}
+
+func (mongo *Mongo) GetAllCourses() ([]common.Course, error){
+	collection := mongo.session.DB(databaseName).C(coursesCollectionName)
+
+	var courses []common.Course
+	err := collection.Find(nil).All(&courses)
+	if err != nil {
+		return nil, err
+	}
+
+	return courses, nil
+}
+
 //InsertTextbook ..
-func (mongo *Mongo) InsertTextbook(textbook bibtex.Item) error {
+func (mongo *Mongo) InsertTextbook(textbook common.Item) error {
 
 	fmt.Println(textbook)
 
@@ -66,7 +85,7 @@ func (mongo *Mongo) InsertTextbook(textbook bibtex.Item) error {
 }
 
 //InsertTextbooks ..
-func (mongo *Mongo) InsertTextbooks(textbooks bibtex.Items) error {
+func (mongo *Mongo) InsertTextbooks(textbooks common.Items) error {
 
 	for _, textbook := range textbooks {
 		err := mongo.InsertTextbook(textbook)
@@ -80,11 +99,11 @@ func (mongo *Mongo) InsertTextbooks(textbooks bibtex.Items) error {
 }
 
 //FindAllTextbooks ..
-func (mongo *Mongo) FindAllTextbooks() (bibtex.Items, error) {
+func (mongo *Mongo) FindAllTextbooks() (common.Items, error) {
 
 	collection := mongo.session.DB(databaseName).C(textbookCollectionName)
 
-	var items bibtex.Items
+	var items common.Items
 	err := collection.Find(nil).All(&items)
 	if err != nil {
 		return nil, err

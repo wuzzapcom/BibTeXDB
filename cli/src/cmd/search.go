@@ -28,10 +28,12 @@ func runSearch(cmd *cobra.Command, args []string){
 	response, err := http.Get(url)
 	if err != nil{
 		fmt.Println(err)
+		return
 	}
 	answer, err := ioutil.ReadAll(response.Body)
 	if err != nil{
 		fmt.Println(err)
+		return
 	}
 	if response.StatusCode != 200 {
 		handleError(answer)
@@ -41,16 +43,18 @@ func runSearch(cmd *cobra.Command, args []string){
 	err = json.Unmarshal(answer, &search)
 	if err != nil{
 		fmt.Println(err)
+		return
 	}
 	resultFile, err := os.Create(resultFilePath)
 	if err != nil{
 		fmt.Println(err)
+		return
 	}
 
 	resultFile.WriteString(search.String())
 	resultFile.Close()
 
-	fmt.Println("Open searchResults.txt, view results, remove wrong items and fix incorrect data.")
+	fmt.Println(fmt.Sprintf("Open %s, view results, remove wrong items and fix incorrect data.", resultFilePath))
 }
 
 func init(){

@@ -1,4 +1,4 @@
-package bibtex
+package common
 
 import "encoding/json"
 

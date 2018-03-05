@@ -1,17 +1,23 @@
 package restful
 
-import "wuzzapcom/Coursework/api/src/bibtex"
+import (
+	"wuzzapcom/Coursework/api/src/common"
+)
 
 type Error struct {
 	Message string `json:"errorMessage"`
 }
 
 type Search struct {
-	Results bibtex.Items `json:"results"`
+	Results common.Items `json:"results"`
 }
 
 type Success struct {
 	Message string `json:"successMessage"`
+}
+
+type Courses struct {
+	CoursesList []common.Course `json:"courses"`
 }
 
 func (search Search) String() string {
