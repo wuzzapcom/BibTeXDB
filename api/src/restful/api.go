@@ -27,7 +27,11 @@ func addBookHandler(w http.ResponseWriter, r *http.Request){
 	addBook(w, body)
 }
 
-func getCoursePrototypeHandler(w http.ResponseWriter, r *http.Request){
+func getBooksHandler(w http.ResponseWriter, _ *http.Request) {
+	getBooks(w)
+}
+
+func getCoursePrototypeHandler(w http.ResponseWriter, _ *http.Request){
 	getCoursePrototype(w)
 }
 
@@ -40,16 +44,16 @@ func addCourseHandler(w http.ResponseWriter, r *http.Request){
 	addCourse(w, body)
 }
 
-func addCourseLiteratureHandler(w http.ResponseWriter, r *http.Request){
+func addCourseLiteratureHandler(w http.ResponseWriter, _ *http.Request){
 	returnError(w, 501, "Not implemented")
 
 }
 
-func getCoursesHandler(w http.ResponseWriter, r *http.Request){
+func getCoursesHandler(w http.ResponseWriter, _ *http.Request){
 	getCourses(w)
 }
 
-func getCourseLiteratureHandler(w http.ResponseWriter, r *http.Request){
+func getCourseLiteratureHandler(w http.ResponseWriter, _ *http.Request){
 	returnError(w, 501, "Not implemented")
 }
 
@@ -66,12 +70,17 @@ func returnError(w http.ResponseWriter, code int, message string){
 
 func Run(f fetchers.GoogleFetcher){
 	fetcher = f
+
 	http.HandleFunc("/search", searchHandler)
 	http.HandleFunc("/addBook", addBookHandler)
+	http.HandleFunc("/getBooks", getBooksHandler)
+
 	http.HandleFunc("/getCoursePrototype", getCoursePrototypeHandler)
 	http.HandleFunc("/addCourse", addCourseHandler)
-	http.HandleFunc("/addCourseLiterature", addCourseLiteratureHandler)
 	http.HandleFunc("/getCourses", getCoursesHandler)
+
 	http.HandleFunc("/getCourseLiterature", getCourseLiteratureHandler)
+	http.HandleFunc("/addCourseLiterature", addCourseLiteratureHandler)
+
 	http.ListenAndServe(":8080", nil)
 }

@@ -20,6 +20,10 @@ type Courses struct {
 	CoursesList []common.Course `json:"courses"`
 }
 
+type Books struct {
+	StoredBooks common.Items `json:"storedBooks"`
+}
+
 func (search Search) String() string {
 
 	return search.Results.String()

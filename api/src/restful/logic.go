@@ -55,10 +55,6 @@ func search(w http.ResponseWriter, values url.Values){
 
 func addBookCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, error){
 	body := r.Body
-	//if  != nil {
-	//	returnError(w, 400, "No JSON provided")
-	//	return nil, err
-	//}
 
 	answer, err := ioutil.ReadAll(body)
 	if err != nil {
@@ -101,6 +97,30 @@ func addBook(w http.ResponseWriter, body []byte){
 	w.WriteHeader(200)
 	w.Write(answer)
 
+}
+
+func getBooks(w http.ResponseWriter){
+	mongo := &database.Mongo{}
+
+	mongo.Connect()
+	defer mongo.Disconnect()
+
+	textbooks, err := mongo.FindAllTextbooks()
+	if err != nil {
+		fmt.Println(err)
+		returnError(w, 500, "Internal server error")
+		return
+	}
+
+	data, err := json.Marshal(Books{textbooks})
+	if err != nil {
+		fmt.Println(err)
+		returnError(w, 500, "Internal server error")
+		return
+	}
+
+	w.WriteHeader(200)
+	w.Write(data)
 }
 
 func getCoursePrototype(w http.ResponseWriter){

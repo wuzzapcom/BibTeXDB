@@ -29,6 +29,7 @@ func init(){
 	rootCommand.AddCommand(addCourseCommand)
 	rootCommand.AddCommand(getCoursePrototypeCommand)
 	rootCommand.AddCommand(getCoursesCommand)
+	rootCommand.AddCommand(getBooksCommand)
 }
 
 func Execute(){
