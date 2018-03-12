@@ -11,7 +11,7 @@ func handleError(answer []byte){
 	var errorAnswer restful.Error
 	err := json.Unmarshal(answer, &errorAnswer)
 	if err != nil{
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 	}
 	fmt.Println(errorAnswer)
 }

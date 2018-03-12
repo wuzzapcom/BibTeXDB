@@ -25,13 +25,13 @@ func getCoursePrototype(cmd *cobra.Command, args []string){
 
 	response, err := http.Get(url)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		return
 	}
 
 	answer, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		return
 	}
 	if response.StatusCode != 200 {
@@ -41,12 +41,12 @@ func getCoursePrototype(cmd *cobra.Command, args []string){
 	var course common.Course
 	err = json.Unmarshal(answer, &course)
 	if err != nil{
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		return
 	}
 	resultFile, err := os.Create(outputFile)
 	if err != nil{
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		return
 	}
 

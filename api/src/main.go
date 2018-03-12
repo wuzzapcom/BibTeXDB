@@ -29,7 +29,7 @@ func testFetch(googleAPIToken string) {
 	}
 	result, err := fetcher.FetchWithString("канатников")
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		return
 	}
 	fmt.Println(result)

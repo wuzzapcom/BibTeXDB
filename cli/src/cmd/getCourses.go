@@ -24,20 +24,20 @@ func getCourses(cmd *cobra.Command, args []string){
 
 	response, err := http.Get(url)
 	if err != nil{
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		return
 	}
 
 	data, err := ioutil.ReadAll(response.Body)
 	if err != nil{
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		return
 	}
 
 	var courses restful.Courses
 	err = json.Unmarshal(data, &courses)
 	if err != nil{
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		return
 	}
 
@@ -52,7 +52,7 @@ func getCourses(cmd *cobra.Command, args []string){
 	}else{
 		file, err := os.Create(output)
 		if err != nil{
-			fmt.Println(err)
+			fmt.Printf("FATAL: %+v\n", err)
 			return
 		}
 		file.Write([]byte(result))

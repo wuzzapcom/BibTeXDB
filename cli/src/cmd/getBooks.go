@@ -20,20 +20,20 @@ func getBooks(cmd *cobra.Command, args []string){
 
 	response, err := http.Get(url)
 	if err != nil{
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		return
 	}
 
 	data, err := ioutil.ReadAll(response.Body)
 	if err != nil{
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		return
 	}
 
 	var books restful.Books
 	err = json.Unmarshal(data, &books)
 	if err != nil{
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		return
 	}
 

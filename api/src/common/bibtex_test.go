@@ -11,17 +11,17 @@ func TestItems_Append(t *testing.T) {
 
 	err := items.Append(common.GetRandomItems())
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		t.Fail()
 	}
 	err = items.Append(common.GetRandomItems()[0])
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		t.Fail()
 	}
 	err = items.Append(&common.GetRandomItems()[0])
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		t.Fail()
 	}
 }

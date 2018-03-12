@@ -11,7 +11,7 @@ func TestPostgres_Connect(t *testing.T) {
 	postgres := database.Postgres{}
 	err := postgres.Connect()
 	if err != nil{
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		t.Fail()
 	}
 	postgres.Disconnect()
@@ -21,7 +21,7 @@ func TestPostgres_InsertTextbook(t *testing.T) {
 	postgres := database.Postgres{}
 	err := postgres.Connect()
 	if err != nil{
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		t.Fail()
 	}
 	defer postgres.Disconnect()
@@ -38,7 +38,7 @@ func TestPostgres_InsertTextbook(t *testing.T) {
 			URL:       "https://www.googleapis.com/books/v1/volumes/_oG_iTxP1pIC",
 		})
 	if err != nil{
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		t.Fail()
 	}
 }
@@ -47,14 +47,14 @@ func TestPostgres_InsertTextbooks(t *testing.T) {
 	postgres := database.Postgres{}
 	err := postgres.Connect()
 	if err != nil{
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		t.Fail()
 	}
 	defer postgres.Disconnect()
 
 	err = postgres.InsertTextbooks(common.GetRandomItems())
 	if err != nil{
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		t.Fail()
 	}
 }
@@ -63,14 +63,14 @@ func TestPostgres_SelectTextbooks(t *testing.T) {
 	postgres := database.Postgres{}
 	err := postgres.Connect()
 	if err != nil{
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		t.Fail()
 	}
 	defer postgres.Disconnect()
 
 	result, err := postgres.SelectTextbooks()
 	if err != nil{
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		t.Fail()
 	}
 

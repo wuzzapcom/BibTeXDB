@@ -35,7 +35,7 @@ func search(w http.ResponseWriter, values url.Values) {
 	for _, request := range values["request"] {
 		res, err := fetcher.FetchWithString(request)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Printf("FATAL: %+v\n", err)
 			returnError(w, 500, "Parsing parameter error")
 			return
 		}
@@ -44,7 +44,7 @@ func search(w http.ResponseWriter, values url.Values) {
 
 	answer, err := json.Marshal(Search{result})
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		returnError(w, 500, "Internal server error")
 		return
 	}
@@ -71,7 +71,7 @@ func addBook(w http.ResponseWriter, body []byte) {
 
 	err := json.Unmarshal(body, &addingBooks)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		returnError(w, 400, "Wrong JSON input")
 		return
 	}
@@ -82,14 +82,14 @@ func addBook(w http.ResponseWriter, body []byte) {
 
 	err = postgres.InsertTextbook(addingBooks)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		returnError(w, 500, "Internal server error")
 		return
 	}
 
 	answer, err := json.Marshal(Success{"OK"})
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		returnError(w, 500, "Internal server error")
 		return
 	}
@@ -107,14 +107,14 @@ func getBooks(w http.ResponseWriter) {
 
 	textbooks, err := postgres.FindAllTextbooks()
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		returnError(w, 500, "Internal server error")
 		return
 	}
 
 	data, err := json.Marshal(Books{textbooks})
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		returnError(w, 500, "Internal server error")
 		return
 	}
@@ -127,7 +127,7 @@ func getCoursePrototype(w http.ResponseWriter) {
 
 	data, err := json.Marshal(common.GetCourseExample())
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		returnError(w, 500, "Internal server error")
 		return
 	}
@@ -152,7 +152,7 @@ func addCourse(w http.ResponseWriter, data []byte) {
 
 	err := json.Unmarshal(data, &course)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		returnError(w, 400, "Wrong JSON input")
 		return
 	}
@@ -163,14 +163,14 @@ func addCourse(w http.ResponseWriter, data []byte) {
 
 	err = postgres.InsertCourse(course)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		returnError(w, 500, "Internal server error")
 		return
 	}
 
 	answer, err := json.Marshal(Success{"OK"})
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		returnError(w, 500, "Internal server error")
 		return
 	}
@@ -188,14 +188,14 @@ func getCourses(w http.ResponseWriter) {
 
 	courses, err := postgres.GetAllCourses()
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		returnError(w, 500, "Internal server error")
 		return
 	}
 
 	data, err := json.Marshal(Courses{courses})
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		returnError(w, 500, "Internal server error")
 		return
 	}

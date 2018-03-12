@@ -22,14 +22,14 @@ func addBooks(cmd *cobra.Command, args []string) {
 	resultFilePath = cmd.Flag(inputFileFlag).Value.String()
 	data, err := ioutil.ReadFile(resultFilePath)
 	if err != nil{
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		return
 	}
 
 	var items common.Item
 	err = json.Unmarshal(data, &items)
 	if err != nil{
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		return
 	}
 
@@ -38,7 +38,7 @@ func addBooks(cmd *cobra.Command, args []string) {
 
 	answer, err := ioutil.ReadAll(response.Body)
 	if err != nil{
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 	}
 
 	if response.StatusCode != 200 {
@@ -49,7 +49,7 @@ func addBooks(cmd *cobra.Command, args []string) {
 	var success restful.Success
 	err = json.Unmarshal(answer, &success)
 	if err != nil{
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 	}
 
 	fmt.Println(success)

@@ -27,12 +27,12 @@ func runSearch(cmd *cobra.Command, args []string){
 	url := "http://localhost:8080/search?request=" + encodedRequest
 	response, err := http.Get(url)
 	if err != nil{
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		return
 	}
 	answer, err := ioutil.ReadAll(response.Body)
 	if err != nil{
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		return
 	}
 	if response.StatusCode != 200 {
@@ -42,12 +42,12 @@ func runSearch(cmd *cobra.Command, args []string){
 	var search restful.Search
 	err = json.Unmarshal(answer, &search)
 	if err != nil{
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		return
 	}
 	resultFile, err := os.Create(resultFilePath)
 	if err != nil{
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		return
 	}
 

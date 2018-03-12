@@ -12,7 +12,7 @@ var fetcher fetchers.GoogleFetcher
 func searchHandler(w http.ResponseWriter, r *http.Request){
 	parameters, err := searchCheckInput(w, r)
 	if err != nil{
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		return
 	}
 	search(w, parameters)
@@ -21,7 +21,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request){
 func addBookHandler(w http.ResponseWriter, r *http.Request){
 	body, err := addBookCheckInput(w, r)
 	if err != nil{
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		return
 	}
 	addBook(w, body)
@@ -38,7 +38,7 @@ func getCoursePrototypeHandler(w http.ResponseWriter, _ *http.Request){
 func addCourseHandler(w http.ResponseWriter, r *http.Request){
 	body, err := addCourseCheckInput(w, r)
 	if err != nil{
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		return
 	}
 	addCourse(w, body)
@@ -60,7 +60,7 @@ func getCourseLiteratureHandler(w http.ResponseWriter, _ *http.Request){
 func returnError(w http.ResponseWriter, code int, message string){
 	answer, err := json.Marshal(Error{message})
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("FATAL: %+v\n", err)
 		return
 	}
 
