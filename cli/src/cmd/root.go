@@ -34,6 +34,7 @@ func init() {
 	rootCommand.AddCommand(getBooksCommand)
 }
 
+//Execute ..
 func Execute() {
 	rootCommand.Execute()
 }

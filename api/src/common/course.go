@@ -2,23 +2,25 @@ package common
 
 import "encoding/json"
 
+//Course ..
 type Course struct {
-	Title string `json:"title"`
-	Lecturer string `json:"lecturer"`
+	Title      string `json:"title"`
+	Lecturer   string `json:"lecturer"`
 	Department string `json:"department"`
-	Semester int `json:"semester"`
+	Semester   int    `json:"semester"`
 }
 
-func (course Course) String() string{
+func (course Course) String() string {
 	data, _ := json.MarshalIndent(course, "", "\t")
 	return string(data)
 }
 
-func GetCourseExample() Course{
+//GetCourseExample ..
+func GetCourseExample() Course {
 	return Course{
-		Title: "Конструирование компиляторов",
-		Lecturer: "Коновалов Александр Владимирович",
+		Title:      "Конструирование компиляторов",
+		Lecturer:   "Коновалов Александр Владимирович",
 		Department: "ИУ9",
-		Semester: 6,
+		Semester:   6,
 	}
 }

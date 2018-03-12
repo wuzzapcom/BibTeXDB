@@ -32,6 +32,7 @@ func (items Items) String() string {
 	return result
 }
 
+//Append ..
 func (items *Items) Append(newItems interface{}) error {
 	switch newItems := newItems.(type) {
 	case Item:
@@ -39,11 +40,11 @@ func (items *Items) Append(newItems interface{}) error {
 	case *Item:
 		*items = append(*items, *newItems)
 	case Items:
-		*items = append(*items, newItems ...)
+		*items = append(*items, newItems...)
 	case *Items:
-		*items = append(*items, *newItems ...)
+		*items = append(*items, *newItems...)
 	default:
-		return errors.New("Unexpected input element.")
+		return errors.New("unexpected input element")
 	}
 
 	return nil
@@ -61,7 +62,8 @@ func (b Item) String() string {
 		"}"
 }
 
-func (b Item)JSONString() string {
+// JSONString ..
+func (b Item) JSONString() string {
 	data, _ := json.MarshalIndent(b, "", "\t")
 	return string(data)
 }
