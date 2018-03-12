@@ -1,29 +1,31 @@
 package cmd
 
 import (
-	"github.com/spf13/cobra"
+	"encoding/json"
 	"fmt"
 	"wuzzapcom/Coursework/api/src/restful"
-	"encoding/json"
+
+	"github.com/spf13/cobra"
 )
 
-func handleError(answer []byte){
+func handleError(answer []byte) {
 	var errorAnswer restful.Error
 	err := json.Unmarshal(answer, &errorAnswer)
-	if err != nil{
+	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
 	}
-	fmt.Println(errorAnswer)
+
+	fmt.Println(errorAnswer.Message)
 }
 
 var rootCommand = &cobra.Command{
 	Use: "cli",
-	Run: func (cmd *cobra.Command, args []string){
+	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("cli")
 	},
 }
 
-func init(){
+func init() {
 	rootCommand.AddCommand(searchCommand)
 	rootCommand.AddCommand(addBooksCommand)
 	rootCommand.AddCommand(addCourseCommand)
@@ -32,6 +34,6 @@ func init(){
 	rootCommand.AddCommand(getBooksCommand)
 }
 
-func Execute(){
+func Execute() {
 	rootCommand.Execute()
 }

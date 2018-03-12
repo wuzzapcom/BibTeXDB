@@ -34,6 +34,11 @@ func getCourses(cmd *cobra.Command, args []string){
 		return
 	}
 
+	if response.StatusCode != 200 {
+		handleError(data)
+		return
+	}
+
 	var courses restful.Courses
 	err = json.Unmarshal(data, &courses)
 	if err != nil{
