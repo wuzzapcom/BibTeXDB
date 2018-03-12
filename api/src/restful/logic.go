@@ -1,16 +1,16 @@
 package restful
 
 import (
-	"net/http"
-	"net/url"
 	"encoding/json"
 	"fmt"
-	"wuzzapcom/Coursework/api/src/common"
 	"io/ioutil"
+	"net/http"
+	"net/url"
+	"wuzzapcom/Coursework/api/src/common"
 	"wuzzapcom/Coursework/api/src/database"
 )
 
-func searchCheckInput(w http.ResponseWriter, r *http.Request) (url.Values, error){
+func searchCheckInput(w http.ResponseWriter, r *http.Request) (url.Values, error) {
 	parameters, err := url.ParseQuery(r.URL.RawQuery)
 	if err != nil {
 		returnError(w, 500, "Parsing parameter error")
@@ -30,11 +30,11 @@ func searchCheckInput(w http.ResponseWriter, r *http.Request) (url.Values, error
 	return parameters, nil
 }
 
-func search(w http.ResponseWriter, values url.Values){
+func search(w http.ResponseWriter, values url.Values) {
 	var result common.Items
 	for _, request := range values["request"] {
 		res, err := fetcher.FetchWithString(request)
-		if err != nil{
+		if err != nil {
 			fmt.Println(err)
 			returnError(w, 500, "Parsing parameter error")
 			return
@@ -53,7 +53,7 @@ func search(w http.ResponseWriter, values url.Values){
 	w.Write(answer)
 }
 
-func addBookCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, error){
+func addBookCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, error) {
 	body := r.Body
 
 	answer, err := ioutil.ReadAll(body)
@@ -66,21 +66,21 @@ func addBookCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, error){
 
 }
 
-func addBook(w http.ResponseWriter, body []byte){
+func addBook(w http.ResponseWriter, body []byte) {
 	var addingBooks common.Item
 
 	err := json.Unmarshal(body, &addingBooks)
-	if err != nil{
+	if err != nil {
 		fmt.Println(err)
 		returnError(w, 400, "Wrong JSON input")
 		return
 	}
 
-	mongo := database.Mongo{}
-	mongo.Connect()
-	defer mongo.Disconnect()
+	postgres := database.Postgres{}
+	postgres.Connect()
+	defer postgres.Disconnect()
 
-	err = mongo.InsertTextbook(addingBooks)
+	err = postgres.InsertTextbook(addingBooks)
 	if err != nil {
 		fmt.Println(err)
 		returnError(w, 500, "Internal server error")
@@ -99,13 +99,13 @@ func addBook(w http.ResponseWriter, body []byte){
 
 }
 
-func getBooks(w http.ResponseWriter){
-	mongo := &database.Mongo{}
+func getBooks(w http.ResponseWriter) {
+	postgres := &database.Postgres{}
 
-	mongo.Connect()
-	defer mongo.Disconnect()
+	postgres.Connect()
+	defer postgres.Disconnect()
 
-	textbooks, err := mongo.FindAllTextbooks()
+	textbooks, err := postgres.FindAllTextbooks()
 	if err != nil {
 		fmt.Println(err)
 		returnError(w, 500, "Internal server error")
@@ -123,10 +123,10 @@ func getBooks(w http.ResponseWriter){
 	w.Write(data)
 }
 
-func getCoursePrototype(w http.ResponseWriter){
+func getCoursePrototype(w http.ResponseWriter) {
 
 	data, err := json.Marshal(common.GetCourseExample())
-	if err != nil{
+	if err != nil {
 		fmt.Println(err)
 		returnError(w, 500, "Internal server error")
 		return
@@ -137,7 +137,7 @@ func getCoursePrototype(w http.ResponseWriter){
 
 }
 
-func addCourseCheckInput(w http.ResponseWriter, r *http.Request)([]byte, error){
+func addCourseCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, error) {
 	body := r.Body
 	answer, err := ioutil.ReadAll(body)
 	if err != nil {
@@ -147,21 +147,21 @@ func addCourseCheckInput(w http.ResponseWriter, r *http.Request)([]byte, error){
 	return answer, nil
 }
 
-func addCourse(w http.ResponseWriter, data []byte){
+func addCourse(w http.ResponseWriter, data []byte) {
 	var course common.Course
 
 	err := json.Unmarshal(data, &course)
-	if err != nil{
+	if err != nil {
 		fmt.Println(err)
 		returnError(w, 400, "Wrong JSON input")
 		return
 	}
 
-	mongo := database.Mongo{}
-	mongo.Connect()
-	defer mongo.Disconnect()
+	postgres := database.Postgres{}
+	postgres.Connect()
+	defer postgres.Disconnect()
 
-	err = mongo.InsertCourse(course)
+	err = postgres.InsertCourse(course)
 	if err != nil {
 		fmt.Println(err)
 		returnError(w, 500, "Internal server error")
@@ -179,14 +179,14 @@ func addCourse(w http.ResponseWriter, data []byte){
 	w.Write(answer)
 }
 
-func getCourses(w http.ResponseWriter){
+func getCourses(w http.ResponseWriter) {
 
-	mongo := &database.Mongo{}
+	postgres := &database.Postgres{}
 
-	mongo.Connect()
-	defer mongo.Disconnect()
+	postgres.Connect()
+	defer postgres.Disconnect()
 
-	courses, err := mongo.GetAllCourses()
+	courses, err := postgres.GetAllCourses()
 	if err != nil {
 		fmt.Println(err)
 		returnError(w, 500, "Internal server error")

@@ -1,6 +1,9 @@
 package common
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"errors"
+)
 
 //Item represents legal BibTeX object. Author may contain many authors with \"and\" separator
 type Item struct {
@@ -29,10 +32,21 @@ func (items Items) String() string {
 	return result
 }
 
-func (items *Items) Append(newItems Items) {
+func (items *Items) Append(newItems interface{}) error {
+	switch newItems := newItems.(type) {
+	case Item:
+		*items = append(*items, newItems)
+	case *Item:
+		*items = append(*items, *newItems)
+	case Items:
+		*items = append(*items, newItems ...)
+	case *Items:
+		*items = append(*items, *newItems ...)
+	default:
+		return errors.New("Unexpected input element.")
+	}
 
-	*items = append(*items, newItems...)
-
+	return nil
 }
 
 func (b Item) String() string {
