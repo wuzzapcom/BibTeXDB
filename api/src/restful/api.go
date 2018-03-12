@@ -83,5 +83,8 @@ func Run(f fetchers.GoogleFetcher) {
 	http.HandleFunc("/getCourseLiterature", getCourseLiteratureHandler)
 	http.HandleFunc("/addCourseLiterature", addCourseLiteratureHandler)
 
-	http.ListenAndServe(":8080", nil)
+	err := http.ListenAndServe(":8080", nil)
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+	}
 }

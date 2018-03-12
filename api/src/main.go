@@ -1,16 +1,16 @@
 package main
 
 import (
-	"fmt"
 	"flag"
-	"wuzzapcom/Coursework/api/src/restful"
+	"fmt"
 	"wuzzapcom/Coursework/api/src/fetchers"
+	"wuzzapcom/Coursework/api/src/restful"
 )
 
 func main() {
 	googleToken := flag.String("googleToken", "", "Token for Google Books API.")
 	flag.Parse()
-	if *googleToken == ""{
+	if *googleToken == "" {
 		fmt.Println("No Google Books API token")
 		return
 	}
