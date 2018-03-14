@@ -269,3 +269,45 @@ func getDepartments(w http.ResponseWriter) {
 	w.WriteHeader(200)
 	w.Write(data)
 }
+
+// func addLecturerCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, error) {
+// 	body := r.Body
+// 	answer, err := ioutil.ReadAll(body)
+// 	if err != nil {
+// 		returnError(w, 400, "No JSON provided")
+// 		return nil, err
+// 	}
+// 	return answer, nil
+// }
+
+// func addLecturer(w http.ResponseWriter, data []byte) {
+// 	var department common.Department
+
+// 	err := json.Unmarshal(data, &department)
+// 	if err != nil {
+// 		fmt.Printf("FATAL: %+v\n", err)
+// 		returnError(w, 400, "Wrong JSON input")
+// 		return
+// 	}
+
+// 	postgres := database.Postgres{}
+// 	postgres.Connect()
+// 	defer postgres.Disconnect()
+
+// 	err = postgres.InsertDepartment(department)
+// 	if err != nil {
+// 		fmt.Printf("FATAL: %+v\n", err)
+// 		returnError(w, 500, "Internal server error")
+// 		return
+// 	}
+
+// 	answer, err := json.Marshal(Success{"OK"})
+// 	if err != nil {
+// 		fmt.Printf("FATAL: %+v\n", err)
+// 		returnError(w, 500, "Internal server error")
+// 		return
+// 	}
+
+// 	w.WriteHeader(200)
+// 	w.Write(answer)
+// }

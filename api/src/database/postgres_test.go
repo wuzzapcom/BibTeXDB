@@ -3,6 +3,7 @@ package database_test
 import (
 	"fmt"
 	"testing"
+	"time"
 	"wuzzapcom/Coursework/api/src/common"
 	"wuzzapcom/Coursework/api/src/database"
 )
@@ -111,4 +112,47 @@ func TestPostgres_SelectDepartments(t *testing.T) {
 	}
 
 	fmt.Println(result)
+}
+
+func TestPostgres_FindIDOfDepartmentWithName(t *testing.T) {
+	postgres := database.Postgres{}
+	err := postgres.Connect()
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+	defer postgres.Disconnect()
+
+	result, err := postgres.FindIDOfDepartmentWithName("Прикладная математика и информатика")
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+	fmt.Println(result)
+}
+
+func TestPostgres_InsertLecturer(t *testing.T) {
+	postgres := database.Postgres{}
+	err := postgres.Connect()
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+	defer postgres.Disconnect()
+
+	dateOfBirth, err := time.Parse("2006-Jan-02", "2013-Feb-03")
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+
+	err = postgres.InsertLecturer(common.Lecturer{
+		Name:        "Коновалов Александр Владимирович",
+		DateOfBirth: dateOfBirth,
+		Department:  "Прикладная математика и информатика",
+	})
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
 }

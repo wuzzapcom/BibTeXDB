@@ -120,6 +120,36 @@ func (postgres *Postgres) SelectDepartments() ([]common.Department, error) {
 	return deparments, nil
 }
 
+// FindIDOfDepartmentWithName ..
+func (postgres *Postgres) FindIDOfDepartmentWithName(name string) (int, error) {
+	row := postgres.db.QueryRow("SELECT department_id FROM schema.department WHERE title = $1", name)
+
+	var id int
+	err := row.Scan(&id)
+
+	return id, err
+}
+
+// InsertLecturer ..
+func (postgres *Postgres) InsertLecturer(lecturer common.Lecturer) error {
+	id, err := postgres.FindIDOfDepartmentWithName(lecturer.Department)
+	if err != nil {
+		return err
+	}
+
+	result, err := postgres.db.Exec("INSERT INTO schema.lecturer(name, date_of_birth, department_id) VALUES ($1, $2, $3)",
+		lecturer.Name,
+		lecturer.DateOfBirth,
+		id,
+	)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(result.RowsAffected())
+	return nil
+}
+
 //FindAllTextbooks ..
 func (postgres *Postgres) FindAllTextbooks() (common.Items, error) {
 	return nil, errors.New("Unimplemented")
