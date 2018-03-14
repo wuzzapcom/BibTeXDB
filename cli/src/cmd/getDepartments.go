@@ -10,14 +10,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var getBooksCommand = &cobra.Command{
-	Use: "getBooks",
-	Run: getBooks,
+var getDepartmentsCommand = &cobra.Command{
+	Use: "getDepartments",
+	Run: getDepartments,
 }
 
-func getBooks(cmd *cobra.Command, args []string) {
+func getDepartments(cmd *cobra.Command, args []string) {
 
-	url := "http://localhost:8080/getBooks"
+	url := "http://localhost:8080/getDepartments"
 
 	response, err := http.Get(url)
 	if err != nil {
@@ -35,18 +35,15 @@ func getBooks(cmd *cobra.Command, args []string) {
 		handleError(data)
 		return
 	}
-	var books restful.Books
-	err = json.Unmarshal(data, &books)
+	var departments restful.Departments
+	err = json.Unmarshal(data, &departments)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
 		return
 	}
 
-	for _, book := range books.StoredBooks {
-		fmt.Println(book.JSONString())
+	for _, department := range departments.DepartmentList {
+		fmt.Println(department.String())
 	}
 
-}
-
-func init() {
 }

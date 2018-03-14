@@ -24,6 +24,11 @@ type Courses struct {
 	CoursesList []common.Course `json:"courses"`
 }
 
+// Departments ..
+type Departments struct {
+	DepartmentList []common.Department `json:"departments"`
+}
+
 //Books ..
 type Books struct {
 	StoredBooks common.Items `json:"storedBooks"`

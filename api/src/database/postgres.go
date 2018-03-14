@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-
 	"wuzzapcom/Coursework/api/src/common"
 
 	//SQL driver import
@@ -35,7 +34,6 @@ func (postgres *Postgres) Connect() error {
 
 //InsertTextbook ..
 func (postgres *Postgres) InsertTextbook(item common.Item) error {
-
 	result, err := postgres.db.Exec(
 		"INSERT INTO schema.textbook(ident, title, author, publisher, year, isbn, url) VALUES ($1, $2, $3, $4, $5, $6, $7)",
 		item.Ident,
@@ -86,6 +84,40 @@ func (postgres *Postgres) SelectTextbooks() (common.Items, error) {
 
 	return items, err
 
+}
+
+// InsertDepartment ..
+func (postgres *Postgres) InsertDepartment(department common.Department) error {
+	result, err := postgres.db.Exec("INSERT INTO schema.department(title) VALUES ($1)",
+		department.Title,
+	)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(result.RowsAffected())
+	return nil
+}
+
+// SelectDepartments ..
+func (postgres *Postgres) SelectDepartments() ([]common.Department, error) {
+	rows, err := postgres.db.Query("SELECT title FROM schema.department")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var deparments []common.Department
+	for rows.Next() {
+		deparment := new(common.Department)
+		err = rows.Scan(&deparment.Title)
+		if err != nil {
+			return nil, err
+		}
+		deparments = append(deparments, *deparment)
+	}
+
+	return deparments, nil
 }
 
 //FindAllTextbooks ..

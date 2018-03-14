@@ -57,6 +57,19 @@ func getCourseLiteratureHandler(w http.ResponseWriter, _ *http.Request) {
 	returnError(w, 501, "Not implemented")
 }
 
+func addDepartmentHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := addDepartmentCheckInput(w, r)
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		return
+	}
+	addDepartment(w, body)
+}
+
+func getDepartmentsHandler(w http.ResponseWriter, r *http.Request) {
+	getDepartments(w)
+}
+
 func returnError(w http.ResponseWriter, code int, message string) {
 	answer, err := json.Marshal(Error{message})
 	if err != nil {
@@ -82,6 +95,9 @@ func Run(f fetchers.GoogleFetcher) {
 
 	http.HandleFunc("/getCourseLiterature", getCourseLiteratureHandler)
 	http.HandleFunc("/addCourseLiterature", addCourseLiteratureHandler)
+
+	http.HandleFunc("/addDepartment", addDepartmentHandler)
+	http.HandleFunc("/getDepartments", getDepartmentsHandler)
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
