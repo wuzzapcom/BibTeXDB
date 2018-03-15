@@ -15,9 +15,27 @@ type Postgres struct {
 	db *sql.DB
 }
 
+// PostgresConfiguration ..
+type PostgresConfiguration struct {
+	Port int
+}
+
+// Configuration ..
+var Configuration = PostgresConfiguration{}
+
 //Connect ..
 func (postgres *Postgres) Connect() error {
-	connStr := "user=wuzzapcom port=32769 dbname=postgres sslmode=disable"
+
+	if Configuration.Port < 0 {
+		return errors.New("Wrong TCP port")
+	}
+
+	var port = 32770
+	if Configuration.Port != 0 {
+		port = Configuration.Port
+	}
+
+	connStr := fmt.Sprintf("user=wuzzapcom port=%d dbname=postgres sslmode=disable", port)
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		return err
