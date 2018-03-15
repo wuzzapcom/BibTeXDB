@@ -17,7 +17,7 @@ type Postgres struct {
 
 //Connect ..
 func (postgres *Postgres) Connect() error {
-	connStr := "user=wuzzapcom port=32768 dbname=postgres sslmode=disable"
+	connStr := "user=wuzzapcom port=32769 dbname=postgres sslmode=disable"
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		return err
@@ -148,6 +148,27 @@ func (postgres *Postgres) InsertLecturer(lecturer common.Lecturer) error {
 
 	fmt.Println(result.RowsAffected())
 	return nil
+}
+
+// SelectLecturers ..
+func (postgres *Postgres) SelectLecturers() ([]common.Lecturer, error) {
+	rows, err := postgres.db.Query("SELECT name, date_of_birth, title FROM schema.lecturer l JOIN schema.department d ON l.department_id = d.department_id")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var lecturers []common.Lecturer
+	for rows.Next() {
+		lecturer := new(common.Lecturer)
+		err = rows.Scan(&lecturer.Name, &lecturer.DateOfBirth, &lecturer.Department)
+		if err != nil {
+			return nil, err
+		}
+		lecturers = append(lecturers, *lecturer)
+	}
+
+	return lecturers, nil
 }
 
 //FindAllTextbooks ..

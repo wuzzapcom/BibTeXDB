@@ -70,14 +70,18 @@ func getDepartmentsHandler(w http.ResponseWriter, r *http.Request) {
 	getDepartments(w)
 }
 
-// func addLecturerHandler(w http.ResponseWriter, r *http.Request) {
-// 	body, err := addLecturerCheckInput(w, r)
-// 	if err != nil {
-// 		fmt.Printf("FATAL: %+v\n", err)
-// 		return
-// 	}
-// 	addLecturer(w, body)
-// }
+func addLecturerHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := addLecturerCheckInput(w, r)
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		return
+	}
+	addLecturer(w, body)
+}
+
+func getLecturersHandler(w http.ResponseWriter, r *http.Request) {
+	getLecturers(w)
+}
 
 func returnError(w http.ResponseWriter, code int, message string) {
 	answer, err := json.Marshal(Error{message})
@@ -108,7 +112,8 @@ func Run(f fetchers.GoogleFetcher) {
 	http.HandleFunc("/addDepartment", addDepartmentHandler)
 	http.HandleFunc("/getDepartments", getDepartmentsHandler)
 
-	// http.HandleFunc("/addLecturer", addLecturerHandler)
+	http.HandleFunc("/addLecturer", addLecturerHandler)
+	http.HandleFunc("/getLecturers", getLecturersHandler)
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {

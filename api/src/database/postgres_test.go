@@ -156,3 +156,21 @@ func TestPostgres_InsertLecturer(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestPostgres_SelectLecturers(t *testing.T) {
+	postgres := database.Postgres{}
+	err := postgres.Connect()
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+	defer postgres.Disconnect()
+
+	result, err := postgres.SelectLecturers()
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+
+	fmt.Println(result)
+}
