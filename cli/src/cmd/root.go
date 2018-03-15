@@ -35,6 +35,7 @@ func init() {
 	rootCommand.AddCommand(getDepartmentsCommand)
 	rootCommand.AddCommand(getDepartmentPrototypeCommand)
 	rootCommand.AddCommand(addDepartmentCommand)
+	rootCommand.AddCommand(getLecturersCommand)
 }
 
 //Execute ..
