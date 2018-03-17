@@ -189,6 +189,19 @@ func (postgres *Postgres) SelectLecturers() ([]common.Lecturer, error) {
 	return lecturers, nil
 }
 
+func (postgres *Postgres) DeleteDepartment(id int) error {
+	result, err := postgres.db.Exec(
+		"DELETE FROM schema.department WHERE id = $1",
+		id,
+	)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(result.RowsAffected())
+	return nil
+}
+
 //FindAllTextbooks ..
 func (postgres *Postgres) FindAllTextbooks() (common.Items, error) {
 	return nil, errors.New("Unimplemented")

@@ -8,7 +8,10 @@ import (
 	"wuzzapcom/Coursework/api/src/database"
 )
 
+var testPort = 32768
+
 func TestPostgres_Connect(t *testing.T) {
+	database.Configuration.Port = testPort
 	postgres := database.Postgres{}
 	err := postgres.Connect()
 	if err != nil {
@@ -19,6 +22,7 @@ func TestPostgres_Connect(t *testing.T) {
 }
 
 func TestPostgres_InsertTextbook(t *testing.T) {
+	database.Configuration.Port = testPort
 	postgres := database.Postgres{}
 	err := postgres.Connect()
 	if err != nil {
@@ -45,6 +49,7 @@ func TestPostgres_InsertTextbook(t *testing.T) {
 }
 
 func TestPostgres_InsertTextbooks(t *testing.T) {
+	database.Configuration.Port = testPort
 	postgres := database.Postgres{}
 	err := postgres.Connect()
 	if err != nil {
@@ -61,6 +66,7 @@ func TestPostgres_InsertTextbooks(t *testing.T) {
 }
 
 func TestPostgres_SelectTextbooks(t *testing.T) {
+	database.Configuration.Port = testPort
 	postgres := database.Postgres{}
 	err := postgres.Connect()
 	if err != nil {
@@ -79,6 +85,7 @@ func TestPostgres_SelectTextbooks(t *testing.T) {
 }
 
 func TestPostgres_InsertDepartment(t *testing.T) {
+	database.Configuration.Port = testPort
 	postgres := database.Postgres{}
 	err := postgres.Connect()
 	if err != nil {
@@ -97,6 +104,7 @@ func TestPostgres_InsertDepartment(t *testing.T) {
 }
 
 func TestPostgres_SelectDepartments(t *testing.T) {
+	database.Configuration.Port = testPort
 	postgres := database.Postgres{}
 	err := postgres.Connect()
 	if err != nil {
@@ -115,6 +123,7 @@ func TestPostgres_SelectDepartments(t *testing.T) {
 }
 
 func TestPostgres_FindIDOfDepartmentWithName(t *testing.T) {
+	database.Configuration.Port = testPort
 	postgres := database.Postgres{}
 	err := postgres.Connect()
 	if err != nil {
@@ -132,6 +141,7 @@ func TestPostgres_FindIDOfDepartmentWithName(t *testing.T) {
 }
 
 func TestPostgres_InsertLecturer(t *testing.T) {
+	database.Configuration.Port = testPort
 	postgres := database.Postgres{}
 	err := postgres.Connect()
 	if err != nil {
@@ -158,6 +168,7 @@ func TestPostgres_InsertLecturer(t *testing.T) {
 }
 
 func TestPostgres_SelectLecturers(t *testing.T) {
+	database.Configuration.Port = testPort
 	postgres := database.Postgres{}
 	err := postgres.Connect()
 	if err != nil {
@@ -173,4 +184,21 @@ func TestPostgres_SelectLecturers(t *testing.T) {
 	}
 
 	fmt.Println(result)
+}
+
+func TestPostgres_DeleteDepartment(t *testing.T) {
+	database.Configuration.Port = 32768
+	postgres := database.Postgres{}
+	err := postgres.Connect()
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+	defer postgres.Disconnect()
+
+	err = postgres.DeleteDepartment(5)
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
 }
