@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 	"wuzzapcom/Coursework/api/src/common"
 
 	//SQL driver import
@@ -35,7 +36,7 @@ func (postgres *Postgres) Connect() error {
 		port = Configuration.Port
 	}
 
-	connStr := fmt.Sprintf("user=wuzzapcom port=%d dbname=postgres sslmode=disable", port)
+	connStr := fmt.Sprintf("user=wuzzapcom port=%d dbname=bibtex_literature sslmode=disable", port)
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		return err
@@ -53,7 +54,7 @@ func (postgres *Postgres) Connect() error {
 //InsertTextbook ..
 func (postgres *Postgres) InsertTextbook(item common.Item) error {
 	result, err := postgres.db.Exec(
-		"INSERT INTO schema.textbook(ident, title, author, publisher, year, isbn, url) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+		"INSERT INTO schema.textbook(ident, title, author, publisher, year, isbn, url, timestamp) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
 		item.Ident,
 		item.Title,
 		item.Author,
@@ -61,6 +62,7 @@ func (postgres *Postgres) InsertTextbook(item common.Item) error {
 		item.Year,
 		item.ISBN,
 		item.URL,
+		int32(time.Now().Unix()),
 	)
 	if err != nil {
 		return err
@@ -106,8 +108,9 @@ func (postgres *Postgres) SelectTextbooks() (common.Items, error) {
 
 // InsertDepartment ..
 func (postgres *Postgres) InsertDepartment(department common.Department) error {
-	result, err := postgres.db.Exec("INSERT INTO schema.department(title) VALUES ($1)",
+	result, err := postgres.db.Exec("INSERT INTO schema.department(title, timestamp) VALUES ($1, $2)",
 		department.Title,
+		int32(time.Now().Unix()),
 	)
 	if err != nil {
 		return err
@@ -155,10 +158,11 @@ func (postgres *Postgres) InsertLecturer(lecturer common.Lecturer) error {
 		return err
 	}
 
-	result, err := postgres.db.Exec("INSERT INTO schema.lecturer(name, date_of_birth, department_id) VALUES ($1, $2, $3)",
+	result, err := postgres.db.Exec("INSERT INTO schema.lecturer(name, date_of_birth, department_id, timestamp) VALUES ($1, $2, $3, $4)",
 		lecturer.Name,
 		lecturer.DateOfBirth,
 		id,
+		int32(time.Now().Unix()),
 	)
 	if err != nil {
 		return err
