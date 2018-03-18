@@ -54,7 +54,9 @@ func (postgres *Postgres) Connect() error {
 //InsertTextbook ..
 func (postgres *Postgres) InsertTextbook(item common.Item) error {
 	result, err := postgres.db.Exec(
-		"INSERT INTO schema.textbook(ident, title, author, publisher, year, isbn, url, timestamp) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+		"INSERT INTO schema.textbook(textbook_ident, textbook_title, "+
+			"textbook_author, textbook_publisher, textbook_year, textbook_isbn, "+
+			"textbook_url, textbook_timestamp) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
 		item.Ident,
 		item.Title,
 		item.Author,
@@ -86,7 +88,8 @@ func (postgres *Postgres) InsertTextbooks(items common.Items) error {
 // SelectTextbooks ..
 func (postgres *Postgres) SelectTextbooks() (common.Items, error) {
 
-	rows, err := postgres.db.Query("SELECT ident, title, author, publisher, year, isbn, url FROM schema.textbook")
+	rows, err := postgres.db.Query("SELECT textbook_ident, textbook_title, " +
+		"textbook_author, textbook_publisher, textbook_year, textbook_isbn, textbook_url FROM schema.textbook")
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +111,7 @@ func (postgres *Postgres) SelectTextbooks() (common.Items, error) {
 
 // InsertDepartment ..
 func (postgres *Postgres) InsertDepartment(department common.Department) error {
-	result, err := postgres.db.Exec("INSERT INTO schema.department(title, timestamp) VALUES ($1, $2)",
+	result, err := postgres.db.Exec("INSERT INTO schema.department(department_title, department_timestamp) VALUES ($1, $2)",
 		department.Title,
 		int32(time.Now().Unix()),
 	)
@@ -122,7 +125,7 @@ func (postgres *Postgres) InsertDepartment(department common.Department) error {
 
 // SelectDepartments ..
 func (postgres *Postgres) SelectDepartments() ([]common.Department, error) {
-	rows, err := postgres.db.Query("SELECT title FROM schema.department")
+	rows, err := postgres.db.Query("SELECT department_title FROM schema.department")
 	if err != nil {
 		return nil, err
 	}
@@ -141,16 +144,6 @@ func (postgres *Postgres) SelectDepartments() ([]common.Department, error) {
 	return deparments, nil
 }
 
-// FindIDOfDepartmentWithName ..
-func (postgres *Postgres) FindIDOfDepartmentWithName(name string) (int, error) {
-	row := postgres.db.QueryRow("SELECT department_id FROM schema.department WHERE title = $1", name)
-
-	var id int
-	err := row.Scan(&id)
-
-	return id, err
-}
-
 // InsertLecturer ..
 func (postgres *Postgres) InsertLecturer(lecturer common.Lecturer) error {
 	id, err := postgres.FindIDOfDepartmentWithName(lecturer.Department)
@@ -158,7 +151,8 @@ func (postgres *Postgres) InsertLecturer(lecturer common.Lecturer) error {
 		return err
 	}
 
-	result, err := postgres.db.Exec("INSERT INTO schema.lecturer(name, date_of_birth, department_id, timestamp) VALUES ($1, $2, $3, $4)",
+	result, err := postgres.db.Exec("INSERT INTO schema.lecturer(lecturer_name, lecturer_date_of_birth, "+
+		"lecturer_department_id, lecturer_timestamp) VALUES ($1, $2, $3, $4)",
 		lecturer.Name,
 		lecturer.DateOfBirth,
 		id,
@@ -174,7 +168,8 @@ func (postgres *Postgres) InsertLecturer(lecturer common.Lecturer) error {
 
 // SelectLecturers ..
 func (postgres *Postgres) SelectLecturers() ([]common.Lecturer, error) {
-	rows, err := postgres.db.Query("SELECT name, date_of_birth, title FROM schema.lecturer l JOIN schema.department d ON l.department_id = d.department_id")
+	rows, err := postgres.db.Query("SELECT lecturer_name, lecturer_date_of_birth, department_title FROM schema.lecturer l " +
+		"JOIN schema.department d ON l.lecturer_department_id = d.department_id")
 	if err != nil {
 		return nil, err
 	}
@@ -193,9 +188,10 @@ func (postgres *Postgres) SelectLecturers() ([]common.Lecturer, error) {
 	return lecturers, nil
 }
 
+// DeleteDepartment ..
 func (postgres *Postgres) DeleteDepartment(id int) error {
 	result, err := postgres.db.Exec(
-		"DELETE FROM schema.department WHERE id = $1",
+		"DELETE FROM schema.department WHERE department_id = $1",
 		id,
 	)
 	if err != nil {
@@ -206,14 +202,259 @@ func (postgres *Postgres) DeleteDepartment(id int) error {
 	return nil
 }
 
-//FindAllTextbooks ..
-func (postgres *Postgres) FindAllTextbooks() (common.Items, error) {
-	return nil, errors.New("Unimplemented")
+// InsertLiteratureList ..
+func (postgres *Postgres) InsertLiteratureList(list common.LiteratureList) error {
+	courseID, err := postgres.FindIDOfCourseByCourseTitleAndDepartmentTitle(list.CourseTitle, list.DepartmentTitle)
+	if err != nil {
+		return err
+	}
+	fmt.Println(courseID)
+	result, err := postgres.db.Exec("INSERT INTO schema.literature_lists(literature_list_year, "+
+		"literature_list_course_id, literature_list_timestamp) VALUES ($1, $2, $3)",
+		list.Year,
+		courseID,
+		int32(time.Now().Unix()),
+	)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(result.RowsAffected())
+	return nil
+}
+
+// SelectLiteratureList ..
+func (postgres *Postgres) SelectLiteratureList() ([]common.LiteratureList, error) {
+	rows, err := postgres.db.Query(`
+	SELECT literature_list_id, literature_list_year, course_title, department_title FROM schema.department d 
+		JOIN (schema.literature_lists l 
+			JOIN schema.course c 
+				ON l.literature_list_course_id = c.course_id) j 
+			ON d.department_id = j.course_department_id;`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var lists []common.LiteratureList
+	for rows.Next() {
+		list := new(common.LiteratureList)
+		err = rows.Scan(&list.ID, &list.Year, &list.CourseTitle, &list.DepartmentTitle)
+		if err != nil {
+			return nil, err
+		}
+		lists = append(lists, *list)
+	}
+
+	return lists, nil
 }
 
 //InsertCourse ..
 func (postgres *Postgres) InsertCourse(course common.Course) error {
-	return errors.New("Unimplemented")
+	departmentID, err := postgres.FindIDOfDepartmentWithName(course.Department)
+	if err != nil {
+		return err
+	}
+	fmt.Println(departmentID)
+	lecturerID, err := postgres.FindIDOfLecturerWithNameAndDateOfBirth(course.Lecturer, course.DateOfBirth)
+	if err != nil {
+		return err
+	}
+	fmt.Println(lecturerID)
+	result, err := postgres.db.Exec("INSERT INTO schema.course(course_title, course_lecturer_id, course_department_id, course_semester, course_timestamp) VALUES ($1, $2, $3, $4, $5)",
+		course.Title,
+		lecturerID,
+		departmentID,
+		course.Semester,
+		int32(time.Now().Unix()),
+	)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(result.RowsAffected())
+	return nil
+}
+
+//SelectCourses ..
+func (postgres *Postgres) SelectCourses() ([]common.Course, error) {
+	rows, err := postgres.db.Query("SELECT course_title, lecturer_name, department_title, course_semester FROM schema.lecturer " +
+		"JOIN (schema.course " +
+		"JOIN schema.department " +
+		"ON course_department_id = department_id) j " +
+		"ON lecturer_id = j.course_lecturer_id")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var courses []common.Course
+	for rows.Next() {
+		course := new(common.Course)
+		err = rows.Scan(
+			&course.Title,
+			&course.Lecturer,
+			&course.Department,
+			&course.Semester,
+		)
+		if err != nil {
+			return nil, err
+		}
+		courses = append(courses, *course)
+	}
+
+	return courses, nil
+}
+
+// SelectCourse ..
+func (postgres *Postgres) SelectCourse(courseID int) (common.Course, error) {
+	row := postgres.db.QueryRow("SELECT course_title, lecturer_name, department_title, course_semester FROM schema.lecturer " +
+		"JOIN (schema.course " +
+		"JOIN schema.department " +
+		"ON course_department_id = department_id) j " +
+		"ON lecturer_id = j.course_lecturer_id WHERE course_id = $1", courseID)
+
+	course := new(common.Course)
+	err := row.Scan(
+		&course.Title,
+		&course.Lecturer,
+		&course.Department,
+		&course.Semester,
+	)
+	return *course, err
+}
+
+// InsertLiterature ..
+func (postgres *Postgres) InsertLiterature(literature common.Literature) error {
+	textbookID, err := postgres.FindIDOfTextbookByIdent(literature.BookIdent)
+	if err != nil {
+		return err
+	}
+	fmt.Println(textbookID)
+	literatureListID, err := postgres.FindIDOfLiteratureListByCourseTitleAndDepartmentTitleAndYear(literature.CourseTitle, literature.DepartmentTitle, literature.Year)
+	if err != nil {
+		return err
+	}
+	fmt.Println(literatureListID)
+	result, err := postgres.db.Exec("INSERT INTO schema.literature(literature_textbook_id, "+
+		"literature_literature_list_id, literature_timestamp) VALUES ($1, $2, $3)",
+		textbookID,
+		literatureListID,
+		int32(time.Now().Unix()),
+	)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(result.RowsAffected())
+	return nil
+}
+
+// SelectLiterature ..
+func (postgres *Postgres) SelectLiterature() ([]common.Literature, error) {
+	rows, err := postgres.db.Query(`
+		SELECT textbook_ident, literature_list_course_id, literature_list_year FROM schema.literature_lists l
+			JOIN (schema.literature
+				JOIN schema.textbook
+					ON literature.literature_textbook_id = textbook.textbook_id) j
+				ON j.literature_literature_list_id = l.literature_list_id;`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var literatures []common.Literature
+	for rows.Next() {
+		literature := new(common.Literature)
+		var courseID int
+		err = rows.Scan(&literature.BookIdent, &courseID, &literature.Year)
+		if err != nil {
+			return nil, err
+		}
+		course, err := postgres.SelectCourse(courseID)
+		if err != nil {
+			return nil, err
+		}
+		literature.CourseTitle = course.Title
+		literature.DepartmentTitle = course.Department
+		literatures = append(literatures, *literature)
+	}
+
+	return literatures, nil
+}
+
+// FindIDOfDepartmentWithName ..
+func (postgres *Postgres) FindIDOfDepartmentWithName(name string) (int, error) {
+	row := postgres.db.QueryRow("SELECT department_id FROM schema.department WHERE department_title = $1", name)
+
+	var id int
+	err := row.Scan(&id)
+
+	return id, err
+}
+
+// FindIDOfLecturerWithNameAndDateOfBirth ..
+func (postgres *Postgres) FindIDOfLecturerWithNameAndDateOfBirth(name string, dateOfBirth time.Time) (int, error) {
+	row := postgres.db.QueryRow("SELECT lecturer_id FROM schema.lecturer WHERE lecturer_name=$1 AND lecturer_date_of_birth=$2",
+		name,
+		dateOfBirth,
+	)
+
+	var id int
+	err := row.Scan(&id)
+
+	return id, err
+}
+
+// FindIDOfCourseByCourseTitleAndDepartmentTitle ..
+func (postgres *Postgres) FindIDOfCourseByCourseTitleAndDepartmentTitle(courseTitle string, departmentTitle string) (int, error) {
+	departmentID, err := postgres.FindIDOfDepartmentWithName(departmentTitle)
+	if err != nil {
+		return 0, err
+	}
+	row := postgres.db.QueryRow("SELECT course_id FROM schema.course WHERE course_title=$1 AND course_department_id=$2",
+		courseTitle,
+		departmentID,
+	)
+
+	var id int
+	err = row.Scan(&id)
+
+	return id, err
+}
+
+// FindIDOfTextbookByIdent ..
+func (postgres *Postgres) FindIDOfTextbookByIdent(ident string) (int, error) {
+	row := postgres.db.QueryRow("SELECT textbook_id FROM schema.textbook WHERE textbook_ident = $1", ident)
+
+	var id int
+	err := row.Scan(&id)
+
+	return id, err
+}
+
+// FindIDOfLiteratureListByCourseTitleAndDepartmentTitleAndYear ..
+func (postgres *Postgres) FindIDOfLiteratureListByCourseTitleAndDepartmentTitleAndYear(
+	courseTitle string,
+	departmentTitle string,
+	year int,
+) (int, error) {
+
+	courseID, err := postgres.FindIDOfCourseByCourseTitleAndDepartmentTitle(courseTitle, departmentTitle)
+	if err != nil {
+		return 0, err
+	}
+	row := postgres.db.QueryRow("SELECT literature_list_id FROM schema.literature_lists WHERE literature_list_course_id = $1 AND literature_list_year = $2", courseID, year)
+
+	var id int
+	err = row.Scan(&id)
+
+	return id, err
+}
+
+//FindAllTextbooks ..
+func (postgres *Postgres) FindAllTextbooks() (common.Items, error) {
+	return nil, errors.New("Unimplemented")
 }
 
 //GetAllCourses ..

@@ -202,3 +202,132 @@ func TestPostgres_DeleteDepartment(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestPostgres_InsertLiteratureList(t *testing.T) {
+	database.Configuration.Port = testPort
+	postgres := database.Postgres{}
+	err := postgres.Connect()
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+	defer postgres.Disconnect()
+
+	err = postgres.InsertLiteratureList(common.LiteratureList{
+		Year:            2017,
+		DepartmentTitle: "ИУ9",
+		CourseTitle:     "Компиляторы",
+	})
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+}
+
+func TestPostgres_SelectLiteratureLists(t *testing.T) {
+	database.Configuration.Port = testPort
+	postgres := database.Postgres{}
+	err := postgres.Connect()
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+	defer postgres.Disconnect()
+
+	result, err := postgres.SelectLiteratureList()
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+
+	fmt.Println(result)
+}
+
+func TestPostgres_InsertCourse(t *testing.T) {
+	database.Configuration.Port = testPort
+	postgres := database.Postgres{}
+	err := postgres.Connect()
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+	defer postgres.Disconnect()
+
+	dateOfBirth, err := time.Parse("2006-Jan-02", "2013-Feb-03")
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+
+	err = postgres.InsertCourse(common.Course{
+		Title:       "Объектно-функциональное программирование",
+		Lecturer:    "Скоробогатов Сергей Юрьевич",
+		DateOfBirth: dateOfBirth,
+		Department:  "Прикладная математика и информатика",
+		Semester:    6,
+	})
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+}
+
+func TestPostgres_SelectCourses(t *testing.T) {
+	database.Configuration.Port = testPort
+	postgres := database.Postgres{}
+	err := postgres.Connect()
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+	defer postgres.Disconnect()
+
+	result, err := postgres.SelectCourses()
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+
+	fmt.Println(result)
+}
+
+func TestPostgres_InsertLiterature(t *testing.T) {
+	database.Configuration.Port = testPort
+	postgres := database.Postgres{}
+	err := postgres.Connect()
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+	defer postgres.Disconnect()
+
+	err = postgres.InsertLiterature(common.Literature{
+		BookIdent:       "FlowersForAlgernon",
+		Year:            2017,
+		CourseTitle:     "Компиляторы",
+		DepartmentTitle: "ИУ9",
+	})
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+}
+
+func TestPostgres_SelectLiterature(t *testing.T) {
+	database.Configuration.Port = testPort
+	postgres := database.Postgres{}
+	err := postgres.Connect()
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+	defer postgres.Disconnect()
+
+	result, err := postgres.SelectLiterature()
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+
+	fmt.Println(result)
+}
