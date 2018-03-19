@@ -1,19 +1,21 @@
 package cmd
 
 import (
-	"github.com/spf13/cobra"
-	"fmt"
-	"encoding/json"
-	"wuzzapcom/Coursework/api/src/common"
-	"net/http"
 	"bytes"
+	"encoding/json"
+	"fmt"
 	"io/ioutil"
+	"net/http"
+	"wuzzapcom/Coursework/api/src/common"
 	"wuzzapcom/Coursework/api/src/restful"
+
+	"github.com/spf13/cobra"
 )
 
 var addBooksCommand = &cobra.Command{
-	Use: "addBooks",
-	Run: addBooks,
+	Use:   "addBooks",
+	Run:   addBooks,
+	Short: "Отправить книгу на сервер из файла, заданного флагом.",
 }
 
 const inputFileFlag = "inputFile"
@@ -21,14 +23,14 @@ const inputFileFlag = "inputFile"
 func addBooks(cmd *cobra.Command, args []string) {
 	resultFilePath = cmd.Flag(inputFileFlag).Value.String()
 	data, err := ioutil.ReadFile(resultFilePath)
-	if err != nil{
+	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
 		return
 	}
 
 	var items common.Item
 	err = json.Unmarshal(data, &items)
-	if err != nil{
+	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
 		return
 	}
@@ -37,7 +39,7 @@ func addBooks(cmd *cobra.Command, args []string) {
 	response, err := http.Post(url, "application/json", bytes.NewReader(data))
 
 	answer, err := ioutil.ReadAll(response.Body)
-	if err != nil{
+	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
 	}
 
@@ -48,7 +50,7 @@ func addBooks(cmd *cobra.Command, args []string) {
 
 	var success restful.Success
 	err = json.Unmarshal(answer, &success)
-	if err != nil{
+	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
 	}
 
@@ -56,6 +58,6 @@ func addBooks(cmd *cobra.Command, args []string) {
 
 }
 
-func init(){
+func init() {
 	addBooksCommand.Flags().String(inputFileFlag, resultFilePath, "Set input file")
 }

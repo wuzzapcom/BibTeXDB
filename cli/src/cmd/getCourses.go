@@ -13,6 +13,7 @@ import (
 var getCoursesCommand = &cobra.Command{
 	Use: "getCourses",
 	Run: getCourses,
+	Short: "Получить список курсов, сохраненных в базе данных.",
 }
 
 var getCoursesOutputFlag = "toFile"

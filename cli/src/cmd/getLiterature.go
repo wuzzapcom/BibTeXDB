@@ -13,6 +13,7 @@ import (
 var getLiteratureCommand = &cobra.Command{
 	Use: "getLiterature",
 	Run: getLiterature,
+	Short: "Получить список связей книг и списков литературы, сохраненных в базе данных.",	
 }
 
 func getLiterature(cmd *cobra.Command, args []string) {

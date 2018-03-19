@@ -11,8 +11,9 @@ import (
 )
 
 var getLecturersCommand = &cobra.Command{
-	Use: "getLecturers",
-	Run: getLecturers,
+	Use:   "getLecturers",
+	Run:   getLecturers,
+	Short: "Получить список лекторов, сохраненных в базе данных.",
 }
 
 func getLecturers(cmd *cobra.Command, args []string) {

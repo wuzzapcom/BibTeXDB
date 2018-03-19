@@ -13,6 +13,7 @@ import (
 var getDepartmentsCommand = &cobra.Command{
 	Use: "getDepartments",
 	Run: getDepartments,
+	Short: "Получить список факультетов, сохраненных в базе данных.",	
 }
 
 func getDepartments(cmd *cobra.Command, args []string) {

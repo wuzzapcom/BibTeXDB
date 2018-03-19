@@ -9,8 +9,10 @@ import (
 )
 
 var getDepartmentPrototypeCommand = &cobra.Command{
-	Use: "getDepartmentPrototype",
-	Run: getDepartmentPrototype,
+	Use:   "getDepartmentPrototype",
+	Run:   getDepartmentPrototype,
+	Short: "Получить заготовку JSON для факультета в файл, определяемый флагом.",
+	Long:  "Получить заготовку JSON для факультета. После чего следует заполнить его вручную и отправить соответствующей командой.",
 }
 
 const departmentOutputFile = "outputFile"

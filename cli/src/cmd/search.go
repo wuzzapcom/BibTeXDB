@@ -13,8 +13,11 @@ import (
 )
 
 var searchCommand = &cobra.Command{
-	Use: "search",
-	Run: runSearch,
+	Use:   "search",
+	Run:   runSearch,
+	Short: "Выполнить поиск книг в онлайн-источниках.",
+	Long: `Выполнить поиск книг в онлайн источниках. Флаг --request является обязательным и необходим для задания запроса. 
+Найденные книги добавляются в файл, переданный флагом --outputFile`,
 }
 
 var resultFilePath = "searchResults.txt"

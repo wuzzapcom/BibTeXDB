@@ -13,8 +13,14 @@ import (
 )
 
 var addLiteratureCommand = &cobra.Command{
-	Use: "addLiterature",
-	Run: addLiterature,
+	Use:   "addLiterature",
+	Run:   addLiterature,
+	Short: "Добавить книгу в список литературы из файла, заданного флагом.",
+	Long: `Добавить книгу в список литературы. 
+	Поле BookIdent задает идентификатор книги в формате BibTeX.
+	Поле Year определяет, за какой год используется список литературы.
+	Поля CourseTitle и DepartmentTitle определяют учебный курс.
+	`,
 }
 
 const inputFileLiteratureFlag = "inputFile"

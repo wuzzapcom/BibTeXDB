@@ -9,8 +9,10 @@ import (
 )
 
 var getLiteratureListPrototypeCommand = &cobra.Command{
-	Use: "getLiteratureListPrototype",
-	Run: getLiteratureListPrototype,
+	Use:   "getLiteratureListPrototype",
+	Run:   getLiteratureListPrototype,
+	Short: "Получить заготовку JSON для списка литературы в файл, определяемый флагом.",
+	Long:  "Получить заготовку JSON для списка литературы. После чего следует заполнить его вручную и отправить соответствующей командой.",
 }
 
 const literatureListOutputFile = "outputFile"

@@ -13,8 +13,12 @@ import (
 )
 
 var addLiteratureListCommand = &cobra.Command{
-	Use: "addLiteratureList",
-	Run: addLiteratureList,
+	Use:   "addLiteratureList",
+	Run:   addLiteratureList,
+	Short: "Добавить список литературы из файла, заданного флагом.",
+	Long: `Добавить книгу в список литературы. 
+	Поле Year определяет, за какой год создается список литературы.
+	Поля CourseTitle и DepartmentTitle определяют учебный курс, для которого создается список литературы.`,
 }
 
 const inputFileLiteratureListFlag = "inputFile"

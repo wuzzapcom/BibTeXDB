@@ -13,8 +13,9 @@ import (
 )
 
 var addLecturerCommand = &cobra.Command{
-	Use: "addLecturer",
-	Run: addLecturer,
+	Use:   "addLecturer",
+	Run:   addLecturer,
+	Short: "Отправить лектора на сервер из файла, заданного флагом.",
 }
 
 const inputFileLecturerFlag = "inputFile"

@@ -9,8 +9,10 @@ import (
 )
 
 var getLecturerPrototypeCommand = &cobra.Command{
-	Use: "getLecturerPrototype",
-	Run: getLecturerPrototype,
+	Use:   "getLecturerPrototype",
+	Run:   getLecturerPrototype,
+	Short: "Получить заготовку JSON для лектора в файл, определяемый флагом.",
+	Long:  "Получить заготовку JSON для лектора. После чего следует заполнить его вручную и отправить соответствующей командой.",
 }
 
 const lecturerOutputFile = "outputFile"

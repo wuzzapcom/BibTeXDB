@@ -11,8 +11,9 @@ import (
 )
 
 var getBooksCommand = &cobra.Command{
-	Use: "getBooks",
-	Run: getBooks,
+	Use:   "getBooks",
+	Run:   getBooks,
+	Short: "Получить список книг в формате BibTeX, сохраненных в базе данных.",
 }
 
 func getBooks(cmd *cobra.Command, args []string) {

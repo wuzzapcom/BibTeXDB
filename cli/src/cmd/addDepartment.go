@@ -15,6 +15,7 @@ import (
 var addDepartmentCommand = &cobra.Command{
 	Use: "addDepartment",
 	Run: addDepartment,
+	Short: "Отправить факультет на сервер из файла, заданного флагом.",
 }
 
 const inputFileDepartmentFlag = "inputFile"

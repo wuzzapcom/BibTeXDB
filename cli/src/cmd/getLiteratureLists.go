@@ -11,8 +11,9 @@ import (
 )
 
 var getLiteratureListsCommand = &cobra.Command{
-	Use: "getLiteratureLists",
-	Run: getLiteratureLists,
+	Use:   "getLiteratureLists",
+	Run:   getLiteratureLists,
+	Short: "Получить все списки литературы, сохраненных в базе данных.",
 }
 
 func getLiteratureLists(cmd *cobra.Command, args []string) {
