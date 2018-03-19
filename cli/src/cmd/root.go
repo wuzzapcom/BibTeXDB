@@ -38,6 +38,12 @@ func init() {
 	rootCommand.AddCommand(getLecturersCommand)
 	rootCommand.AddCommand(getLecturerPrototypeCommand)
 	rootCommand.AddCommand(addLecturerCommand)
+	rootCommand.AddCommand(addLiteratureListCommand)
+	rootCommand.AddCommand(getLiteratureListsCommand)
+	rootCommand.AddCommand(getLiteratureListPrototypeCommand)
+	rootCommand.AddCommand(addLiteratureCommand)
+	rootCommand.AddCommand(getLiteratureCommand)
+	rootCommand.AddCommand(getLiteraturePrototypeCommand)
 }
 
 //Execute ..

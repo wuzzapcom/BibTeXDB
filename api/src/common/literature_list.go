@@ -14,3 +14,12 @@ func (list LiteratureList) String() string {
 	data, _ := json.MarshalIndent(list, "", "\t")
 	return string(data)
 }
+
+// GetLiteratureListExample ..
+func GetLiteratureListExample() LiteratureList {
+	return LiteratureList{
+		Year:            2017,
+		DepartmentTitle: "Прикладная математика и информатика",
+		CourseTitle:     "Компиляторы",
+	}
+}
