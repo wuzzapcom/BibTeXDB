@@ -18,6 +18,7 @@ var searchCommand = &cobra.Command{
 	Short: "Выполнить поиск книг в онлайн-источниках.",
 	Long: `Выполнить поиск книг в онлайн источниках. Флаг --request является обязательным и необходим для задания запроса. 
 Найденные книги добавляются в файл, переданный флагом --outputFile`,
+	Example: "cli search --request=Компиляторы --outputFile=searchResults.txt",
 }
 
 var resultFilePath = "searchResults.txt"
