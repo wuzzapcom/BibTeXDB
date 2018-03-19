@@ -35,28 +35,6 @@ func getCoursePrototypeHandler(w http.ResponseWriter, _ *http.Request) {
 	getCoursePrototype(w)
 }
 
-func addCourseHandler(w http.ResponseWriter, r *http.Request) {
-	body, err := addCourseCheckInput(w, r)
-	if err != nil {
-		fmt.Printf("FATAL: %+v\n", err)
-		return
-	}
-	addCourse(w, body)
-}
-
-func addCourseLiteratureHandler(w http.ResponseWriter, _ *http.Request) {
-	returnError(w, 501, "Not implemented")
-
-}
-
-func getCoursesHandler(w http.ResponseWriter, _ *http.Request) {
-	getCourses(w)
-}
-
-func getCourseLiteratureHandler(w http.ResponseWriter, _ *http.Request) {
-	returnError(w, 501, "Not implemented")
-}
-
 func addDepartmentHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := addDepartmentCheckInput(w, r)
 	if err != nil {
@@ -83,6 +61,45 @@ func getLecturersHandler(w http.ResponseWriter, r *http.Request) {
 	getLecturers(w)
 }
 
+func addLiteratureListHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := addLiteratureListCheckInput(w, r)
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		return
+	}
+	addLiteratureList(w, body)
+}
+
+func getLiteratureListsHandler(w http.ResponseWriter, r *http.Request) {
+	getLiteratureLists(w)
+}
+
+func addLiteratureHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := addLiteratureCheckInput(w, r)
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		return
+	}
+	addLiterature(w, body)
+}
+
+func getLiteratureHandler(w http.ResponseWriter, r *http.Request) {
+	getLiterature(w)
+}
+
+func addCourseHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := addCourseCheckInput(w, r)
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		return
+	}
+	addCourse(w, body)
+}
+
+func getCoursesHandler(w http.ResponseWriter, r *http.Request) {
+	getCourses(w)
+}
+
 func returnError(w http.ResponseWriter, code int, message string) {
 	answer, err := json.Marshal(Error{message})
 	if err != nil {
@@ -106,14 +123,17 @@ func Run(f fetchers.GoogleFetcher) {
 	http.HandleFunc("/addCourse", addCourseHandler)
 	http.HandleFunc("/getCourses", getCoursesHandler)
 
-	http.HandleFunc("/getCourseLiterature", getCourseLiteratureHandler)
-	http.HandleFunc("/addCourseLiterature", addCourseLiteratureHandler)
-
 	http.HandleFunc("/addDepartment", addDepartmentHandler)
 	http.HandleFunc("/getDepartments", getDepartmentsHandler)
 
 	http.HandleFunc("/addLecturer", addLecturerHandler)
 	http.HandleFunc("/getLecturers", getLecturersHandler)
+
+	http.HandleFunc("/addLiteratureList", addLiteratureListHandler)
+	http.HandleFunc("/getLiteratureLists", getLiteratureListsHandler)
+
+	http.HandleFunc("/addLiterature", addLiteratureHandler)
+	http.HandleFunc("/getLiterature", getLiteratureHandler)
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {

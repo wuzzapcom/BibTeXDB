@@ -34,6 +34,16 @@ type Lecturers struct {
 	LecturerList []common.Lecturer `json:"lecturers"`
 }
 
+// LiteratureLists ..
+type LiteratureLists struct {
+	StoredLists []common.LiteratureList `json:"lists"`
+}
+
+// Literature ..
+type Literature struct {
+	StoredLiterature []common.Literature `json:"literature"`
+}
+
 //Books ..
 type Books struct {
 	StoredBooks common.Items `json:"storedBooks"`

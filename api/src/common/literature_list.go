@@ -4,7 +4,7 @@ import "encoding/json"
 
 // LiteratureList ..
 type LiteratureList struct {
-	ID              int `json:"omitempty"`
+	ID              int `json:"id,omitempty"`
 	Year            int
 	DepartmentTitle string
 	CourseTitle     string
