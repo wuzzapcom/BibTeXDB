@@ -11,13 +11,13 @@ type HumanizedTime struct {
 	time.Time
 }
 
+//TimeFormat is string that defines format of date for user
 const TimeFormat = "2006-02-02"
 
 var nilTime = (time.Time{}).UnixNano()
 
 // UnmarshalJSON ..
 func (ht *HumanizedTime) UnmarshalJSON(b []byte) (err error) {
-	fmt.Println("unmarshal")
 	s := strings.Trim(string(b), "\"")
 	if s == "null" {
 		ht.Time = time.Time{}
@@ -29,7 +29,6 @@ func (ht *HumanizedTime) UnmarshalJSON(b []byte) (err error) {
 
 // MarshalJSON ..
 func (ht HumanizedTime) MarshalJSON() ([]byte, error) {
-	fmt.Println("marshal")
 	if ht.Time.UnixNano() == nilTime {
 		return []byte("null"), nil
 	}
