@@ -8,6 +8,8 @@ import (
 	"net/url"
 	"wuzzapcom/Coursework/api/src/common"
 	"wuzzapcom/Coursework/api/src/database"
+
+	"github.com/lib/pq"
 )
 
 func searchCheckInput(w http.ResponseWriter, r *http.Request) (url.Values, error) {
@@ -423,8 +425,7 @@ func addCourse(w http.ResponseWriter, data []byte) {
 
 	err = postgres.InsertCourse(course)
 	if err != nil {
-		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 500, "Internal server error")
+		handleDatabaseErrors(w, err)
 		return
 	}
 
@@ -463,4 +464,19 @@ func getCourses(w http.ResponseWriter) {
 	w.WriteHeader(200)
 	w.Write(data)
 
+}
+
+func handleDatabaseErrors(w http.ResponseWriter, err error) {
+	postgresError, ok := err.(*pq.Error)
+	if !ok {
+		fmt.Printf("handleDatabaseError: %+v\n", err)
+		if err.Error() == "sql: no rows in result set" {
+			returnError(w, 400, "Not found row in database for input UNIQUE key. Check input or add row.")
+		} else {
+			returnError(w, 500, "Internal server error")
+		}
+		return
+	}
+
+	fmt.Println(postgresError.Code)
 }

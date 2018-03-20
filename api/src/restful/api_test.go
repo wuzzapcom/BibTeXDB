@@ -11,7 +11,9 @@ import (
 )
 
 func TestAPI_AddLecturer(t *testing.T) {
-	dateOfBirth, err := time.Parse("2006-Jan-02", "2013-Feb-03")
+	dateOfBirth := common.HumanizedTime{}
+	var err error
+	dateOfBirth.Time, err = time.Parse(common.TimeFormat, "2013-02-03")
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
 		t.Fail()
