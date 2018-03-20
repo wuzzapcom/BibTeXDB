@@ -154,7 +154,7 @@ func (postgres *Postgres) InsertLecturer(lecturer common.Lecturer) error {
 	result, err := postgres.db.Exec("INSERT INTO schema.lecturer(lecturer_name, lecturer_date_of_birth, "+
 		"lecturer_department_id, lecturer_timestamp) VALUES ($1, $2, $3, $4)",
 		lecturer.Name,
-		lecturer.DateOfBirth,
+		lecturer.DateOfBirth.Time,
 		id,
 		int32(time.Now().Unix()),
 	)
@@ -178,7 +178,7 @@ func (postgres *Postgres) SelectLecturers() ([]common.Lecturer, error) {
 	var lecturers []common.Lecturer
 	for rows.Next() {
 		lecturer := new(common.Lecturer)
-		err = rows.Scan(&lecturer.Name, &lecturer.DateOfBirth, &lecturer.Department)
+		err = rows.Scan(&lecturer.Name, &lecturer.DateOfBirth.Time, &lecturer.Department)
 		if err != nil {
 			return nil, err
 		}
@@ -256,7 +256,7 @@ func (postgres *Postgres) InsertCourse(course common.Course) error {
 		return err
 	}
 	fmt.Println(departmentID)
-	lecturerID, err := postgres.FindIDOfLecturerWithNameAndDateOfBirth(course.Lecturer, course.DateOfBirth)
+	lecturerID, err := postgres.FindIDOfLecturerWithNameAndDateOfBirth(course.Lecturer, course.DateOfBirth.Time)
 	if err != nil {
 		return err
 	}
@@ -308,10 +308,10 @@ func (postgres *Postgres) SelectCourses() ([]common.Course, error) {
 
 // SelectCourse ..
 func (postgres *Postgres) SelectCourse(courseID int) (common.Course, error) {
-	row := postgres.db.QueryRow("SELECT course_title, lecturer_name, department_title, course_semester FROM schema.lecturer " +
-		"JOIN (schema.course " +
-		"JOIN schema.department " +
-		"ON course_department_id = department_id) j " +
+	row := postgres.db.QueryRow("SELECT course_title, lecturer_name, department_title, course_semester FROM schema.lecturer "+
+		"JOIN (schema.course "+
+		"JOIN schema.department "+
+		"ON course_department_id = department_id) j "+
 		"ON lecturer_id = j.course_lecturer_id WHERE course_id = $1", courseID)
 
 	course := new(common.Course)

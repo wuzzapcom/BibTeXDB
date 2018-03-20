@@ -8,7 +8,7 @@ import (
 // Lecturer ..
 type Lecturer struct {
 	Name        string
-	DateOfBirth time.Time
+	DateOfBirth HumanizedTime
 	Department  string
 }
 
@@ -19,7 +19,8 @@ func (lecturer Lecturer) String() string {
 
 // GetLecturerExample ..
 func GetLecturerExample() Lecturer {
-	dateOfBirth, _ := time.Parse("2006-Jan-02", "2013-Feb-03")
+	dateOfBirth := HumanizedTime{}
+	dateOfBirth.Time, _ = time.Parse(TimeFormat, "2013-Feb-03")
 
 	return Lecturer{
 		Name:        "Коновалов Александр Владимирович",
