@@ -13,7 +13,7 @@ type Item struct {
 	Publisher string
 	Year      string
 	Language  string
-	ISBN      string `bson:"_id,omitempty"`
+	ISBN      string
 	URL       string
 }
 

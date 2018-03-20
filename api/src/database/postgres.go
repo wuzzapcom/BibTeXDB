@@ -278,7 +278,7 @@ func (postgres *Postgres) InsertCourse(course common.Course) error {
 
 //SelectCourses ..
 func (postgres *Postgres) SelectCourses() ([]common.Course, error) {
-	rows, err := postgres.db.Query("SELECT course_title, lecturer_name, department_title, course_semester FROM schema.lecturer " +
+	rows, err := postgres.db.Query("SELECT course_title, lecturer_name, lecturer_date_of_birth, department_title, course_semester FROM schema.lecturer " +
 		"JOIN (schema.course " +
 		"JOIN schema.department " +
 		"ON course_department_id = department_id) j " +
@@ -294,6 +294,7 @@ func (postgres *Postgres) SelectCourses() ([]common.Course, error) {
 		err = rows.Scan(
 			&course.Title,
 			&course.Lecturer,
+			&course.DateOfBirth.Time,
 			&course.Department,
 			&course.Semester,
 		)
@@ -308,7 +309,7 @@ func (postgres *Postgres) SelectCourses() ([]common.Course, error) {
 
 // SelectCourse ..
 func (postgres *Postgres) SelectCourse(courseID int) (common.Course, error) {
-	row := postgres.db.QueryRow("SELECT course_title, lecturer_name, department_title, course_semester FROM schema.lecturer "+
+	row := postgres.db.QueryRow("SELECT course_title, lecturer_name, lecturer_date_of_birth, department_title, course_semester FROM schema.lecturer "+
 		"JOIN (schema.course "+
 		"JOIN schema.department "+
 		"ON course_department_id = department_id) j "+
@@ -318,6 +319,7 @@ func (postgres *Postgres) SelectCourse(courseID int) (common.Course, error) {
 	err := row.Scan(
 		&course.Title,
 		&course.Lecturer,
+		&course.DateOfBirth.Time,
 		&course.Department,
 		&course.Semester,
 	)

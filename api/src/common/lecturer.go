@@ -20,7 +20,7 @@ func (lecturer Lecturer) String() string {
 // GetLecturerExample ..
 func GetLecturerExample() Lecturer {
 	dateOfBirth := HumanizedTime{}
-	dateOfBirth.Time, _ = time.Parse(TimeFormat, "2013-Feb-03")
+	dateOfBirth.Time, _ = time.Parse(TimeFormat, "2013-02-03")
 
 	return Lecturer{
 		Name:        "Коновалов Александр Владимирович",

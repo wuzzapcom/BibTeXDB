@@ -22,7 +22,7 @@ func (course Course) String() string {
 //GetCourseExample ..
 func GetCourseExample() Course {
 	dateOfBirth := HumanizedTime{}
-	dateOfBirth.Time, _ = time.Parse(TimeFormat, "2013-Feb-03")
+	dateOfBirth.Time, _ = time.Parse(TimeFormat, "2013-02-03")
 
 	return Course{
 		Title:       "Конструирование компиляторов",
