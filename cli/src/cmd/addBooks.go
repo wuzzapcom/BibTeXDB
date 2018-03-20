@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"wuzzapcom/Coursework/api/src/common"
 	"wuzzapcom/Coursework/api/src/restful"
 
@@ -55,6 +56,11 @@ func addBooks(cmd *cobra.Command, args []string) {
 	}
 
 	fmt.Println(success)
+
+	err = os.Remove(resultFilePath)
+	if err != nil {
+		fmt.Println("Не удалось удалить файл", err)
+	}
 
 }
 

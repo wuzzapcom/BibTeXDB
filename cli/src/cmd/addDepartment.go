@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"wuzzapcom/Coursework/api/src/common"
 	"wuzzapcom/Coursework/api/src/restful"
 
@@ -13,8 +14,8 @@ import (
 )
 
 var addDepartmentCommand = &cobra.Command{
-	Use: "addDepartment",
-	Run: addDepartment,
+	Use:   "addDepartment",
+	Run:   addDepartment,
 	Short: "Отправить факультет на сервер из файла, заданного флагом.",
 }
 
@@ -55,6 +56,11 @@ func addDepartment(cmd *cobra.Command, args []string) {
 	}
 
 	fmt.Println(success)
+
+	err = os.Remove(inputFile)
+	if err != nil {
+		fmt.Println("Не удалось удалить файл", err)
+	}
 }
 
 func init() {
