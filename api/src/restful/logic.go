@@ -107,7 +107,7 @@ func getBooks(w http.ResponseWriter) {
 	postgres.Connect()
 	defer postgres.Disconnect()
 
-	textbooks, err := postgres.FindAllTextbooks()
+	textbooks, err := postgres.SelectTextbooks()
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
 		returnError(w, 500, "Internal server error")

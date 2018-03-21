@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"wuzzapcom/Coursework/api/src/common"
 	"wuzzapcom/Coursework/api/src/restful"
 
@@ -29,13 +28,25 @@ func addBooks(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	var items common.Item
+	var items common.Items
 	err = json.Unmarshal(data, &items)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
 		return
 	}
 
+	for _, item := range items {
+		itemBytes, err := json.Marshal(item)
+		if err != nil {
+			fmt.Printf("FATAL: %+v\n", err)
+			continue
+		}
+		sendRequestForBook(itemBytes)
+	}
+
+}
+
+func sendRequestForBook(data []byte) {
 	url := "http://localhost:8080/addBook"
 	response, err := http.Post(url, "application/json", bytes.NewReader(data))
 
@@ -56,11 +67,6 @@ func addBooks(cmd *cobra.Command, args []string) {
 	}
 
 	fmt.Println(success)
-
-	err = os.Remove(resultFilePath)
-	if err != nil {
-		fmt.Println("Не удалось удалить файл", err)
-	}
 
 }
 

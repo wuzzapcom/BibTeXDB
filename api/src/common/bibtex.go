@@ -22,14 +22,17 @@ type Items []Item
 
 func (items Items) String() string {
 
-	result := ""
+	res, _ := json.MarshalIndent(items, "", "\t")
+	return string(res)
 
-	for _, val := range items {
-		result += val.JSONString()
-		result += "\n"
-	}
+	// result := ""
 
-	return result
+	// for _, val := range items {
+	// 	result += val.JSONString()
+	// 	result += "\n"
+	// }
+
+	// return result
 }
 
 //Append ..
