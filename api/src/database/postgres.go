@@ -385,6 +385,51 @@ func (postgres *Postgres) SelectLiterature() ([]common.Literature, error) {
 	return literatures, nil
 }
 
+// SelectBooksInList ..
+func (postgres *Postgres) SelectBooksInList(list common.LiteratureList) (common.Items, error) {
+	id, err := postgres.FindIDOfLiteratureListByCourseTitleAndDepartmentTitleAndYear(
+		list.CourseTitle,
+		list.DepartmentTitle,
+		list.Year,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := postgres.db.Query(`
+		SELECT textbook_ident, textbook_title, textbook_author, textbook_publisher, textbook_year, textbook_isbn, textbook_url FROM 
+		(SELECT * FROM schema.literature WHERE literature_literature_list_id = $1) l
+				JOIN schema.textbook
+					ON l.literature_textbook_id = textbook.textbook_id;`,
+		id,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var items common.Items
+	for rows.Next() {
+		item := common.Item{}
+		err = rows.Scan(
+			&item.Ident,
+			&item.Title,
+			&item.Author,
+			&item.Publisher,
+			&item.Year,
+			&item.ISBN,
+			&item.URL,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		items.Append(item)
+	}
+
+	return items, err
+}
+
 // FindIDOfDepartmentWithName ..
 func (postgres *Postgres) FindIDOfDepartmentWithName(name string) (int, error) {
 	row := postgres.db.QueryRow("SELECT department_id FROM schema.department WHERE department_title = $1", name)

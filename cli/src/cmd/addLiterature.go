@@ -50,6 +50,7 @@ func addLiterature(cmd *cobra.Command, args []string) {
 	answer, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
+		return
 	}
 
 	if response.StatusCode != 200 {
@@ -61,6 +62,7 @@ func addLiterature(cmd *cobra.Command, args []string) {
 	err = json.Unmarshal(answer, &success)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
+		return
 	}
 
 	fmt.Println(success)

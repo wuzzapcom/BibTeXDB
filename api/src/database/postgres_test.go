@@ -355,3 +355,27 @@ func TestPostgres_Migrate(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestPostgres_SelectBooksInList(t *testing.T) {
+	database.Configuration.Port = testPort
+	postgres := database.Postgres{}
+	err := postgres.Connect()
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+	defer postgres.Disconnect()
+
+	items, err := postgres.SelectBooksInList(common.LiteratureList{
+		CourseTitle:     "Базы данных",
+		DepartmentTitle: "Прикладная математика и информатика",
+		Year:            2017,
+	})
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+
+	fmt.Println(items)
+
+}

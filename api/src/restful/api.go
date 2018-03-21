@@ -84,7 +84,12 @@ func addLiteratureHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getLiteratureHandler(w http.ResponseWriter, r *http.Request) {
-	getLiterature(w)
+	request, err := addLiteratureCheckInput(w, r)
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		return
+	}
+	getLiterature(request, w)
 }
 
 func addCourseHandler(w http.ResponseWriter, r *http.Request) {

@@ -376,27 +376,68 @@ func addLiterature(w http.ResponseWriter, data []byte) {
 	w.Write(answer)
 }
 
-func getLiterature(w http.ResponseWriter) {
+func getLiteratureCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, error) {
+	if r.ContentLength > 0 {
+		body := r.Body
+		answer, err := ioutil.ReadAll(body)
+		if err != nil {
+			returnError(w, 400, "No JSON provided")
+			return nil, err
+		}
+		return answer, nil
+	}
+
+	return nil, nil
+
+}
+
+func getLiterature(request []byte, w http.ResponseWriter) {
 	postgres := &database.Postgres{}
 	postgres.Connect()
 	defer postgres.Disconnect()
 
-	literature, err := postgres.SelectLiterature()
-	if err != nil {
-		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 500, "Internal server error")
-		return
-	}
+	if request == nil {
+		literature, err := postgres.SelectLiterature()
+		if err != nil {
+			fmt.Printf("FATAL: %+v\n", err)
+			returnError(w, 500, "Internal server error")
+			return
+		}
 
-	data, err := json.Marshal(Literature{literature})
-	if err != nil {
-		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 500, "Internal server error")
-		return
-	}
+		data, err := json.Marshal(Literature{literature})
+		if err != nil {
+			fmt.Printf("FATAL: %+v\n", err)
+			returnError(w, 500, "Internal server error")
+			return
+		}
 
-	w.WriteHeader(200)
-	w.Write(data)
+		w.WriteHeader(200)
+		w.Write(data)
+	} else {
+		var list common.LiteratureList
+		err := json.Unmarshal(request, &list)
+		if err != nil {
+			fmt.Printf("FATAL: %+v\n", err)
+			returnError(w, 500, "Internal server error")
+			return
+		}
+		items, err := postgres.SelectBooksInList(list)
+		if err != nil {
+			fmt.Printf("FATAL: %+v\n", err)
+			returnError(w, 500, "Internal server error")
+			return
+		}
+
+		data, err := json.Marshal(Books{items})
+		if err != nil {
+			fmt.Printf("FATAL: %+v\n", err)
+			returnError(w, 500, "Internal server error")
+			return
+		}
+
+		w.WriteHeader(200)
+		w.Write(data)
+	}
 }
 
 func addCourseCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, error) {
