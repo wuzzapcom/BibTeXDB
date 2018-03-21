@@ -41,6 +41,9 @@ func addLiteratureList(cmd *cobra.Command, args []string) {
 
 	url := "http://localhost:8080/addLiteratureList"
 	response, err := http.Post(url, "application/json", bytes.NewReader(data))
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+	}
 
 	answer, err := ioutil.ReadAll(response.Body)
 	if err != nil {
