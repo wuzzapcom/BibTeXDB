@@ -18,10 +18,10 @@ var addBooksCommand = &cobra.Command{
 	Short: "Отправить книгу на сервер из файла, заданного флагом.",
 }
 
-const inputFileFlag = "inputFile"
+const inputFileBooksFlag = "inputFile"
 
 func addBooks(cmd *cobra.Command, args []string) {
-	resultFilePath = cmd.Flag(inputFileFlag).Value.String()
+	resultFilePath = cmd.Flag(inputFileBooksFlag).Value.String()
 	data, err := ioutil.ReadFile(resultFilePath)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
@@ -71,5 +71,5 @@ func sendRequestForBook(data []byte) {
 }
 
 func init() {
-	addBooksCommand.Flags().String(inputFileFlag, resultFilePath, "Set input file")
+	addBooksCommand.Flags().String(inputFileBooksFlag, resultFilePath, "Set input file")
 }

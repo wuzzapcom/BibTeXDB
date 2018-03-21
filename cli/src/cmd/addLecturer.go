@@ -22,7 +22,7 @@ var addLecturerCommand = &cobra.Command{
 const inputFileLecturerFlag = "inputFile"
 
 func addLecturer(cmd *cobra.Command, args []string) {
-	inputFile := cmd.Flag(inputFileFlag).Value.String()
+	inputFile := cmd.Flag(inputFileLecturerFlag).Value.String()
 	data, err := ioutil.ReadFile(inputFile)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
@@ -65,7 +65,7 @@ func addLecturer(cmd *cobra.Command, args []string) {
 
 func init() {
 	addLecturerCommand.Flags().String(
-		inputFileFlag,
+		inputFileLecturerFlag,
 		lecturerDefaultPath,
 		"Set input file for lecturer",
 	)

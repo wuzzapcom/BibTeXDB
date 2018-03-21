@@ -22,7 +22,7 @@ var addDepartmentCommand = &cobra.Command{
 const inputFileDepartmentFlag = "inputFile"
 
 func addDepartment(cmd *cobra.Command, args []string) {
-	inputFile := cmd.Flag(inputFileFlag).Value.String()
+	inputFile := cmd.Flag(inputFileDepartmentFlag).Value.String()
 	data, err := ioutil.ReadFile(inputFile)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
@@ -65,7 +65,7 @@ func addDepartment(cmd *cobra.Command, args []string) {
 
 func init() {
 	addDepartmentCommand.Flags().String(
-		inputFileFlag,
+		inputFileDepartmentFlag,
 		departmentDefaultPath,
 		"Set input file for department",
 	)

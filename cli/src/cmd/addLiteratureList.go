@@ -25,7 +25,7 @@ var addLiteratureListCommand = &cobra.Command{
 const inputFileLiteratureListFlag = "inputFile"
 
 func addLiteratureList(cmd *cobra.Command, args []string) {
-	inputFile := cmd.Flag(inputFileFlag).Value.String()
+	inputFile := cmd.Flag(inputFileLiteratureListFlag).Value.String()
 	data, err := ioutil.ReadFile(inputFile)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
@@ -68,7 +68,7 @@ func addLiteratureList(cmd *cobra.Command, args []string) {
 
 func init() {
 	addLiteratureListCommand.Flags().String(
-		inputFileFlag,
+		inputFileLiteratureListFlag,
 		literatureListDefaultPath,
 		"Set input file for literatureList",
 	)

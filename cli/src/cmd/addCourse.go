@@ -22,7 +22,7 @@ var addCourseCommand = &cobra.Command{
 const inputFileCourseFlag = "inputFile"
 
 func addCourse(cmd *cobra.Command, args []string) {
-	inputFile := cmd.Flag(inputFileFlag).Value.String()
+	inputFile := cmd.Flag(inputFileCourseFlag).Value.String()
 	data, err := ioutil.ReadFile(inputFile)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
@@ -65,7 +65,7 @@ func addCourse(cmd *cobra.Command, args []string) {
 
 func init() {
 	addCourseCommand.Flags().String(
-		inputFileFlag,
+		inputFileCourseFlag,
 		courseDefaultPath,
 		"Set input file for course",
 	)
