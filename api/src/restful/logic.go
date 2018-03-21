@@ -466,6 +466,47 @@ func getCourses(w http.ResponseWriter) {
 
 }
 
+func migrateLiteratureListCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, error) {
+	body := r.Body
+	answer, err := ioutil.ReadAll(body)
+	if err != nil {
+		returnError(w, 400, "No JSON provided")
+		return nil, err
+	}
+	return answer, nil
+}
+
+func migrateLiteratureList(w http.ResponseWriter, data []byte) {
+	var migrate common.Migrate
+
+	err := json.Unmarshal(data, &migrate)
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		returnError(w, 400, "Wrong JSON input")
+		return
+	}
+
+	postgres := database.Postgres{}
+	postgres.Connect()
+	defer postgres.Disconnect()
+
+	// err = postgres.InsertCourse(course)
+	// if err != nil {
+	// 	handleDatabaseErrors(w, err)
+	// 	return
+	// }
+
+	answer, err := json.Marshal(Success{"OK"})
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		returnError(w, 500, "Internal server error")
+		return
+	}
+
+	w.WriteHeader(200)
+	w.Write(answer)
+}
+
 func handleDatabaseErrors(w http.ResponseWriter, err error) {
 	postgresError, ok := err.(*pq.Error)
 	if !ok {

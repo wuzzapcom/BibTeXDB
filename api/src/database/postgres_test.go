@@ -216,8 +216,8 @@ func TestPostgres_InsertLiteratureList(t *testing.T) {
 
 	err = postgres.InsertLiteratureList(common.LiteratureList{
 		Year:            2017,
-		DepartmentTitle: "ИУ9",
-		CourseTitle:     "Компиляторы",
+		DepartmentTitle: "Прикладная математика и информатика",
+		CourseTitle:     "Базы данных",
 	})
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
@@ -332,4 +332,26 @@ func TestPostgres_SelectLiterature(t *testing.T) {
 	}
 
 	fmt.Println(result)
+}
+
+func TestPostgres_Migrate(t *testing.T) {
+	database.Configuration.Port = testPort
+	postgres := database.Postgres{}
+	err := postgres.Connect()
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+	defer postgres.Disconnect()
+
+	err = postgres.Migrate(common.Migrate{
+		CourseTitle:     "Базы данных",
+		DepartmentTitle: "Прикладная математика и информатика",
+		From:            2018,
+		To:              2017,
+	})
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
 }

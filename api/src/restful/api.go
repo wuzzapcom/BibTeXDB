@@ -100,6 +100,15 @@ func getCoursesHandler(w http.ResponseWriter, r *http.Request) {
 	getCourses(w)
 }
 
+func migrateLiteratureListHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := migrateLiteratureListCheckInput(w, r)
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		return
+	}
+	migrateLiteratureList(w, body)
+}
+
 func returnError(w http.ResponseWriter, code int, message string) {
 	answer, err := json.Marshal(Error{message})
 	if err != nil {
@@ -134,6 +143,8 @@ func Run(f fetchers.GoogleFetcher) {
 
 	http.HandleFunc("/addLiterature", addLiteratureHandler)
 	http.HandleFunc("/getLiterature", getLiteratureHandler)
+
+	http.HandleFunc("/migrateLiteratureList", migrateLiteratureListHandler)
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {

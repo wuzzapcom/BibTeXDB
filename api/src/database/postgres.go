@@ -454,6 +454,41 @@ func (postgres *Postgres) FindIDOfLiteratureListByCourseTitleAndDepartmentTitleA
 	return id, err
 }
 
+// Migrate ..
+func (postgres *Postgres) Migrate(migrate common.Migrate) error {
+
+	fromLiteratureListID, err := postgres.FindIDOfLiteratureListByCourseTitleAndDepartmentTitleAndYear(
+		migrate.CourseTitle,
+		migrate.DepartmentTitle,
+		migrate.From,
+	)
+	if err != nil {
+		return err
+	}
+
+	toLiteratureListID, err := postgres.FindIDOfLiteratureListByCourseTitleAndDepartmentTitleAndYear(
+		migrate.CourseTitle,
+		migrate.DepartmentTitle,
+		migrate.To,
+	)
+	if err != nil {
+		return err
+	}
+
+	res, err := postgres.db.Exec(`INSERT INTO schema.literature(literature_textbook_id, literature_literature_list_id, literature_timestamp)
+  SELECT literature_textbook_id, $1, literature_timestamp FROM schema.literature WHERE literature_literature_list_id = $2;`,
+		toLiteratureListID,
+		fromLiteratureListID,
+	)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(res.RowsAffected())
+
+	return nil
+}
+
 //FindAllTextbooks ..
 func (postgres *Postgres) FindAllTextbooks() (common.Items, error) {
 	return nil, errors.New("Unimplemented")
