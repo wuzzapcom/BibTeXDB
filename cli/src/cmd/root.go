@@ -46,6 +46,7 @@ func init() {
 	rootCommand.AddCommand(getLiteraturePrototypeCommand)
 	rootCommand.AddCommand(migratePrototypeCommand)
 	rootCommand.AddCommand(migrateCommand)
+	rootCommand.AddCommand(reportCommand)
 }
 
 //Execute ..

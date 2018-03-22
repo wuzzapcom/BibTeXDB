@@ -114,6 +114,15 @@ func migrateLiteratureListHandler(w http.ResponseWriter, r *http.Request) {
 	migrateLiteratureList(w, body)
 }
 
+func generateBibTexHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := generateBibTexCheckInput(w, r)
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		return
+	}
+	generateBibTex(w, body)
+}
+
 func returnError(w http.ResponseWriter, code int, message string) {
 	answer, err := json.Marshal(Error{message})
 	if err != nil {
@@ -150,6 +159,7 @@ func Run(f fetchers.GoogleFetcher) {
 	http.HandleFunc("/getLiterature", getLiteratureHandler)
 
 	http.HandleFunc("/migrateLiteratureList", migrateLiteratureListHandler)
+	http.HandleFunc("/generateReport", generateBibTexHandler)
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {

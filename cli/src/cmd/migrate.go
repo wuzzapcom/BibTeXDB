@@ -45,6 +45,7 @@ func migrate(cmd *cobra.Command, args []string) {
 	answer, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
+		return
 	}
 
 	if response.StatusCode != 200 {
@@ -56,6 +57,7 @@ func migrate(cmd *cobra.Command, args []string) {
 	err = json.Unmarshal(answer, &success)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
+		return
 	}
 
 	fmt.Println(success)
@@ -63,6 +65,7 @@ func migrate(cmd *cobra.Command, args []string) {
 	err = os.Remove(inputFile)
 	if err != nil {
 		fmt.Println("Не удалось удалить файл", err)
+		return
 	}
 }
 

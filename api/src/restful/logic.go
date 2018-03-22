@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"wuzzapcom/Coursework/api/src/common"
 	"wuzzapcom/Coursework/api/src/database"
+	"wuzzapcom/Coursework/api/src/reports"
 
 	"github.com/lib/pq"
 )
@@ -546,6 +547,41 @@ func migrateLiteratureList(w http.ResponseWriter, data []byte) {
 
 	w.WriteHeader(200)
 	w.Write(answer)
+}
+
+func generateBibTexCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, error) {
+	body := r.Body
+	answer, err := ioutil.ReadAll(body)
+	if err != nil {
+		returnError(w, 400, "No JSON provided")
+		return nil, err
+	}
+	return answer, nil
+}
+
+func generateBibTex(w http.ResponseWriter, data []byte) {
+	var list common.LiteratureList
+	err := json.Unmarshal(data, &list)
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		returnError(w, 400, "Wrong JSON input")
+		return
+	}
+
+	postgres := database.Postgres{}
+	postgres.Connect()
+	defer postgres.Disconnect()
+
+	books, err := postgres.SelectBooksInList(list)
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		returnError(w, 400, "Wrong JSON input")
+		return
+	}
+
+	report := reports.CreateReport(books)
+	w.WriteHeader(200)
+	w.Write([]byte(report))
 }
 
 func handleDatabaseErrors(w http.ResponseWriter, err error) {
