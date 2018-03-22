@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"regexp"
 	"wuzzapcom/Coursework/api/src/common"
 	"wuzzapcom/Coursework/api/src/restful"
 
@@ -33,6 +34,26 @@ func addBooks(cmd *cobra.Command, args []string) {
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
 		return
+	}
+
+	for _, item := range items {
+		if item.Ident == "empty" {
+			fmt.Println("Заполните поле Ident латинскими буквами без пробелов. Это будет идентификатор, по которому " +
+				"вы будете добавлять библиографическую ссылку в документ.")
+			return
+		}
+
+		matches, err := regexp.MatchString("[a-zA-Z]+", item.Ident)
+		if err != nil {
+			fmt.Printf("FATAL: %+v\n", err)
+			return
+		}
+
+		if !matches {
+			fmt.Printf("Идентификатор %s не подходит под требования для идентификаторов в LaTeX.\n", item.Ident)
+			return
+		}
+
 	}
 
 	for _, item := range items {
