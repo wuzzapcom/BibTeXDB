@@ -1,0 +1,88 @@
+ \documentclass[a4paper,14pt]{report}
+\usepackage{extsizes} % Включаем поддержку 14 размера
+\usepackage[T2A]{fontenc} % Поддержка русских букв
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc} % Включаем поддержку UTF8
+\usepackage[russian, english]{babel}  % Включаем пакет для поддержки русского языка
+\usepackage[left=2cm,right=1.5cm,top=1cm,bottom=2cm]{geometry} % Размер отступов
+\usepackage{sectsty}
+\usepackage[pdftex]{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{enumitem}
+\usepackage{cite}
+\usepackage{indentfirst} % Красная строка
+\usepackage[nottoc]{tocbibind}
+% Отображение списка литературы в содержании как section, а не chapter
+\makeatletter
+\renewenvironment{thebibliography}[1]
+     {\section*{\bibname}% <-- this line was changed from \chapter* to \section*
+      \@mkboth{\MakeUppercase\bibname}{\MakeUppercase\bibname}%
+      \list{\@biblabel{\@arabic\c@enumiv}}%
+           {\settowidth\labelwidth{\@biblabel{#1}}%
+            \leftmargin\labelwidth
+            \advance\leftmargin\labelsep
+            \@openbib@code
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+      \sloppy
+      \clubpenalty4000
+      \@clubpenalty \clubpenalty
+      \widowpenalty4000%
+      \sfcode`\.\@m}
+     {\def\@noitemerr
+       {\@latex@warning{Empty `thebibliography' environment}}%
+      \endlist}
+\makeatother
+
+\setlist{nolistsep} % убрать лишние интервалы в списках
+\linespread{1.3} % полуторный интервал
+% \renewcommand{\rmdefault}{ftm} % Times New Roman
+\lstdefinestyle{sharpc}{language=[Sharp]C, frame=lr, rulecolor=\color{blue!80!black}}
+
+
+\author{Vladimir Lapatin}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\graphicspath{{pics/}}
+
+
+
+\begin{document}
+
+%Титульная страница
+\input{title}
+\pagebreak
+% -----------------
+
+% Содержание
+\renewcommand{\contentsname}{Содержание}
+\tableofcontents
+\pagebreak
+% -----------------
+
+% Введение
+\input{intro}
+\pagebreak
+% -----------------
+
+% Глава 1
+\input{chapter1}
+\pagebreak
+% -----------------
+
+% Вывод
+\input{conclusion}
+\pagebreak
+% -----------------
+
+% Список литературы
+\renewcommand{\bibname}{Список использованной литературы}
+\addcontentsline{toc}{section}{Список используемой литературы}
+\bibliographystyle{unsrt}
+\bibliography{literature}
+% -----------------
+
+\end{document}
