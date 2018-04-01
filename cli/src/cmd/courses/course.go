@@ -12,5 +12,5 @@ var CourseCommand = &cobra.Command{
 func init() {
 	CourseCommand.AddCommand(addCommand)
 	CourseCommand.AddCommand(getCommand)
-	CourseCommand.AddCommand(getCoursePrototypeCommand)
+	CourseCommand.AddCommand(prototypeCommand)
 }

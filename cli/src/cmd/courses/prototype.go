@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var getCoursePrototypeCommand = &cobra.Command{
+var prototypeCommand = &cobra.Command{
 	Use:   "prototype",
 	Run:   getCoursePrototype,
 	Short: "Получить заготовку JSON для курса в файл, определяемый флагом.",
@@ -34,7 +34,7 @@ func getCoursePrototype(cmd *cobra.Command, args []string) {
 }
 
 func init() {
-	getCoursePrototypeCommand.Flags().String(
+	prototypeCommand.Flags().String(
 		courseOutputFile,
 		courseDefaultPath,
 		"Set output file for Course prototype",
