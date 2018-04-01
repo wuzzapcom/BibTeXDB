@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"wuzzapcom/Coursework/cli/src/cmd/books"
 	"wuzzapcom/Coursework/cli/src/cmd/courses"
 	"wuzzapcom/Coursework/cli/src/cmd/departments"
 
@@ -18,6 +19,7 @@ var rootCommand = &cobra.Command{
 func init() {
 	rootCommand.AddCommand(courses.CourseCommand)
 	rootCommand.AddCommand(departments.DepartmentCommand)
+	rootCommand.AddCommand(books.BookCommand)
 }
 
 //Execute ..
