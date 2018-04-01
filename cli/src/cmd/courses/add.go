@@ -1,14 +1,8 @@
 package courses
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"os"
 	"wuzzapcom/Coursework/api/src/common"
-	"wuzzapcom/Coursework/api/src/restful"
 	"wuzzapcom/Coursework/cli/src/cmd/helpers"
 
 	"github.com/spf13/cobra"
@@ -24,47 +18,22 @@ const inputFileCourseFlag = "inputFile"
 
 func addCourse(cmd *cobra.Command, args []string) {
 	inputFile := cmd.Flag(inputFileCourseFlag).Value.String()
-	data, err := ioutil.ReadFile(inputFile)
-	if err != nil {
-		fmt.Printf("FATAL: %+v\n", err)
-		return
-	}
 
 	var items common.Course
-	err = json.Unmarshal(data, &items)
+	data, err := helpers.LoadFromFileAndValidate(items, inputFile)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
 		return
 	}
 
 	url := helpers.ServerURL + "addCourse"
-	response, err := http.Post(url, "application/json", bytes.NewReader(data))
+	err = helpers.SendDataToServer(data, url)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-	}
-
-	answer, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		fmt.Printf("FATAL: %+v\n", err)
-	}
-
-	if response.StatusCode != 200 {
-		helpers.HandleError(answer)
 		return
 	}
 
-	var success restful.Success
-	err = json.Unmarshal(answer, &success)
-	if err != nil {
-		fmt.Printf("FATAL: %+v\n", err)
-	}
-
-	fmt.Println(success)
-
-	err = os.Remove(inputFile)
-	if err != nil {
-		fmt.Println("Не удалось удалить файл", err)
-	}
+	helpers.DeleteFile(inputFile)
 }
 
 func init() {

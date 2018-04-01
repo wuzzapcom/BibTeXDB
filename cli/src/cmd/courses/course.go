@@ -2,6 +2,7 @@ package courses
 
 import "github.com/spf13/cobra"
 
+// CourseCommand ..
 var CourseCommand = &cobra.Command{
 	Use: "course",
 	// Run:   addCourse,
