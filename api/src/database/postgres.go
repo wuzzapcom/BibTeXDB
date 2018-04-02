@@ -11,9 +11,17 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// SQLExecutable интерфейс для унификации db и Tx структур
+type SQLExecutable interface {
+	Exec(string, ...interface{}) (sql.Result, error)
+	Query(string, ...interface{}) (*sql.Rows, error)
+	QueryRow(string, ...interface{}) *sql.Row
+}
+
 //Postgres ..
 type Postgres struct {
-	db *sql.DB
+	db          *sql.DB
+	transaction *sql.Tx
 }
 
 // PostgresConfiguration ..
@@ -53,7 +61,7 @@ func (postgres *Postgres) Connect() error {
 
 //InsertTextbook ..
 func (postgres *Postgres) InsertTextbook(item common.Item) error {
-	result, err := postgres.db.Exec(
+	result, err := postgres.getSQLExecutable().Exec(
 		"INSERT INTO schema.textbook(textbook_ident, textbook_title, "+
 			"textbook_author, textbook_publisher, textbook_year, textbook_isbn, "+
 			"textbook_url, textbook_timestamp) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
@@ -88,7 +96,7 @@ func (postgres *Postgres) InsertTextbooks(items common.Items) error {
 // SelectTextbooks ..
 func (postgres *Postgres) SelectTextbooks() (common.Items, error) {
 
-	rows, err := postgres.db.Query("SELECT textbook_ident, textbook_title, " +
+	rows, err := postgres.getSQLExecutable().Query("SELECT textbook_ident, textbook_title, " +
 		"textbook_author, textbook_publisher, textbook_year, textbook_isbn, textbook_url FROM schema.textbook")
 	if err != nil {
 		return nil, err
@@ -111,7 +119,7 @@ func (postgres *Postgres) SelectTextbooks() (common.Items, error) {
 
 // InsertDepartment ..
 func (postgres *Postgres) InsertDepartment(department common.Department) error {
-	result, err := postgres.db.Exec("INSERT INTO schema.department(department_title, department_timestamp) VALUES ($1, $2)",
+	result, err := postgres.getSQLExecutable().Exec("INSERT INTO schema.department(department_title, department_timestamp) VALUES ($1, $2)",
 		department.Title,
 		int32(time.Now().Unix()),
 	)
@@ -125,7 +133,7 @@ func (postgres *Postgres) InsertDepartment(department common.Department) error {
 
 // SelectDepartments ..
 func (postgres *Postgres) SelectDepartments() ([]common.Department, error) {
-	rows, err := postgres.db.Query("SELECT department_title FROM schema.department")
+	rows, err := postgres.getSQLExecutable().Query("SELECT department_title FROM schema.department")
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +159,7 @@ func (postgres *Postgres) InsertLecturer(lecturer common.Lecturer) error {
 		return err
 	}
 
-	result, err := postgres.db.Exec("INSERT INTO schema.lecturer(lecturer_name, lecturer_date_of_birth, "+
+	result, err := postgres.getSQLExecutable().Exec("INSERT INTO schema.lecturer(lecturer_name, lecturer_date_of_birth, "+
 		"lecturer_department_id, lecturer_timestamp) VALUES ($1, $2, $3, $4)",
 		lecturer.Name,
 		lecturer.DateOfBirth.Time,
@@ -168,7 +176,7 @@ func (postgres *Postgres) InsertLecturer(lecturer common.Lecturer) error {
 
 // SelectLecturers ..
 func (postgres *Postgres) SelectLecturers() ([]common.Lecturer, error) {
-	rows, err := postgres.db.Query("SELECT lecturer_name, lecturer_date_of_birth, department_title FROM schema.lecturer l " +
+	rows, err := postgres.getSQLExecutable().Query("SELECT lecturer_name, lecturer_date_of_birth, department_title FROM schema.lecturer l " +
 		"JOIN schema.department d ON l.lecturer_department_id = d.department_id")
 	if err != nil {
 		return nil, err
@@ -190,7 +198,7 @@ func (postgres *Postgres) SelectLecturers() ([]common.Lecturer, error) {
 
 // DeleteDepartment ..
 func (postgres *Postgres) DeleteDepartment(id int) error {
-	result, err := postgres.db.Exec(
+	result, err := postgres.getSQLExecutable().Exec(
 		"DELETE FROM schema.department WHERE department_id = $1",
 		id,
 	)
@@ -209,7 +217,7 @@ func (postgres *Postgres) InsertLiteratureList(list common.LiteratureList) error
 		return err
 	}
 	fmt.Println(courseID)
-	result, err := postgres.db.Exec("INSERT INTO schema.literature_lists(literature_list_year, "+
+	result, err := postgres.getSQLExecutable().Exec("INSERT INTO schema.literature_lists(literature_list_year, "+
 		"literature_list_course_id, literature_list_timestamp) VALUES ($1, $2, $3)",
 		list.Year,
 		courseID,
@@ -225,7 +233,7 @@ func (postgres *Postgres) InsertLiteratureList(list common.LiteratureList) error
 
 // SelectLiteratureList ..
 func (postgres *Postgres) SelectLiteratureList() ([]common.LiteratureList, error) {
-	rows, err := postgres.db.Query(`
+	rows, err := postgres.getSQLExecutable().Query(`
 	SELECT literature_list_id, literature_list_year, course_title, department_title FROM schema.department d 
 		JOIN (schema.literature_lists l 
 			JOIN schema.course c 
@@ -261,7 +269,7 @@ func (postgres *Postgres) InsertCourse(course common.Course) error {
 		return err
 	}
 	fmt.Println(lecturerID)
-	result, err := postgres.db.Exec("INSERT INTO schema.course(course_title, course_lecturer_id, course_department_id, course_semester, course_timestamp) VALUES ($1, $2, $3, $4, $5)",
+	result, err := postgres.getSQLExecutable().Exec("INSERT INTO schema.course(course_title, course_lecturer_id, course_department_id, course_semester, course_timestamp) VALUES ($1, $2, $3, $4, $5)",
 		course.Title,
 		lecturerID,
 		departmentID,
@@ -278,7 +286,7 @@ func (postgres *Postgres) InsertCourse(course common.Course) error {
 
 //SelectCourses ..
 func (postgres *Postgres) SelectCourses() ([]common.Course, error) {
-	rows, err := postgres.db.Query("SELECT course_title, lecturer_name, lecturer_date_of_birth, department_title, course_semester FROM schema.lecturer " +
+	rows, err := postgres.getSQLExecutable().Query("SELECT course_title, lecturer_name, lecturer_date_of_birth, department_title, course_semester FROM schema.lecturer " +
 		"JOIN (schema.course " +
 		"JOIN schema.department " +
 		"ON course_department_id = department_id) j " +
@@ -309,7 +317,7 @@ func (postgres *Postgres) SelectCourses() ([]common.Course, error) {
 
 // SelectCourse ..
 func (postgres *Postgres) SelectCourse(courseID int) (common.Course, error) {
-	row := postgres.db.QueryRow("SELECT course_title, lecturer_name, lecturer_date_of_birth, department_title, course_semester FROM schema.lecturer "+
+	row := postgres.getSQLExecutable().QueryRow("SELECT course_title, lecturer_name, lecturer_date_of_birth, department_title, course_semester FROM schema.lecturer "+
 		"JOIN (schema.course "+
 		"JOIN schema.department "+
 		"ON course_department_id = department_id) j "+
@@ -338,7 +346,7 @@ func (postgres *Postgres) InsertLiterature(literature common.Literature) error {
 		return err
 	}
 	fmt.Println(literatureListID)
-	result, err := postgres.db.Exec("INSERT INTO schema.literature(literature_textbook_id, "+
+	result, err := postgres.getSQLExecutable().Exec("INSERT INTO schema.literature(literature_textbook_id, "+
 		"literature_literature_list_id, literature_timestamp) VALUES ($1, $2, $3)",
 		textbookID,
 		literatureListID,
@@ -354,7 +362,7 @@ func (postgres *Postgres) InsertLiterature(literature common.Literature) error {
 
 // SelectLiterature ..
 func (postgres *Postgres) SelectLiterature() ([]common.Literature, error) {
-	rows, err := postgres.db.Query(`
+	rows, err := postgres.getSQLExecutable().Query(`
 		SELECT textbook_ident, literature_list_course_id, literature_list_year FROM schema.literature_lists l
 			JOIN (schema.literature
 				JOIN schema.textbook
@@ -396,7 +404,7 @@ func (postgres *Postgres) SelectBooksInList(list common.LiteratureList) (common.
 		return nil, err
 	}
 
-	rows, err := postgres.db.Query(`
+	rows, err := postgres.getSQLExecutable().Query(`
 		SELECT textbook_ident, textbook_title, textbook_author, textbook_publisher, textbook_year, textbook_isbn, textbook_url FROM 
 		(SELECT * FROM schema.literature WHERE literature_literature_list_id = $1) l
 				JOIN schema.textbook
@@ -432,7 +440,7 @@ func (postgres *Postgres) SelectBooksInList(list common.LiteratureList) (common.
 
 // FindIDOfDepartmentWithName ..
 func (postgres *Postgres) FindIDOfDepartmentWithName(name string) (int, error) {
-	row := postgres.db.QueryRow("SELECT department_id FROM schema.department WHERE department_title = $1", name)
+	row := postgres.getSQLExecutable().QueryRow("SELECT department_id FROM schema.department WHERE department_title = $1", name)
 
 	var id int
 	err := row.Scan(&id)
@@ -442,7 +450,7 @@ func (postgres *Postgres) FindIDOfDepartmentWithName(name string) (int, error) {
 
 // FindIDOfLecturerWithNameAndDateOfBirth ..
 func (postgres *Postgres) FindIDOfLecturerWithNameAndDateOfBirth(name string, dateOfBirth time.Time) (int, error) {
-	row := postgres.db.QueryRow("SELECT lecturer_id FROM schema.lecturer WHERE lecturer_name=$1 AND lecturer_date_of_birth=$2",
+	row := postgres.getSQLExecutable().QueryRow("SELECT lecturer_id FROM schema.lecturer WHERE lecturer_name=$1 AND lecturer_date_of_birth=$2",
 		name,
 		dateOfBirth,
 	)
@@ -459,7 +467,7 @@ func (postgres *Postgres) FindIDOfCourseByCourseTitleAndDepartmentTitle(courseTi
 	if err != nil {
 		return 0, err
 	}
-	row := postgres.db.QueryRow("SELECT course_id FROM schema.course WHERE course_title=$1 AND course_department_id=$2",
+	row := postgres.getSQLExecutable().QueryRow("SELECT course_id FROM schema.course WHERE course_title=$1 AND course_department_id=$2",
 		courseTitle,
 		departmentID,
 	)
@@ -472,7 +480,7 @@ func (postgres *Postgres) FindIDOfCourseByCourseTitleAndDepartmentTitle(courseTi
 
 // FindIDOfTextbookByIdent ..
 func (postgres *Postgres) FindIDOfTextbookByIdent(ident string) (int, error) {
-	row := postgres.db.QueryRow("SELECT textbook_id FROM schema.textbook WHERE textbook_ident = $1", ident)
+	row := postgres.getSQLExecutable().QueryRow("SELECT textbook_id FROM schema.textbook WHERE textbook_ident = $1", ident)
 
 	var id int
 	err := row.Scan(&id)
@@ -491,7 +499,11 @@ func (postgres *Postgres) FindIDOfLiteratureListByCourseTitleAndDepartmentTitleA
 	if err != nil {
 		return 0, err
 	}
-	row := postgres.db.QueryRow("SELECT literature_list_id FROM schema.literature_lists WHERE literature_list_course_id = $1 AND literature_list_year = $2", courseID, year)
+	row := postgres.getSQLExecutable().QueryRow(`
+		SELECT literature_list_id 
+			FROM schema.literature_lists 
+			WHERE literature_list_course_id = $1 AND literature_list_year = $2
+		`, courseID, year)
 
 	var id int
 	err = row.Scan(&id)
@@ -520,7 +532,7 @@ func (postgres *Postgres) Migrate(migrate common.Migrate) error {
 		return err
 	}
 
-	res, err := postgres.db.Exec(`INSERT INTO schema.literature(literature_textbook_id, literature_literature_list_id, literature_timestamp)
+	res, err := postgres.getSQLExecutable().Exec(`INSERT INTO schema.literature(literature_textbook_id, literature_literature_list_id, literature_timestamp)
   SELECT literature_textbook_id, $1, literature_timestamp FROM schema.literature WHERE literature_literature_list_id = $2;`,
 		toLiteratureListID,
 		fromLiteratureListID,
@@ -532,6 +544,154 @@ func (postgres *Postgres) Migrate(migrate common.Migrate) error {
 	fmt.Println(res.RowsAffected())
 
 	return nil
+}
+
+// DeleteTextbook ..
+func (postgres *Postgres) DeleteTextbook(ident string) error {
+	var err error
+	postgres.transaction, err = postgres.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	row := postgres.getSQLExecutable().QueryRow(`
+		UPDATE schema.textbook
+			SET textbook_is_deleted = TRUE, textbook_timestamp = $1
+			WHERE textbook_ident = $2
+			RETURNING textbook_id
+		`, getTimestamp(), ident)
+	if err != nil {
+		return err
+	}
+
+	var textbookID int
+	row.Scan(&textbookID)
+
+	postgres.DeleteLiteratureWithTextbook(textbookID)
+
+	err = postgres.transaction.Commit()
+	if err != nil {
+		return err
+	}
+	postgres.transaction = nil
+
+	return nil
+}
+
+// DeleteLiteratureWithTextbook ..
+func (postgres *Postgres) DeleteLiteratureWithTextbook(textbookID int) error {
+
+	_, err := postgres.getSQLExecutable().Exec(`
+		UPDATE schema.literature
+			SET textbook_is_deleted = TRUE, literature_timestamp = $1
+			WHERE literature_textbook_id = $2
+		`, getTimestamp(), textbookID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// DeleteLiteratureWithList ..
+func (postgres *Postgres) DeleteLiteratureWithList(literatureListID int) error {
+
+	_, err := postgres.getSQLExecutable().Exec(`
+		UPDATE schema.literature
+			SET textbook_is_deleted = TRUE, literature_timestamp = $1
+			WHERE literature_literature_list_id = $2
+		`, getTimestamp(), literatureListID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// DeleteLiterature ..
+func (postgres *Postgres) DeleteLiterature(literature common.Literature) error {
+	var err error
+	postgres.transaction, err = postgres.db.Begin()
+	if err != nil {
+		return err
+	}
+	textbookID, err := postgres.FindIDOfTextbookByIdent(literature.BookIdent)
+	if err != nil {
+		return err
+	}
+	literatureListID, err := postgres.FindIDOfLiteratureListByCourseTitleAndDepartmentTitleAndYear(literature.CourseTitle, literature.DepartmentTitle, literature.Year)
+	if err != nil {
+		return err
+	}
+
+	_, err = postgres.getSQLExecutable().Exec(`
+		UPDATE schema.literature
+			SET literature_is_deleted = TRUE, literature_timestamp = $1
+			WHERE literature_textbook_id = $2 AND literature_literature_list_id = $3
+		`, getTimestamp(), textbookID, literatureListID)
+	if err != nil {
+		return err
+	}
+
+	err = postgres.transaction.Commit()
+	if err != nil {
+		return err
+	}
+	postgres.transaction = nil
+
+	return nil
+}
+
+// DeleteLiteratureList ..
+func (postgres *Postgres) DeleteLiteratureList(
+	courseTitle string,
+	departmentTitle string,
+	year int,
+) error {
+
+	var err error
+	postgres.transaction, err = postgres.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	id, err := postgres.FindIDOfLiteratureListByCourseTitleAndDepartmentTitleAndYear(
+		courseTitle,
+		departmentTitle,
+		year,
+	)
+	if err != nil {
+		return err
+	}
+
+	_, err = postgres.getSQLExecutable().Exec(`
+		UPDATE schema.literature_list
+			SET literature_list_is_deleted = TRUE, literature_list_timestamp = $1
+			WHERE literature_list_id = $1
+		`, getTimestamp(), id)
+	if err != nil {
+		return err
+	}
+
+	err = postgres.DeleteLiteratureWithList(id)
+	if err != nil {
+		return err
+	}
+
+	err = postgres.transaction.Commit()
+	if err != nil {
+		return err
+	}
+	postgres.transaction = nil
+
+	return nil
+}
+
+func (postgres *Postgres) getSQLExecutable() SQLExecutable {
+	if postgres.transaction != nil {
+		return postgres.transaction
+	}
+	return postgres.db
 }
 
 //FindAllTextbooks ..
@@ -547,4 +707,8 @@ func (postgres *Postgres) GetAllCourses() ([]common.Course, error) {
 // Disconnect ..
 func (postgres *Postgres) Disconnect() {
 	postgres.db.Close()
+}
+
+func getTimestamp() int32 {
+	return int32(time.Now().Unix())
 }
