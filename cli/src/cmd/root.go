@@ -6,6 +6,7 @@ import (
 	"wuzzapcom/Coursework/cli/src/cmd/courses"
 	"wuzzapcom/Coursework/cli/src/cmd/departments"
 	"wuzzapcom/Coursework/cli/src/cmd/lecturers"
+	"wuzzapcom/Coursework/cli/src/cmd/literature"
 
 	"github.com/spf13/cobra"
 )
@@ -22,6 +23,7 @@ func init() {
 	rootCommand.AddCommand(departments.DepartmentCommand)
 	rootCommand.AddCommand(books.BookCommand)
 	rootCommand.AddCommand(lecturers.LecturerCommand)
+	rootCommand.AddCommand(literature.LiteratureCommand)
 }
 
 //Execute ..

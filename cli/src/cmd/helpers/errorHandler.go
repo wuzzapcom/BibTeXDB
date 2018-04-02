@@ -10,6 +10,9 @@ import (
 	"wuzzapcom/Coursework/api/src/restful"
 )
 
+// LiteratureListDefaultPath ..
+const LiteratureListDefaultPath = "literatureList.txt"
+
 // ServerURL ..
 const ServerURL = "http://localhost:8080/"
 
@@ -86,7 +89,7 @@ func LoadFromFileAndValidate(strct interface{}, inputFile string) ([]byte, error
 	return data, nil
 }
 
-// SendDataToServer ..
+//SendDataToServer ..
 func SendDataToServer(data []byte, url string) error {
 	response, err := http.Post(url, "application/json", bytes.NewReader(data))
 	if err != nil {
@@ -109,6 +112,34 @@ func SendDataToServer(data []byte, url string) error {
 		fmt.Printf("FATAL: %+v\n", err)
 	}
 	return nil
+}
+
+/*GetDataFromServerWithBody :
+data[]byte -- body;
+strct interface -- answer result object
+url string -- server url
+*/
+func GetDataFromServerWithBody(data []byte, strct interface{}, url string) (interface{}, error) {
+	response, err := http.Post(url, "application/json", bytes.NewReader(data))
+	if err != nil {
+		return nil, err
+	}
+
+	answer, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if response.StatusCode != 200 {
+		HandleError(answer)
+		return nil, fmt.Errorf("Server answer`s code is %d", response.StatusCode)
+	}
+
+	err = json.Unmarshal(answer, &strct)
+	if err != nil {
+		return nil, err
+	}
+	return strct, err
 }
 
 // DeleteFile ..
