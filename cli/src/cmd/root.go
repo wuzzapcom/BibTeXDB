@@ -26,6 +26,11 @@ func init() {
 	rootCommand.AddCommand(lecturers.LecturerCommand)
 	rootCommand.AddCommand(literature.LiteratureCommand)
 	rootCommand.AddCommand(literature_lists.LiteratureListCommand)
+
+	rootCommand.AddCommand(migrateCommand)
+	rootCommand.AddCommand(migratePrototypeCommand)
+	rootCommand.AddCommand(reportCommand)
+	rootCommand.AddCommand(searchCommand)
 }
 
 //Execute ..
