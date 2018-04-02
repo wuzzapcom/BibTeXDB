@@ -70,6 +70,7 @@ func PrintResult(printable Printable, outputFile string) {
 			return
 		}
 		file.Write([]byte(printable.String()))
+		file.Close()
 	}
 }
 
