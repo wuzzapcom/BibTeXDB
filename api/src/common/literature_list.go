@@ -8,6 +8,7 @@ type LiteratureList struct {
 	Year            int
 	DepartmentTitle string
 	CourseTitle     string
+	Semester        int
 }
 
 func (list LiteratureList) String() string {

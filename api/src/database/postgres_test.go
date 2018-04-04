@@ -218,6 +218,7 @@ func TestPostgres_InsertLiteratureList(t *testing.T) {
 		Year:            2017,
 		DepartmentTitle: "Прикладная математика и информатика",
 		CourseTitle:     "Базы данных",
+		Semester:        4,
 	})
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
@@ -307,6 +308,7 @@ func TestPostgres_InsertLiterature(t *testing.T) {
 		BookIdent:       "FlowersForAlgernon",
 		Year:            2017,
 		CourseTitle:     "Компиляторы",
+		Semester:        3,
 		DepartmentTitle: "ИУ9",
 	})
 	if err != nil {
@@ -347,6 +349,7 @@ func TestPostgres_Migrate(t *testing.T) {
 	err = postgres.Migrate(common.Migrate{
 		CourseTitle:     "Базы данных",
 		DepartmentTitle: "Прикладная математика и информатика",
+		Semester:        4,
 		From:            2018,
 		To:              2017,
 	})
@@ -370,6 +373,7 @@ func TestPostgres_SelectBooksInList(t *testing.T) {
 		CourseTitle:     "Базы данных",
 		DepartmentTitle: "Прикладная математика и информатика",
 		Year:            2017,
+		Semester:        4,
 	})
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
@@ -412,6 +416,7 @@ func TestPostgres_DeleteLiterature(t *testing.T) {
 		Year:            2017,
 		CourseTitle:     "Компиляторы",
 		DepartmentTitle: "ИУ9",
+		Semester:        3,
 	})
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
@@ -429,13 +434,36 @@ func TestPostgres_DeleteLiteratureList(t *testing.T) {
 	}
 	defer postgres.Disconnect()
 
-	err = postgres.DeleteLiteratureList(
+	err = postgres.DeleteLiteratureList(common.LiteratureList{
+		CourseTitle:     "Компиляторы",
+		DepartmentTitle: "ИУ9",
+		Semester:        3,
+		Year:            2017,
+	})
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+}
+
+func TestPostgres_DeleteCourse(t *testing.T) {
+	database.Configuration.Port = testPort
+	postgres := database.Postgres{}
+	err := postgres.Connect()
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+	defer postgres.Disconnect()
+
+	err = postgres.DeleteCourse(
 		"Компиляторы",
 		"ИУ9",
-		2017,
+		3,
 	)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
 		t.Fail()
 	}
+
 }

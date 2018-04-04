@@ -6,6 +6,7 @@ import "encoding/json"
 type Migrate struct {
 	CourseTitle     string
 	DepartmentTitle string
+	Semester        int
 	From            int
 	To              int
 }
