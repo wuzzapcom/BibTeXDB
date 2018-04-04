@@ -566,6 +566,7 @@ func (postgres *Postgres) DeleteTextbook(ident string) error {
 
 	var textbookID int
 	row.Scan(&textbookID)
+	fmt.Println(textbookID)
 
 	postgres.DeleteLiteratureWithTextbook(textbookID)
 
@@ -583,7 +584,7 @@ func (postgres *Postgres) DeleteLiteratureWithTextbook(textbookID int) error {
 
 	_, err := postgres.getSQLExecutable().Exec(`
 		UPDATE schema.literature
-			SET textbook_is_deleted = TRUE, literature_timestamp = $1
+			SET literature_is_deleted = TRUE, literature_timestamp = $1
 			WHERE literature_textbook_id = $2
 		`, getTimestamp(), textbookID)
 	if err != nil {
@@ -598,7 +599,7 @@ func (postgres *Postgres) DeleteLiteratureWithList(literatureListID int) error {
 
 	_, err := postgres.getSQLExecutable().Exec(`
 		UPDATE schema.literature
-			SET textbook_is_deleted = TRUE, literature_timestamp = $1
+			SET literature_is_deleted = TRUE, literature_timestamp = $1
 			WHERE literature_literature_list_id = $2
 		`, getTimestamp(), literatureListID)
 	if err != nil {
@@ -665,9 +666,9 @@ func (postgres *Postgres) DeleteLiteratureList(
 	}
 
 	_, err = postgres.getSQLExecutable().Exec(`
-		UPDATE schema.literature_list
+		UPDATE schema.literature_lists
 			SET literature_list_is_deleted = TRUE, literature_list_timestamp = $1
-			WHERE literature_list_id = $1
+			WHERE literature_list_id = $2
 		`, getTimestamp(), id)
 	if err != nil {
 		return err

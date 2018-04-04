@@ -379,3 +379,63 @@ func TestPostgres_SelectBooksInList(t *testing.T) {
 	fmt.Println(items)
 
 }
+
+func TestPostgres_DeleteBook(t *testing.T) {
+	database.Configuration.Port = testPort
+	postgres := database.Postgres{}
+	err := postgres.Connect()
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+	defer postgres.Disconnect()
+
+	err = postgres.DeleteTextbook("FlowersForAlgernon")
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+}
+
+func TestPostgres_DeleteLiterature(t *testing.T) {
+	database.Configuration.Port = testPort
+	postgres := database.Postgres{}
+	err := postgres.Connect()
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+	defer postgres.Disconnect()
+
+	err = postgres.DeleteLiterature(common.Literature{
+		BookIdent:       "FlowersForAlgernon",
+		Year:            2017,
+		CourseTitle:     "Компиляторы",
+		DepartmentTitle: "ИУ9",
+	})
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+}
+
+func TestPostgres_DeleteLiteratureList(t *testing.T) {
+	database.Configuration.Port = testPort
+	postgres := database.Postgres{}
+	err := postgres.Connect()
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+	defer postgres.Disconnect()
+
+	err = postgres.DeleteLiteratureList(
+		"Компиляторы",
+		"ИУ9",
+		2017,
+	)
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+}
