@@ -196,20 +196,6 @@ func (postgres *Postgres) SelectLecturers() ([]common.Lecturer, error) {
 	return lecturers, nil
 }
 
-// DeleteDepartment ..
-func (postgres *Postgres) DeleteDepartment(id int) error {
-	result, err := postgres.getSQLExecutable().Exec(
-		"DELETE FROM schema.department WHERE department_id = $1",
-		id,
-	)
-	if err != nil {
-		return err
-	}
-
-	fmt.Println(result.RowsAffected())
-	return nil
-}
-
 // InsertLiteratureList ..
 func (postgres *Postgres) InsertLiteratureList(list common.LiteratureList) error {
 	courseID, err := postgres.FindIDOfCourseByCourseTitleAndDepartmentTitle(list.CourseTitle, list.DepartmentTitle, list.Semester)
@@ -871,6 +857,104 @@ func (postgres *Postgres) DeleteLecturer(name string, dateOfBirth time.Time) err
 	}
 
 	err = postgres.DeleteLecturerWithID(lecturerID)
+	if err != nil {
+		postgres.transaction.Rollback()
+		postgres.transaction = nil
+		return err
+	}
+
+	err = postgres.transaction.Commit()
+	if err != nil {
+		postgres.transaction.Rollback()
+		postgres.transaction = nil
+		return err
+	}
+	postgres.transaction = nil
+
+	return nil
+}
+
+// DeleteDepartmentWithID ..
+func (postgres *Postgres) DeleteDepartmentWithID(departmentID int) error {
+	_, err := postgres.getSQLExecutable().Exec(`
+		UPDATE schema.department
+			SET department_is_deleted = TRUE, department_timestamp = $1
+			WHERE department_id = $2
+		`, getTimestamp(), departmentID)
+	if err != nil {
+		return err
+	}
+	//delete courses
+	rows, err := postgres.getSQLExecutable().Query(`
+		SELECT course_id FROM schema.course
+			WHERE course_department_id=$1
+		`, departmentID)
+	if err != nil {
+		return err
+	}
+
+	courseIDs := make([]int, 0)
+	for rows.Next() {
+		var courseID int
+		err = rows.Scan(&courseID)
+		if err != nil {
+			return err
+		}
+		courseIDs = append(courseIDs, courseID)
+	}
+	rows.Close()
+
+	for _, courseID := range courseIDs {
+		err = postgres.DeleteCourseWithID(courseID)
+		if err != nil {
+			return err
+		}
+	}
+	//delete lecturers
+	rows, err = postgres.getSQLExecutable().Query(`
+		SELECT lecturer_id FROM schema.lecturer
+			WHERE lecturer_department_id=$1
+		`, departmentID)
+	if err != nil {
+		return err
+	}
+
+	lecturerIDs := make([]int, 0)
+	for rows.Next() {
+		var lecturerID int
+		err = rows.Scan(&lecturerID)
+		if err != nil {
+			return err
+		}
+		lecturerIDs = append(lecturerIDs, lecturerID)
+	}
+	rows.Close()
+
+	for _, lecturerID := range lecturerIDs {
+		err = postgres.DeleteLecturerWithID(lecturerID)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// DeleteDepartment ..
+func (postgres *Postgres) DeleteDepartment(title string) error {
+	var err error
+	postgres.transaction, err = postgres.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	lecturerID, err := postgres.FindIDOfDepartmentWithName(title)
+	if err != nil {
+		postgres.transaction.Rollback()
+		postgres.transaction = nil
+		return err
+	}
+
+	err = postgres.DeleteDepartmentWithID(lecturerID)
 	if err != nil {
 		postgres.transaction.Rollback()
 		postgres.transaction = nil

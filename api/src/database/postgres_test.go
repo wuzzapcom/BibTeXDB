@@ -187,23 +187,6 @@ func TestPostgres_SelectLecturers(t *testing.T) {
 	fmt.Println(result)
 }
 
-func TestPostgres_DeleteDepartment(t *testing.T) {
-	database.Configuration.Port = 32768
-	postgres := database.Postgres{}
-	err := postgres.Connect()
-	if err != nil {
-		fmt.Printf("FATAL: %+v\n", err)
-		t.Fail()
-	}
-	defer postgres.Disconnect()
-
-	err = postgres.DeleteDepartment(5)
-	if err != nil {
-		fmt.Printf("FATAL: %+v\n", err)
-		t.Fail()
-	}
-}
-
 func TestPostgres_InsertLiteratureList(t *testing.T) {
 	database.Configuration.Port = testPort
 	postgres := database.Postgres{}
@@ -489,6 +472,24 @@ func TestPostgres_DeleteLecturer(t *testing.T) {
 		"Вишняков Игорь Эдуардович",
 		dateOfBirth.Time,
 	)
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+
+}
+
+func TestPostgres_DeleteDepartment(t *testing.T) {
+	database.Configuration.Port = testPort
+	postgres := database.Postgres{}
+	err := postgres.Connect()
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+	defer postgres.Disconnect()
+
+	err = postgres.DeleteDepartment("ИУ9")
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
 		t.Fail()
