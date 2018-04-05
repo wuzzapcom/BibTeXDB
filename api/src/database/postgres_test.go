@@ -467,3 +467,31 @@ func TestPostgres_DeleteCourse(t *testing.T) {
 	}
 
 }
+
+func TestPostgres_DeleteLecturer(t *testing.T) {
+	database.Configuration.Port = testPort
+	postgres := database.Postgres{}
+	err := postgres.Connect()
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+	defer postgres.Disconnect()
+
+	dateOfBirth := common.HumanizedTime{}
+	dateOfBirth.Time, err = time.Parse(common.TimeFormat, "1980-01-01")
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+
+	err = postgres.DeleteLecturer(
+		"Вишняков Игорь Эдуардович",
+		dateOfBirth.Time,
+	)
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		t.Fail()
+	}
+
+}

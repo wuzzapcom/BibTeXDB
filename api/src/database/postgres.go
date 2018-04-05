@@ -740,6 +740,47 @@ func (postgres *Postgres) DeleteLiteratureListWithID(
 	return nil
 }
 
+// DeleteCourseWithID ..
+func (postgres *Postgres) DeleteCourseWithID(courseID int) error {
+
+	_, err := postgres.getSQLExecutable().Exec(`
+		UPDATE schema.course
+			SET course_is_deleted = TRUE, course_timestamp = $1
+			WHERE course_id = $2
+		`, getTimestamp(), courseID)
+	if err != nil {
+		return err
+	}
+
+	rows, err := postgres.getSQLExecutable().Query(`
+		SELECT literature_list_id FROM schema.literature_lists
+			WHERE literature_list_course_id=$1
+		`, courseID)
+	if err != nil {
+		return err
+	}
+
+	literatureListIDs := make([]int, 0)
+	for rows.Next() {
+		var literatureListID int
+		err = rows.Scan(&literatureListID)
+		if err != nil {
+			return err
+		}
+		literatureListIDs = append(literatureListIDs, literatureListID)
+	}
+	rows.Close()
+
+	for _, literatureListID := range literatureListIDs {
+		err = postgres.DeleteLiteratureListWithID(literatureListID)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // DeleteCourse ..
 func (postgres *Postgres) DeleteCourse(title string, department string, semester int) error {
 
@@ -756,48 +797,84 @@ func (postgres *Postgres) DeleteCourse(title string, department string, semester
 		return err
 	}
 
-	_, err = postgres.getSQLExecutable().Exec(`
-		UPDATE schema.course
-			SET course_is_deleted = TRUE, course_timestamp = $1
-			WHERE course_id = $2
-		`, getTimestamp(), courseID)
+	err = postgres.DeleteCourseWithID(courseID)
 	if err != nil {
 		postgres.transaction.Rollback()
 		postgres.transaction = nil
+		return err
+	}
+
+	err = postgres.transaction.Commit()
+	if err != nil {
+		postgres.transaction.Rollback()
+		postgres.transaction = nil
+		return err
+	}
+	postgres.transaction = nil
+
+	return nil
+}
+
+// DeleteLecturerWithID ..
+func (postgres *Postgres) DeleteLecturerWithID(lecturerID int) error {
+
+	_, err := postgres.getSQLExecutable().Exec(`
+		UPDATE schema.lecturer
+			SET lecturer_is_deleted = TRUE, lecturer_timestamp = $1
+			WHERE lecturer_id = $2
+		`, getTimestamp(), lecturerID)
+	if err != nil {
 		return err
 	}
 
 	rows, err := postgres.getSQLExecutable().Query(`
-		SELECT literature_list_id FROM schema.literature_lists
-			WHERE literature_list_course_id=$1
-		`, courseID)
+		SELECT course_id FROM schema.course
+			WHERE course_lecturer_id=$1
+		`, lecturerID)
+	if err != nil {
+		return err
+	}
+
+	courseIDs := make([]int, 0)
+	for rows.Next() {
+		var courseID int
+		err = rows.Scan(&courseID)
+		if err != nil {
+			return err
+		}
+		courseIDs = append(courseIDs, courseID)
+	}
+	rows.Close()
+
+	for _, courseID := range courseIDs {
+		err = postgres.DeleteCourseWithID(courseID)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// DeleteLecturer ..
+func (postgres *Postgres) DeleteLecturer(name string, dateOfBirth time.Time) error {
+	var err error
+	postgres.transaction, err = postgres.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	lecturerID, err := postgres.FindIDOfLecturerWithNameAndDateOfBirth(name, dateOfBirth)
 	if err != nil {
 		postgres.transaction.Rollback()
 		postgres.transaction = nil
 		return err
 	}
 
-	literatureListIDs := make([]int, 0)
-	for rows.Next() {
-		var literatureListID int
-		err = rows.Scan(&literatureListID)
-		if err != nil {
-			postgres.transaction.Rollback()
-			postgres.transaction = nil
-			return err
-		}
-		literatureListIDs = append(literatureListIDs, literatureListID)
-	}
-	rows.Close()
-
-	for _, literatureListID := range literatureListIDs {
-		err = postgres.DeleteLiteratureListWithID(literatureListID)
-		if err != nil {
-			fmt.Println(5)
-			postgres.transaction.Rollback()
-			postgres.transaction = nil
-			return err
-		}
+	err = postgres.DeleteLecturerWithID(lecturerID)
+	if err != nil {
+		postgres.transaction.Rollback()
+		postgres.transaction = nil
+		return err
 	}
 
 	err = postgres.transaction.Commit()
