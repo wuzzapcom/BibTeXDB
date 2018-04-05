@@ -96,8 +96,12 @@ func (postgres *Postgres) InsertTextbooks(items common.Items) error {
 // SelectTextbooks ..
 func (postgres *Postgres) SelectTextbooks() (common.Items, error) {
 
-	rows, err := postgres.getSQLExecutable().Query("SELECT textbook_ident, textbook_title, " +
-		"textbook_author, textbook_publisher, textbook_year, textbook_isbn, textbook_url FROM schema.textbook")
+	rows, err := postgres.getSQLExecutable().Query(`
+		SELECT textbook_ident, textbook_title, textbook_author, 
+		textbook_publisher, textbook_year, textbook_isbn, textbook_url 
+			FROM schema.textbook
+				WHERE textbook_is_deleted = FALSE
+			`)
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +123,9 @@ func (postgres *Postgres) SelectTextbooks() (common.Items, error) {
 
 // InsertDepartment ..
 func (postgres *Postgres) InsertDepartment(department common.Department) error {
-	result, err := postgres.getSQLExecutable().Exec("INSERT INTO schema.department(department_title, department_timestamp) VALUES ($1, $2)",
+	result, err := postgres.getSQLExecutable().Exec(`
+		INSERT INTO schema.department(department_title, department_timestamp) VALUES 
+		($1, $2)`,
 		department.Title,
 		int32(time.Now().Unix()),
 	)
@@ -133,7 +139,11 @@ func (postgres *Postgres) InsertDepartment(department common.Department) error {
 
 // SelectDepartments ..
 func (postgres *Postgres) SelectDepartments() ([]common.Department, error) {
-	rows, err := postgres.getSQLExecutable().Query("SELECT department_title FROM schema.department")
+	rows, err := postgres.getSQLExecutable().Query(`
+		SELECT department_title 
+			FROM schema.department
+				WHERE department_is_deleted = FALSE
+		`)
 	if err != nil {
 		return nil, err
 	}
@@ -176,8 +186,13 @@ func (postgres *Postgres) InsertLecturer(lecturer common.Lecturer) error {
 
 // SelectLecturers ..
 func (postgres *Postgres) SelectLecturers() ([]common.Lecturer, error) {
-	rows, err := postgres.getSQLExecutable().Query("SELECT lecturer_name, lecturer_date_of_birth, department_title FROM schema.lecturer l " +
-		"JOIN schema.department d ON l.lecturer_department_id = d.department_id")
+	rows, err := postgres.getSQLExecutable().Query(`
+		SELECT lecturer_name, lecturer_date_of_birth, department_title 
+		FROM schema.lecturer l 
+			JOIN schema.department d 
+				ON l.lecturer_department_id = d.department_id
+			WHERE lecturer_is_deleted = FALSE
+		`)
 	if err != nil {
 		return nil, err
 	}
@@ -224,7 +239,9 @@ func (postgres *Postgres) SelectLiteratureList() ([]common.LiteratureList, error
 		JOIN (schema.literature_lists l 
 			JOIN schema.course c 
 				ON l.literature_list_course_id = c.course_id) j 
-			ON d.department_id = j.course_department_id;`)
+			ON d.department_id = j.course_department_id
+		WHERE literature_list_is_deleted = FALSE
+		`)
 	if err != nil {
 		return nil, err
 	}
@@ -272,11 +289,15 @@ func (postgres *Postgres) InsertCourse(course common.Course) error {
 
 //SelectCourses ..
 func (postgres *Postgres) SelectCourses() ([]common.Course, error) {
-	rows, err := postgres.getSQLExecutable().Query("SELECT course_title, lecturer_name, lecturer_date_of_birth, department_title, course_semester FROM schema.lecturer " +
-		"JOIN (schema.course " +
-		"JOIN schema.department " +
-		"ON course_department_id = department_id) j " +
-		"ON lecturer_id = j.course_lecturer_id")
+	rows, err := postgres.getSQLExecutable().Query(`
+		SELECT course_title, lecturer_name, lecturer_date_of_birth, 
+		department_title, course_semester 
+			FROM schema.lecturer
+				JOIN (schema.course 
+					JOIN schema.department 
+						ON course_department_id = department_id) j 
+					ON lecturer_id = j.course_lecturer_id
+			WHERE course_is_deleted = FALSE`)
 	if err != nil {
 		return nil, err
 	}
@@ -358,7 +379,8 @@ func (postgres *Postgres) SelectLiterature() ([]common.Literature, error) {
 			JOIN (schema.literature
 				JOIN schema.textbook
 					ON literature.literature_textbook_id = textbook.textbook_id) j
-				ON j.literature_literature_list_id = l.literature_list_id;`)
+				ON j.literature_literature_list_id = l.literature_list_id
+			WHERE literature_is_deleted = FALSE`)
 	if err != nil {
 		return nil, err
 	}
@@ -398,9 +420,11 @@ func (postgres *Postgres) SelectBooksInList(list common.LiteratureList) (common.
 
 	rows, err := postgres.getSQLExecutable().Query(`
 		SELECT textbook_ident, textbook_title, textbook_author, textbook_publisher, textbook_year, textbook_isbn, textbook_url FROM 
-		(SELECT * FROM schema.literature WHERE literature_literature_list_id = $1) l
+		(SELECT * FROM schema.literature 
+			WHERE literature_literature_list_id = $1 AND literature_is_deleted = FALSE) l
 				JOIN schema.textbook
-					ON l.literature_textbook_id = textbook.textbook_id;`,
+					ON l.literature_textbook_id = textbook.textbook_id
+				WHERE textbook_is_deleted = FALSE`,
 		id,
 	)
 	if err != nil {
@@ -464,7 +488,8 @@ func (postgres *Postgres) FindIDOfCourseByCourseTitleAndDepartmentTitle(courseTi
 			FROM schema.course 
 				WHERE course_title=$1 AND 
 					course_department_id=$2 AND
-					course_semester=$3`,
+					course_semester=$3 AND
+					course_is_deleted = FALSE`,
 		courseTitle,
 		departmentID,
 		semester,
@@ -478,7 +503,11 @@ func (postgres *Postgres) FindIDOfCourseByCourseTitleAndDepartmentTitle(courseTi
 
 // FindIDOfTextbookByIdent ..
 func (postgres *Postgres) FindIDOfTextbookByIdent(ident string) (int, error) {
-	row := postgres.getSQLExecutable().QueryRow("SELECT textbook_id FROM schema.textbook WHERE textbook_ident = $1", ident)
+	row := postgres.getSQLExecutable().QueryRow(`
+		SELECT textbook_id 
+			FROM schema.textbook 
+				WHERE textbook_ident = $1 AND textbook_is_deleted = FALSE
+		`, ident)
 
 	var id int
 	err := row.Scan(&id)
@@ -501,7 +530,9 @@ func (postgres *Postgres) FindIDOfLiteratureListByCourseTitleAndDepartmentTitleA
 	row := postgres.getSQLExecutable().QueryRow(`
 		SELECT literature_list_id 
 			FROM schema.literature_lists 
-			WHERE literature_list_course_id = $1 AND literature_list_year = $2
+			WHERE literature_list_course_id = $1 AND 
+				literature_list_year = $2 AND 
+				literature_list_is_deleted = FALSE
 		`, courseID, year)
 
 	var id int
