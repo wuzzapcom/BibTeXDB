@@ -36,7 +36,7 @@ var Configuration = PostgresConfiguration{}
 func (postgres *Postgres) Connect() error {
 
 	if Configuration.Port < 0 {
-		return errors.New("Wrong TCP port")
+		return common.CreateError(errors.New("Wrong TCP port"))
 	}
 
 	var port = 32770
@@ -47,13 +47,13 @@ func (postgres *Postgres) Connect() error {
 	connStr := fmt.Sprintf("user=wuzzapcom port=%d dbname=bibtex_literature sslmode=disable", port)
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 
 	postgres.db = db
 	err = postgres.db.Ping()
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 
 	return nil
@@ -75,7 +75,7 @@ func (postgres *Postgres) InsertTextbook(item common.Item) error {
 		int32(time.Now().Unix()),
 	)
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 
 	fmt.Println(result.RowsAffected())
@@ -87,7 +87,7 @@ func (postgres *Postgres) InsertTextbooks(items common.Items) error {
 	for _, item := range items {
 		err := postgres.InsertTextbook(item)
 		if err != nil {
-			return err
+			return common.CreateError(err)
 		}
 	}
 	return nil
@@ -130,7 +130,7 @@ func (postgres *Postgres) InsertDepartment(department common.Department) error {
 		int32(time.Now().Unix()),
 	)
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 
 	fmt.Println(result.RowsAffected())
@@ -145,7 +145,7 @@ func (postgres *Postgres) SelectDepartments() ([]common.Department, error) {
 				WHERE department_is_deleted = FALSE
 		`)
 	if err != nil {
-		return nil, err
+		return nil, common.CreateError(err)
 	}
 	defer rows.Close()
 
@@ -154,7 +154,7 @@ func (postgres *Postgres) SelectDepartments() ([]common.Department, error) {
 		deparment := new(common.Department)
 		err = rows.Scan(&deparment.Title)
 		if err != nil {
-			return nil, err
+			return nil, common.CreateError(err)
 		}
 		deparments = append(deparments, *deparment)
 	}
@@ -166,7 +166,7 @@ func (postgres *Postgres) SelectDepartments() ([]common.Department, error) {
 func (postgres *Postgres) InsertLecturer(lecturer common.Lecturer) error {
 	id, err := postgres.FindIDOfDepartmentWithName(lecturer.Department)
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 
 	result, err := postgres.getSQLExecutable().Exec("INSERT INTO schema.lecturer(lecturer_name, lecturer_date_of_birth, "+
@@ -177,7 +177,7 @@ func (postgres *Postgres) InsertLecturer(lecturer common.Lecturer) error {
 		int32(time.Now().Unix()),
 	)
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 
 	fmt.Println(result.RowsAffected())
@@ -194,7 +194,7 @@ func (postgres *Postgres) SelectLecturers() ([]common.Lecturer, error) {
 			WHERE lecturer_is_deleted = FALSE
 		`)
 	if err != nil {
-		return nil, err
+		return nil, common.CreateError(err)
 	}
 	defer rows.Close()
 
@@ -203,7 +203,7 @@ func (postgres *Postgres) SelectLecturers() ([]common.Lecturer, error) {
 		lecturer := new(common.Lecturer)
 		err = rows.Scan(&lecturer.Name, &lecturer.DateOfBirth.Time, &lecturer.Department)
 		if err != nil {
-			return nil, err
+			return nil, common.CreateError(err)
 		}
 		lecturers = append(lecturers, *lecturer)
 	}
@@ -215,7 +215,7 @@ func (postgres *Postgres) SelectLecturers() ([]common.Lecturer, error) {
 func (postgres *Postgres) InsertLiteratureList(list common.LiteratureList) error {
 	courseID, err := postgres.FindIDOfCourseByCourseTitleAndDepartmentTitle(list.CourseTitle, list.DepartmentTitle, list.Semester)
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 	fmt.Println(courseID)
 	result, err := postgres.getSQLExecutable().Exec("INSERT INTO schema.literature_lists(literature_list_year, "+
@@ -225,7 +225,7 @@ func (postgres *Postgres) InsertLiteratureList(list common.LiteratureList) error
 		int32(time.Now().Unix()),
 	)
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 
 	fmt.Println(result.RowsAffected())
@@ -235,24 +235,25 @@ func (postgres *Postgres) InsertLiteratureList(list common.LiteratureList) error
 // SelectLiteratureList ..
 func (postgres *Postgres) SelectLiteratureList() ([]common.LiteratureList, error) {
 	rows, err := postgres.getSQLExecutable().Query(`
-	SELECT literature_list_id, literature_list_year, course_title, department_title FROM schema.department d 
-		JOIN (schema.literature_lists l 
-			JOIN schema.course c 
-				ON l.literature_list_course_id = c.course_id) j 
-			ON d.department_id = j.course_department_id
-		WHERE literature_list_is_deleted = FALSE
+	SELECT literature_list_id, literature_list_year, course_title, department_title, course_semester 
+		FROM schema.department d 
+			JOIN (schema.literature_lists l 
+				JOIN schema.course c 
+					ON l.literature_list_course_id = c.course_id) j 
+				ON d.department_id = j.course_department_id
+			WHERE literature_list_is_deleted = FALSE
 		`)
 	if err != nil {
-		return nil, err
+		return nil, common.CreateError(err)
 	}
 	defer rows.Close()
 
 	var lists []common.LiteratureList
 	for rows.Next() {
 		list := new(common.LiteratureList)
-		err = rows.Scan(&list.ID, &list.Year, &list.CourseTitle, &list.DepartmentTitle)
+		err = rows.Scan(&list.ID, &list.Year, &list.CourseTitle, &list.DepartmentTitle, &list.Semester)
 		if err != nil {
-			return nil, err
+			return nil, common.CreateError(err)
 		}
 		lists = append(lists, *list)
 	}
@@ -264,12 +265,12 @@ func (postgres *Postgres) SelectLiteratureList() ([]common.LiteratureList, error
 func (postgres *Postgres) InsertCourse(course common.Course) error {
 	departmentID, err := postgres.FindIDOfDepartmentWithName(course.Department)
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 	fmt.Println(departmentID)
 	lecturerID, err := postgres.FindIDOfLecturerWithNameAndDateOfBirth(course.Lecturer, course.DateOfBirth.Time)
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 	fmt.Println(lecturerID)
 	result, err := postgres.getSQLExecutable().Exec("INSERT INTO schema.course(course_title, course_lecturer_id, course_department_id, course_semester, course_timestamp) VALUES ($1, $2, $3, $4, $5)",
@@ -280,7 +281,7 @@ func (postgres *Postgres) InsertCourse(course common.Course) error {
 		int32(time.Now().Unix()),
 	)
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 
 	fmt.Println(result.RowsAffected())
@@ -299,7 +300,7 @@ func (postgres *Postgres) SelectCourses() ([]common.Course, error) {
 					ON lecturer_id = j.course_lecturer_id
 			WHERE course_is_deleted = FALSE`)
 	if err != nil {
-		return nil, err
+		return nil, common.CreateError(err)
 	}
 	defer rows.Close()
 
@@ -314,7 +315,7 @@ func (postgres *Postgres) SelectCourses() ([]common.Course, error) {
 			&course.Semester,
 		)
 		if err != nil {
-			return nil, err
+			return nil, common.CreateError(err)
 		}
 		courses = append(courses, *course)
 	}
@@ -338,14 +339,17 @@ func (postgres *Postgres) SelectCourse(courseID int) (common.Course, error) {
 		&course.Department,
 		&course.Semester,
 	)
-	return *course, err
+	if err != nil {
+		return *course, common.CreateError(err)
+	}
+	return *course, nil
 }
 
 // InsertLiterature ..
 func (postgres *Postgres) InsertLiterature(literature common.Literature) error {
 	textbookID, err := postgres.FindIDOfTextbookByIdent(literature.BookIdent)
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 	fmt.Println(textbookID)
 	literatureListID, err := postgres.FindIDOfLiteratureListByCourseTitleAndDepartmentTitleAndYear(
@@ -355,7 +359,7 @@ func (postgres *Postgres) InsertLiterature(literature common.Literature) error {
 		literature.Year,
 	)
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 	fmt.Println(literatureListID)
 	result, err := postgres.getSQLExecutable().Exec("INSERT INTO schema.literature(literature_textbook_id, "+
@@ -365,7 +369,7 @@ func (postgres *Postgres) InsertLiterature(literature common.Literature) error {
 		int32(time.Now().Unix()),
 	)
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 
 	fmt.Println(result.RowsAffected())
@@ -382,7 +386,7 @@ func (postgres *Postgres) SelectLiterature() ([]common.Literature, error) {
 				ON j.literature_literature_list_id = l.literature_list_id
 			WHERE literature_is_deleted = FALSE`)
 	if err != nil {
-		return nil, err
+		return nil, common.CreateError(err)
 	}
 	defer rows.Close()
 
@@ -392,11 +396,11 @@ func (postgres *Postgres) SelectLiterature() ([]common.Literature, error) {
 		var courseID int
 		err = rows.Scan(&literature.BookIdent, &courseID, &literature.Year)
 		if err != nil {
-			return nil, err
+			return nil, common.CreateError(err)
 		}
 		course, err := postgres.SelectCourse(courseID)
 		if err != nil {
-			return nil, err
+			return nil, common.CreateError(err)
 		}
 		literature.CourseTitle = course.Title
 		literature.DepartmentTitle = course.Department
@@ -415,7 +419,7 @@ func (postgres *Postgres) SelectBooksInList(list common.LiteratureList) (common.
 		list.Year,
 	)
 	if err != nil {
-		return nil, err
+		return nil, common.CreateError(err)
 	}
 
 	rows, err := postgres.getSQLExecutable().Query(`
@@ -428,7 +432,7 @@ func (postgres *Postgres) SelectBooksInList(list common.LiteratureList) (common.
 		id,
 	)
 	if err != nil {
-		return nil, err
+		return nil, common.CreateError(err)
 	}
 	defer rows.Close()
 
@@ -445,13 +449,13 @@ func (postgres *Postgres) SelectBooksInList(list common.LiteratureList) (common.
 			&item.URL,
 		)
 		if err != nil {
-			return nil, err
+			return nil, common.CreateError(err)
 		}
 
 		items.Append(item)
 	}
 
-	return items, err
+	return items, nil
 }
 
 // FindIDOfDepartmentWithName ..
@@ -460,8 +464,11 @@ func (postgres *Postgres) FindIDOfDepartmentWithName(name string) (int, error) {
 
 	var id int
 	err := row.Scan(&id)
+	if err != nil {
+		return id, common.CreateError(err)
+	}
 
-	return id, err
+	return id, nil
 }
 
 // FindIDOfLecturerWithNameAndDateOfBirth ..
@@ -473,15 +480,23 @@ func (postgres *Postgres) FindIDOfLecturerWithNameAndDateOfBirth(name string, da
 
 	var id int
 	err := row.Scan(&id)
+	if err != nil {
+		return id, common.CreateError(err)
+	}
 
-	return id, err
+	return id, nil
 }
 
 // FindIDOfCourseByCourseTitleAndDepartmentTitle ..
-func (postgres *Postgres) FindIDOfCourseByCourseTitleAndDepartmentTitle(courseTitle string, departmentTitle string, semester int) (int, error) {
+func (postgres *Postgres) FindIDOfCourseByCourseTitleAndDepartmentTitle(
+	courseTitle string,
+	departmentTitle string,
+	semester int,
+) (int, error) {
+
 	departmentID, err := postgres.FindIDOfDepartmentWithName(departmentTitle)
 	if err != nil {
-		return 0, err
+		return 0, common.CreateError(err)
 	}
 	row := postgres.getSQLExecutable().QueryRow(`
 		SELECT course_id 
@@ -497,8 +512,11 @@ func (postgres *Postgres) FindIDOfCourseByCourseTitleAndDepartmentTitle(courseTi
 
 	var id int
 	err = row.Scan(&id)
+	if err != nil {
+		return id, common.CreateError(err)
+	}
 
-	return id, err
+	return id, nil
 }
 
 // FindIDOfTextbookByIdent ..
@@ -511,8 +529,11 @@ func (postgres *Postgres) FindIDOfTextbookByIdent(ident string) (int, error) {
 
 	var id int
 	err := row.Scan(&id)
+	if err != nil {
+		return id, common.CreateError(err)
+	}
 
-	return id, err
+	return id, nil
 }
 
 // FindIDOfLiteratureListByCourseTitleAndDepartmentTitleAndYear ..
@@ -525,7 +546,7 @@ func (postgres *Postgres) FindIDOfLiteratureListByCourseTitleAndDepartmentTitleA
 
 	courseID, err := postgres.FindIDOfCourseByCourseTitleAndDepartmentTitle(courseTitle, departmentTitle, semester)
 	if err != nil {
-		return 0, err
+		return 0, common.CreateError(err)
 	}
 	row := postgres.getSQLExecutable().QueryRow(`
 		SELECT literature_list_id 
@@ -537,8 +558,11 @@ func (postgres *Postgres) FindIDOfLiteratureListByCourseTitleAndDepartmentTitleA
 
 	var id int
 	err = row.Scan(&id)
+	if err != nil {
+		return id, common.CreateError(err)
+	}
 
-	return id, err
+	return id, nil
 }
 
 // Migrate ..
@@ -551,7 +575,7 @@ func (postgres *Postgres) Migrate(migrate common.Migrate) error {
 		migrate.From,
 	)
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 
 	toLiteratureListID, err := postgres.FindIDOfLiteratureListByCourseTitleAndDepartmentTitleAndYear(
@@ -561,16 +585,20 @@ func (postgres *Postgres) Migrate(migrate common.Migrate) error {
 		migrate.To,
 	)
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 
-	res, err := postgres.getSQLExecutable().Exec(`INSERT INTO schema.literature(literature_textbook_id, literature_literature_list_id, literature_timestamp)
-  SELECT literature_textbook_id, $1, literature_timestamp FROM schema.literature WHERE literature_literature_list_id = $2;`,
+	res, err := postgres.getSQLExecutable().Exec(`
+		INSERT INTO schema.literature(literature_textbook_id, literature_literature_list_id, literature_timestamp)
+			  SELECT literature_textbook_id, $1, $3
+				  FROM schema.literature 
+				  	WHERE literature_literature_list_id = $2;`,
 		toLiteratureListID,
 		fromLiteratureListID,
+		getTimestamp(),
 	)
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 
 	fmt.Println(res.RowsAffected())
@@ -583,7 +611,7 @@ func (postgres *Postgres) DeleteTextbook(ident string) error {
 	var err error
 	postgres.transaction, err = postgres.db.Begin()
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 
 	row := postgres.getSQLExecutable().QueryRow(`
@@ -595,20 +623,30 @@ func (postgres *Postgres) DeleteTextbook(ident string) error {
 	if err != nil {
 		postgres.transaction.Rollback()
 		postgres.transaction = nil
-		return err
+		return common.CreateError(err)
 	}
 
 	var textbookID int
-	row.Scan(&textbookID)
+	err = row.Scan(&textbookID)
+	if err != nil {
+		postgres.transaction.Rollback()
+		postgres.transaction = nil
+		return common.CreateError(err)
+	}
 	fmt.Println(textbookID)
 
-	postgres.DeleteLiteratureWithTextbook(textbookID)
+	err = postgres.DeleteLiteratureWithTextbook(textbookID)
+	if err != nil {
+		postgres.transaction.Rollback()
+		postgres.transaction = nil
+		return common.CreateError(err)
+	}
 
 	err = postgres.transaction.Commit()
 	if err != nil {
 		postgres.transaction.Rollback()
 		postgres.transaction = nil
-		return err
+		return common.CreateError(err)
 	}
 	postgres.transaction = nil
 
@@ -624,7 +662,7 @@ func (postgres *Postgres) DeleteLiteratureWithTextbook(textbookID int) error {
 			WHERE literature_textbook_id = $2
 		`, getTimestamp(), textbookID)
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 
 	return nil
@@ -639,7 +677,7 @@ func (postgres *Postgres) DeleteLiteratureWithList(literatureListID int) error {
 			WHERE literature_literature_list_id = $2
 		`, getTimestamp(), literatureListID)
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 
 	return nil
@@ -650,13 +688,13 @@ func (postgres *Postgres) DeleteLiterature(literature common.Literature) error {
 	var err error
 	postgres.transaction, err = postgres.db.Begin()
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 	textbookID, err := postgres.FindIDOfTextbookByIdent(literature.BookIdent)
 	if err != nil {
 		postgres.transaction.Rollback()
 		postgres.transaction = nil
-		return err
+		return common.CreateError(err)
 	}
 	literatureListID, err := postgres.FindIDOfLiteratureListByCourseTitleAndDepartmentTitleAndYear(
 		literature.CourseTitle,
@@ -667,7 +705,7 @@ func (postgres *Postgres) DeleteLiterature(literature common.Literature) error {
 	if err != nil {
 		postgres.transaction.Rollback()
 		postgres.transaction = nil
-		return err
+		return common.CreateError(err)
 	}
 
 	_, err = postgres.getSQLExecutable().Exec(`
@@ -678,14 +716,14 @@ func (postgres *Postgres) DeleteLiterature(literature common.Literature) error {
 	if err != nil {
 		postgres.transaction.Rollback()
 		postgres.transaction = nil
-		return err
+		return common.CreateError(err)
 	}
 
 	err = postgres.transaction.Commit()
 	if err != nil {
 		postgres.transaction.Rollback()
 		postgres.transaction = nil
-		return err
+		return common.CreateError(err)
 	}
 	postgres.transaction = nil
 
@@ -700,7 +738,7 @@ func (postgres *Postgres) DeleteLiteratureList(
 	var err error
 	postgres.transaction, err = postgres.db.Begin()
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 
 	id, err := postgres.FindIDOfLiteratureListByCourseTitleAndDepartmentTitleAndYear(
@@ -712,21 +750,21 @@ func (postgres *Postgres) DeleteLiteratureList(
 	if err != nil {
 		postgres.transaction.Rollback()
 		postgres.transaction = nil
-		return err
+		return common.CreateError(err)
 	}
 
 	err = postgres.DeleteLiteratureListWithID(id)
 	if err != nil {
 		postgres.transaction.Rollback()
 		postgres.transaction = nil
-		return err
+		return common.CreateError(err)
 	}
 
 	err = postgres.transaction.Commit()
 	if err != nil {
 		postgres.transaction.Rollback()
 		postgres.transaction = nil
-		return err
+		return common.CreateError(err)
 	}
 	postgres.transaction = nil
 
@@ -744,14 +782,12 @@ func (postgres *Postgres) DeleteLiteratureListWithID(
 			WHERE literature_list_id = $2
 		`, getTimestamp(), id)
 	if err != nil {
-		fmt.Println(55)
-		return err
+		return common.CreateError(err)
 	}
 
 	err = postgres.DeleteLiteratureWithList(id)
 	if err != nil {
-		fmt.Println(56)
-		return err
+		return common.CreateError(err)
 	}
 
 	return nil
@@ -766,7 +802,7 @@ func (postgres *Postgres) DeleteCourseWithID(courseID int) error {
 			WHERE course_id = $2
 		`, getTimestamp(), courseID)
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 
 	rows, err := postgres.getSQLExecutable().Query(`
@@ -774,7 +810,7 @@ func (postgres *Postgres) DeleteCourseWithID(courseID int) error {
 			WHERE literature_list_course_id=$1
 		`, courseID)
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 
 	literatureListIDs := make([]int, 0)
@@ -782,7 +818,7 @@ func (postgres *Postgres) DeleteCourseWithID(courseID int) error {
 		var literatureListID int
 		err = rows.Scan(&literatureListID)
 		if err != nil {
-			return err
+			return common.CreateError(err)
 		}
 		literatureListIDs = append(literatureListIDs, literatureListID)
 	}
@@ -791,7 +827,7 @@ func (postgres *Postgres) DeleteCourseWithID(courseID int) error {
 	for _, literatureListID := range literatureListIDs {
 		err = postgres.DeleteLiteratureListWithID(literatureListID)
 		if err != nil {
-			return err
+			return common.CreateError(err)
 		}
 	}
 
@@ -804,28 +840,28 @@ func (postgres *Postgres) DeleteCourse(title string, department string, semester
 	var err error
 	postgres.transaction, err = postgres.db.Begin()
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 
 	courseID, err := postgres.FindIDOfCourseByCourseTitleAndDepartmentTitle(title, department, semester)
 	if err != nil {
 		postgres.transaction.Rollback()
 		postgres.transaction = nil
-		return err
+		return common.CreateError(err)
 	}
 
 	err = postgres.DeleteCourseWithID(courseID)
 	if err != nil {
 		postgres.transaction.Rollback()
 		postgres.transaction = nil
-		return err
+		return common.CreateError(err)
 	}
 
 	err = postgres.transaction.Commit()
 	if err != nil {
 		postgres.transaction.Rollback()
 		postgres.transaction = nil
-		return err
+		return common.CreateError(err)
 	}
 	postgres.transaction = nil
 
@@ -841,7 +877,7 @@ func (postgres *Postgres) DeleteLecturerWithID(lecturerID int) error {
 			WHERE lecturer_id = $2
 		`, getTimestamp(), lecturerID)
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 
 	rows, err := postgres.getSQLExecutable().Query(`
@@ -849,7 +885,7 @@ func (postgres *Postgres) DeleteLecturerWithID(lecturerID int) error {
 			WHERE course_lecturer_id=$1
 		`, lecturerID)
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 
 	courseIDs := make([]int, 0)
@@ -857,7 +893,7 @@ func (postgres *Postgres) DeleteLecturerWithID(lecturerID int) error {
 		var courseID int
 		err = rows.Scan(&courseID)
 		if err != nil {
-			return err
+			return common.CreateError(err)
 		}
 		courseIDs = append(courseIDs, courseID)
 	}
@@ -866,7 +902,7 @@ func (postgres *Postgres) DeleteLecturerWithID(lecturerID int) error {
 	for _, courseID := range courseIDs {
 		err = postgres.DeleteCourseWithID(courseID)
 		if err != nil {
-			return err
+			return common.CreateError(err)
 		}
 	}
 	return nil
@@ -877,28 +913,28 @@ func (postgres *Postgres) DeleteLecturer(name string, dateOfBirth time.Time) err
 	var err error
 	postgres.transaction, err = postgres.db.Begin()
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 
 	lecturerID, err := postgres.FindIDOfLecturerWithNameAndDateOfBirth(name, dateOfBirth)
 	if err != nil {
 		postgres.transaction.Rollback()
 		postgres.transaction = nil
-		return err
+		return common.CreateError(err)
 	}
 
 	err = postgres.DeleteLecturerWithID(lecturerID)
 	if err != nil {
 		postgres.transaction.Rollback()
 		postgres.transaction = nil
-		return err
+		return common.CreateError(err)
 	}
 
 	err = postgres.transaction.Commit()
 	if err != nil {
 		postgres.transaction.Rollback()
 		postgres.transaction = nil
-		return err
+		return common.CreateError(err)
 	}
 	postgres.transaction = nil
 
@@ -913,7 +949,7 @@ func (postgres *Postgres) DeleteDepartmentWithID(departmentID int) error {
 			WHERE department_id = $2
 		`, getTimestamp(), departmentID)
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 	//delete courses
 	rows, err := postgres.getSQLExecutable().Query(`
@@ -921,7 +957,7 @@ func (postgres *Postgres) DeleteDepartmentWithID(departmentID int) error {
 			WHERE course_department_id=$1
 		`, departmentID)
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 
 	courseIDs := make([]int, 0)
@@ -929,7 +965,7 @@ func (postgres *Postgres) DeleteDepartmentWithID(departmentID int) error {
 		var courseID int
 		err = rows.Scan(&courseID)
 		if err != nil {
-			return err
+			return common.CreateError(err)
 		}
 		courseIDs = append(courseIDs, courseID)
 	}
@@ -938,7 +974,7 @@ func (postgres *Postgres) DeleteDepartmentWithID(departmentID int) error {
 	for _, courseID := range courseIDs {
 		err = postgres.DeleteCourseWithID(courseID)
 		if err != nil {
-			return err
+			return common.CreateError(err)
 		}
 	}
 	//delete lecturers
@@ -947,7 +983,7 @@ func (postgres *Postgres) DeleteDepartmentWithID(departmentID int) error {
 			WHERE lecturer_department_id=$1
 		`, departmentID)
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 
 	lecturerIDs := make([]int, 0)
@@ -955,7 +991,7 @@ func (postgres *Postgres) DeleteDepartmentWithID(departmentID int) error {
 		var lecturerID int
 		err = rows.Scan(&lecturerID)
 		if err != nil {
-			return err
+			return common.CreateError(err)
 		}
 		lecturerIDs = append(lecturerIDs, lecturerID)
 	}
@@ -964,7 +1000,7 @@ func (postgres *Postgres) DeleteDepartmentWithID(departmentID int) error {
 	for _, lecturerID := range lecturerIDs {
 		err = postgres.DeleteLecturerWithID(lecturerID)
 		if err != nil {
-			return err
+			return common.CreateError(err)
 		}
 	}
 	return nil
@@ -975,28 +1011,28 @@ func (postgres *Postgres) DeleteDepartment(title string) error {
 	var err error
 	postgres.transaction, err = postgres.db.Begin()
 	if err != nil {
-		return err
+		return common.CreateError(err)
 	}
 
 	lecturerID, err := postgres.FindIDOfDepartmentWithName(title)
 	if err != nil {
 		postgres.transaction.Rollback()
 		postgres.transaction = nil
-		return err
+		return common.CreateError(err)
 	}
 
 	err = postgres.DeleteDepartmentWithID(lecturerID)
 	if err != nil {
 		postgres.transaction.Rollback()
 		postgres.transaction = nil
-		return err
+		return common.CreateError(err)
 	}
 
 	err = postgres.transaction.Commit()
 	if err != nil {
 		postgres.transaction.Rollback()
 		postgres.transaction = nil
-		return err
+		return common.CreateError(err)
 	}
 	postgres.transaction = nil
 

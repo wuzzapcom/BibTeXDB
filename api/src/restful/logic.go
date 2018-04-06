@@ -4,13 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"wuzzapcom/Coursework/api/src/common"
 	"wuzzapcom/Coursework/api/src/database"
 	"wuzzapcom/Coursework/api/src/reports"
-
-	"github.com/lib/pq"
 )
 
 func searchCheckInput(w http.ResponseWriter, r *http.Request) (url.Values, error) {
@@ -519,10 +518,12 @@ func migrateLiteratureListCheckInput(w http.ResponseWriter, r *http.Request) ([]
 }
 
 func migrateLiteratureList(w http.ResponseWriter, data []byte) {
+	log.Println("migrateLiteratureList")
 	var migrate common.Migrate
 
 	err := json.Unmarshal(data, &migrate)
 	if err != nil {
+		log.Println("Error in json umparshalling")
 		fmt.Printf("FATAL: %+v\n", err)
 		returnError(w, 400, "Wrong JSON input")
 		return
@@ -532,11 +533,12 @@ func migrateLiteratureList(w http.ResponseWriter, data []byte) {
 	postgres.Connect()
 	defer postgres.Disconnect()
 
-	// err = postgres.InsertCourse(course)
-	// if err != nil {
-	// 	handleDatabaseErrors(w, err)
-	// 	return
-	// }
+	err = postgres.Migrate(migrate)
+	if err != nil {
+		log.Println("Error in migrate")
+		handleDatabaseErrors(w, err)
+		return
+	}
 
 	answer, err := json.Marshal(Success{"OK"})
 	if err != nil {
@@ -585,16 +587,11 @@ func generateBibTex(w http.ResponseWriter, data []byte) {
 }
 
 func handleDatabaseErrors(w http.ResponseWriter, err error) {
-	postgresError, ok := err.(*pq.Error)
-	if !ok {
-		fmt.Printf("handleDatabaseError: %+v\n", err)
-		if err.Error() == "sql: no rows in result set" {
-			returnError(w, 400, "Not found row in database for input UNIQUE key. Check input or add row.")
-		} else {
-			returnError(w, 500, "Internal server error")
-		}
-		return
+	log.Println(err)
+	full, ok := err.(*common.Error)
+	if ok {
+		returnError(w, 500, full.GetMessageForUser())
+	} else {
+		returnError(w, 500, "Internal server error")
 	}
-
-	fmt.Println(postgresError.Code)
 }

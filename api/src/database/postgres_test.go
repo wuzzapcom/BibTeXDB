@@ -489,7 +489,7 @@ func TestPostgres_DeleteDepartment(t *testing.T) {
 	}
 	defer postgres.Disconnect()
 
-	err = postgres.DeleteDepartment("ИУ9")
+	err = postgres.DeleteDepartment("Прикладная математика и информатика")
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
 		t.Fail()
