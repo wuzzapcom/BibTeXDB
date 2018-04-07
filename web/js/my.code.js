@@ -1,32 +1,11 @@
-function setRed(element) {
-    element.style.color = 'red'
-}
-
-function getText(str) {
-    return str
-}
-
-function setText(id) {
-    document.getElementById(id).innerHTML = getText("str")
-}
-
 function testQuery() {
     var x = new XMLHttpRequest();
     x.open("GET", "https://jsonplaceholder.typicode.com/posts", true);
     x.onload = function () {
-        document.getElementById("comment").value = x.responseText
+        document.getElementById("textarea").value += "\n" + x.responseText
 
     }
     x.send(null);
-}
-
-function setButtonActiveAndUpdateTextareaLabel(button, btnGroupID) {
-    var btnGroup = document.getElementById(btnGroupID)
-    var buttons = btnGroup.getElementsByClassName("btn")
-    for (var i = 0; i < buttons.length; i++) {
-        buttons[i].className = buttons[i].className.replace(" active", "")
-    }
-    button.className += " active"
 }
 
 function addListenersForSettingButtonActiveAndUpdatingTextareaLabel(btnGroupID, textareaID) {
@@ -42,4 +21,14 @@ function addListenersForSettingButtonActiveAndUpdatingTextareaLabel(btnGroupID, 
             label.textContent = this.textContent
         })
     }
+}
+
+function addListenerToGetPrototypeButton(btnID, textareaLabelID, textareaID) {
+    var btn = document.getElementById(btnID)
+    var label = document.getElementById(textareaLabelID)
+    var area = document.getElementById(textareaID)
+    btn.addEventListener("click", function () {
+        area.value = label.textContent
+        testQuery()
+    })
 }

@@ -34,9 +34,7 @@
         <div class="row justify-content-md-center">
             <div id="tablesButtonGroup" class="btn-group-vertical" role="group" aria-label="...">
                 <button id="textbookButton" type="button" class="btn btn-dark active">Textbook</button>
-                <button id="literatureButton" type="button" class="btn btn-dark">
-                    Literature
-                </button>
+                <button id="literatureButton" type="button" class="btn btn-dark">Literature</button>
                 <button id="literatureListButton" type="button" class="btn btn-dark">LiteratureList</button>
                 <button id="courseButton" type="button" class="btn btn-dark">Course</button>
                 <button id="lecturerButton" type="button" class="btn btn-dark">Lecturer</button>
@@ -45,12 +43,13 @@
             <div class="col">
                 <div class="form-group">
                     <label id="textareaLabel" for="comment">Textbook</label>
-                    <textarea class="form-control" rows="13" cols="90" id="comment"></textarea>
+                    <textarea class="form-control" rows="13" cols="90" id="textarea"></textarea>
                 </div>
-                <button type="button" class="btn btn-dark float-right">OK</button>
+                <button id="loadPrototypeButton" type="button" class="btn btn-dark float-right btn-space">Load prototype</button>
+                <button id="GetButton" type="button" class="btn btn-dark float-right btn-space">Get</button>
+                <button id="UploadButton" type="button" class="btn btn-dark float-right btn-space">Upload</button>
             </div>
         </div>
-
     </div>
 
 
@@ -60,6 +59,7 @@
 
     <!-- Инициализация -->
     <script>addListenersForSettingButtonActiveAndUpdatingTextareaLabel("tablesButtonGroup", "textareaLabel")</script>
+    <script>addListenerToGetPrototypeButton("loadPrototypeButton", "textareaLabel", "textarea")</script>
 
 </body>
 
