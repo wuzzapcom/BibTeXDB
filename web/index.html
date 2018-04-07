@@ -33,12 +33,12 @@
     <div class="container">
         <div class="row justify-content-md-center">
             <div id="tablesButtonGroup" class="btn-group-vertical" role="group" aria-label="...">
-                <button id="textbookButton" type="button" class="btn btn-dark active">Textbook</button>
-                <button id="literatureButton" type="button" class="btn btn-dark">Literature</button>
-                <button id="literatureListButton" type="button" class="btn btn-dark">LiteratureList</button>
-                <button id="courseButton" type="button" class="btn btn-dark">Course</button>
-                <button id="lecturerButton" type="button" class="btn btn-dark">Lecturer</button>
-                <button id="departmentButton" type="button" class="btn btn-dark">Department</button>
+                <button id="textbookButton" type="button" class="btn btn-dark active">...</button>
+                <button id="literatureButton" type="button" class="btn btn-dark">...</button>
+                <button id="literatureListButton" type="button" class="btn btn-dark">...</button>
+                <button id="courseButton" type="button" class="btn btn-dark">...</button>
+                <button id="lecturerButton" type="button" class="btn btn-dark">...</button>
+                <button id="departmentButton" type="button" class="btn btn-dark">...</button>
             </div>
             <div class="col">
                 <div class="form-group">
@@ -52,14 +52,14 @@
         </div>
     </div>
 
-
     <script src="js/bootstrap/jquery.min.js"></script>
     <script src="js/bootstrap/bootstrap.min.js"></script>
     <script src="js/my.code.js"></script>
 
     <!-- Инициализация -->
     <script>addListenersForSettingButtonActiveAndUpdatingTextareaLabel("tablesButtonGroup", "textareaLabel")</script>
-    <script>addListenerToGetPrototypeButton("loadPrototypeButton", "textareaLabel", "textarea")</script>
+    <script>addListenerToGetPrototypeButton("loadPrototypeButton", "textarea")</script>
+    <script>initTablesButtonGroup("tablesButtonGroup")</script>
 
 </body>
 

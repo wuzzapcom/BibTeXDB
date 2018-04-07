@@ -1,3 +1,13 @@
+var currentSelectedState = "Textbook"
+var states = new Map() //Maps button ID to Text
+states.set("textbookButton", "Textbook")
+states.set("literatureButton", "Literature")
+states.set("literatureListButton", "LiteratureList")
+states.set("courseButton", "Course")
+states.set("lecturerButton", "Lecturer")
+states.set("departmentButton", "Department")
+
+
 function testQuery() {
     var x = new XMLHttpRequest();
     x.open("GET", "https://jsonplaceholder.typicode.com/posts", true);
@@ -19,16 +29,24 @@ function addListenersForSettingButtonActiveAndUpdatingTextareaLabel(btnGroupID, 
             }
             this.className += " active"
             label.textContent = this.textContent
+            currentSelectedState = label.textContent
         })
     }
 }
 
-function addListenerToGetPrototypeButton(btnID, textareaLabelID, textareaID) {
+function addListenerToGetPrototypeButton(btnID, textareaID) {
     var btn = document.getElementById(btnID)
-    var label = document.getElementById(textareaLabelID)
     var area = document.getElementById(textareaID)
     btn.addEventListener("click", function () {
-        area.value = label.textContent
+        area.value = currentSelectedState
         testQuery()
     })
+}
+
+function initTablesButtonGroup(btnGroupID) {
+    var btnGroup = document.getElementById(btnGroupID)
+    var buttons = btnGroup.getElementsByClassName("btn")
+    for (var i = 0; i < buttons.length; i++) {
+        buttons[i].textContent = states.get(buttons[i].id)
+    }
 }
