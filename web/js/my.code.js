@@ -18,10 +18,11 @@ function testQuery() {
     x.send(null);
 }
 
-function addListenersForSettingButtonActiveAndUpdatingTextareaLabel(btnGroupID, textareaID) {
+function addListenersForSettingButtonActiveAndUpdatingTextareaLabel(btnGroupID, textareaLabelID, textareaID) {
     var btnGroup = document.getElementById(btnGroupID)
     var buttons = btnGroup.getElementsByClassName("btn")
-    var label = document.getElementById(textareaID)
+    var label = document.getElementById(textareaLabelID)
+    var area = document.getElementById(textareaID)
     for (var i = 0; i < buttons.length; i++) {
         buttons[i].addEventListener("click", function () {
             for (var i = 0; i < buttons.length; i++) {
@@ -30,6 +31,7 @@ function addListenersForSettingButtonActiveAndUpdatingTextareaLabel(btnGroupID, 
             this.className += " active"
             label.textContent = this.textContent
             currentSelectedState = label.textContent
+            area.value = ""
         })
     }
 }
