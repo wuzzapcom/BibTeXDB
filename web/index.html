@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Main</title>
+    <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="css/navbar-setup.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand" href="#">BibTeX</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="index.html">Tables</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="help.html">Help</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row justify-content-md-center">
+            <div id="tablesButtonGroup" class="btn-group-vertical" role="group" aria-label="...">
+                <button id="textbookButton" type="button" class="btn btn-dark active">Textbook</button>
+                <button id="literatureButton" type="button" class="btn btn-dark">
+                    Literature
+                </button>
+                <button id="literatureListButton" type="button" class="btn btn-dark">LiteratureList</button>
+                <button id="courseButton" type="button" class="btn btn-dark">Course</button>
+                <button id="lecturerButton" type="button" class="btn btn-dark">Lecturer</button>
+                <button id="departmentButton" type="button" class="btn btn-dark">Department</button>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label id="textareaLabel" for="comment">Textbook</label>
+                    <textarea class="form-control" rows="13" cols="90" id="comment"></textarea>
+                </div>
+                <button type="button" class="btn btn-dark float-right">OK</button>
+            </div>
+        </div>
+
+    </div>
+
+
+    <script src="js/bootstrap/jquery.min.js"></script>
+    <script src="js/bootstrap/bootstrap.min.js"></script>
+    <script src="js/my.code.js"></script>
+
+    <!-- Инициализация -->
+    <script>addListenersForSettingButtonActiveAndUpdatingTextareaLabel("tablesButtonGroup", "textareaLabel")</script>
+
+</body>
+
+</html>
