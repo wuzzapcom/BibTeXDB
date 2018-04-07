@@ -15,14 +15,14 @@ import (
 func searchCheckInput(w http.ResponseWriter, r *http.Request) (url.Values, error) {
 	parameters, err := url.ParseQuery(r.URL.RawQuery)
 	if err != nil {
-		returnError(w, 500, "Parsing parameter error")
+		returnError(w, 500, common.ErrorMessages[common.ParsingParameterError])
 		return nil, err
 	}
 
 	if len(parameters["request"]) == 0 {
-		answer, err := json.Marshal(Error{"No request provided"})
+		answer, err := json.Marshal(Error{common.ErrorMessages[common.NoRequestProvidedError]})
 		if err != nil {
-			returnError(w, 500, "Internal server error")
+			returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 			return nil, err
 		}
 
@@ -38,7 +38,7 @@ func search(w http.ResponseWriter, values url.Values) {
 		res, err := fetcher.FetchWithString(request)
 		if err != nil {
 			fmt.Printf("FATAL: %+v\n", err)
-			returnError(w, 500, "Parsing parameter error")
+			returnError(w, 500, common.ErrorMessages[common.ParsingParameterError])
 			return
 		}
 		result.Append(res)
@@ -47,7 +47,7 @@ func search(w http.ResponseWriter, values url.Values) {
 	answer, err := json.Marshal(Search{result})
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 500, "Internal server error")
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 		return
 	}
 
@@ -60,7 +60,7 @@ func addBookCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, error) {
 
 	answer, err := ioutil.ReadAll(body)
 	if err != nil {
-		returnError(w, 400, "No JSON provided")
+		returnError(w, 400, common.ErrorMessages[common.NoJSONProvidedError])
 		return nil, err
 	}
 
@@ -74,7 +74,7 @@ func addBook(w http.ResponseWriter, body []byte) {
 	err := json.Unmarshal(body, &addingBooks)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 400, "Wrong JSON input")
+		returnError(w, 400, common.ErrorMessages[common.WrongJSONInputError])
 		return
 	}
 
@@ -85,14 +85,14 @@ func addBook(w http.ResponseWriter, body []byte) {
 	err = postgres.InsertTextbook(addingBooks)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 500, "Internal server error")
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 		return
 	}
 
 	answer, err := json.Marshal(Success{"OK"})
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 500, "Internal server error")
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 		return
 	}
 
@@ -110,14 +110,14 @@ func getBooks(w http.ResponseWriter) {
 	textbooks, err := postgres.SelectTextbooks()
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 500, "Internal server error")
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 		return
 	}
 
 	data, err := json.Marshal(Books{textbooks})
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 500, "Internal server error")
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 		return
 	}
 
@@ -130,7 +130,7 @@ func getCoursePrototype(w http.ResponseWriter) {
 	data, err := json.Marshal(common.GetCourseExample())
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 500, "Internal server error")
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 		return
 	}
 
@@ -143,7 +143,7 @@ func addDepartmentCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, er
 	body := r.Body
 	answer, err := ioutil.ReadAll(body)
 	if err != nil {
-		returnError(w, 400, "No JSON provided")
+		returnError(w, 400, common.ErrorMessages[common.NoJSONProvidedError])
 		return nil, err
 	}
 	return answer, nil
@@ -155,7 +155,7 @@ func addDepartment(w http.ResponseWriter, data []byte) {
 	err := json.Unmarshal(data, &department)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 400, "Wrong JSON input")
+		returnError(w, 400, common.ErrorMessages[common.WrongJSONInputError])
 		return
 	}
 
@@ -166,14 +166,14 @@ func addDepartment(w http.ResponseWriter, data []byte) {
 	err = postgres.InsertDepartment(department)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 500, "Internal server error")
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 		return
 	}
 
 	answer, err := json.Marshal(Success{"OK"})
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 500, "Internal server error")
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 		return
 	}
 
@@ -189,14 +189,14 @@ func getDepartments(w http.ResponseWriter) {
 	departments, err := postgres.SelectDepartments()
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 500, "Internal server error")
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 		return
 	}
 
 	data, err := json.Marshal(Departments{departments})
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 500, "Internal server error")
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 		return
 	}
 
@@ -208,7 +208,7 @@ func addLecturerCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, erro
 	body := r.Body
 	answer, err := ioutil.ReadAll(body)
 	if err != nil {
-		returnError(w, 400, "No JSON provided")
+		returnError(w, 400, common.ErrorMessages[common.NoJSONProvidedError])
 		return nil, err
 	}
 	return answer, nil
@@ -220,7 +220,7 @@ func addLecturer(w http.ResponseWriter, data []byte) {
 	err := json.Unmarshal(data, &lecturer)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 400, "Wrong JSON input")
+		returnError(w, 400, common.ErrorMessages[common.WrongJSONInputError])
 		return
 	}
 
@@ -231,14 +231,14 @@ func addLecturer(w http.ResponseWriter, data []byte) {
 	err = postgres.InsertLecturer(lecturer)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 500, "Internal server error")
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 		return
 	}
 
 	answer, err := json.Marshal(Success{"OK"})
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 500, "Internal server error")
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 		return
 	}
 
@@ -254,14 +254,14 @@ func getLecturers(w http.ResponseWriter) {
 	lecturers, err := postgres.SelectLecturers()
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 500, "Internal server error")
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 		return
 	}
 
 	data, err := json.Marshal(Lecturers{lecturers})
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 500, "Internal server error")
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 		return
 	}
 
@@ -273,7 +273,7 @@ func addLiteratureListCheckInput(w http.ResponseWriter, r *http.Request) ([]byte
 	body := r.Body
 	answer, err := ioutil.ReadAll(body)
 	if err != nil {
-		returnError(w, 400, "No JSON provided")
+		returnError(w, 400, common.ErrorMessages[common.NoJSONProvidedError])
 		return nil, err
 	}
 	return answer, nil
@@ -285,7 +285,7 @@ func addLiteratureList(w http.ResponseWriter, data []byte) {
 	err := json.Unmarshal(data, &literatureList)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 400, "Wrong JSON input")
+		returnError(w, 400, common.ErrorMessages[common.WrongJSONInputError])
 		return
 	}
 
@@ -296,14 +296,14 @@ func addLiteratureList(w http.ResponseWriter, data []byte) {
 	err = postgres.InsertLiteratureList(literatureList)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 500, "Internal server error")
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 		return
 	}
 
 	answer, err := json.Marshal(Success{"OK"})
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 500, "Internal server error")
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 		return
 	}
 
@@ -319,14 +319,14 @@ func getLiteratureLists(w http.ResponseWriter) {
 	lists, err := postgres.SelectLiteratureList()
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 500, "Internal server error")
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 		return
 	}
 
 	data, err := json.Marshal(LiteratureLists{lists})
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 500, "Internal server error")
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 		return
 	}
 
@@ -338,7 +338,7 @@ func addLiteratureCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, er
 	body := r.Body
 	answer, err := ioutil.ReadAll(body)
 	if err != nil {
-		returnError(w, 400, "No JSON provided")
+		returnError(w, 400, common.ErrorMessages[common.NoJSONProvidedError])
 		return nil, err
 	}
 	return answer, nil
@@ -350,7 +350,7 @@ func addLiterature(w http.ResponseWriter, data []byte) {
 	err := json.Unmarshal(data, &literature)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 400, "Wrong JSON input")
+		returnError(w, 400, common.ErrorMessages[common.WrongJSONInputError])
 		return
 	}
 
@@ -361,14 +361,14 @@ func addLiterature(w http.ResponseWriter, data []byte) {
 	err = postgres.InsertLiterature(literature)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 500, "Internal server error")
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 		return
 	}
 
 	answer, err := json.Marshal(Success{"OK"})
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 500, "Internal server error")
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 		return
 	}
 
@@ -381,7 +381,7 @@ func getLiteratureCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, er
 		body := r.Body
 		answer, err := ioutil.ReadAll(body)
 		if err != nil {
-			returnError(w, 400, "No JSON provided")
+			returnError(w, 400, common.ErrorMessages[common.NoJSONProvidedError])
 			return nil, err
 		}
 		return answer, nil
@@ -400,14 +400,14 @@ func getLiterature(request []byte, w http.ResponseWriter) {
 		literature, err := postgres.SelectLiterature()
 		if err != nil {
 			fmt.Printf("FATAL: %+v\n", err)
-			returnError(w, 500, "Internal server error")
+			returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 			return
 		}
 
 		data, err := json.Marshal(Literature{literature})
 		if err != nil {
 			fmt.Printf("FATAL: %+v\n", err)
-			returnError(w, 500, "Internal server error")
+			returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 			return
 		}
 
@@ -418,20 +418,20 @@ func getLiterature(request []byte, w http.ResponseWriter) {
 		err := json.Unmarshal(request, &list)
 		if err != nil {
 			fmt.Printf("FATAL: %+v\n", err)
-			returnError(w, 500, "Internal server error")
+			returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 			return
 		}
 		items, err := postgres.SelectBooksInList(list)
 		if err != nil {
 			fmt.Printf("FATAL: %+v\n", err)
-			returnError(w, 500, "Internal server error")
+			returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 			return
 		}
 
 		data, err := json.Marshal(Books{items})
 		if err != nil {
 			fmt.Printf("FATAL: %+v\n", err)
-			returnError(w, 500, "Internal server error")
+			returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 			return
 		}
 
@@ -444,7 +444,7 @@ func addCourseCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, error)
 	body := r.Body
 	answer, err := ioutil.ReadAll(body)
 	if err != nil {
-		returnError(w, 400, "No JSON provided")
+		returnError(w, 400, common.ErrorMessages[common.NoJSONProvidedError])
 		return nil, err
 	}
 	return answer, nil
@@ -456,7 +456,7 @@ func addCourse(w http.ResponseWriter, data []byte) {
 	err := json.Unmarshal(data, &course)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 400, "Wrong JSON input")
+		returnError(w, 400, common.ErrorMessages[common.WrongJSONInputError])
 		return
 	}
 
@@ -473,7 +473,7 @@ func addCourse(w http.ResponseWriter, data []byte) {
 	answer, err := json.Marshal(Success{"OK"})
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 500, "Internal server error")
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 		return
 	}
 
@@ -491,14 +491,14 @@ func getCourses(w http.ResponseWriter) {
 	courses, err := postgres.SelectCourses()
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 500, "Internal server error")
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 		return
 	}
 
 	data, err := json.Marshal(Courses{courses})
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 500, "Internal server error")
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 		return
 	}
 
@@ -511,7 +511,7 @@ func migrateLiteratureListCheckInput(w http.ResponseWriter, r *http.Request) ([]
 	body := r.Body
 	answer, err := ioutil.ReadAll(body)
 	if err != nil {
-		returnError(w, 400, "No JSON provided")
+		returnError(w, 400, common.ErrorMessages[common.NoJSONProvidedError])
 		return nil, err
 	}
 	return answer, nil
@@ -525,7 +525,7 @@ func migrateLiteratureList(w http.ResponseWriter, data []byte) {
 	if err != nil {
 		log.Println("Error in json umparshalling")
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 400, "Wrong JSON input")
+		returnError(w, 400, common.ErrorMessages[common.WrongJSONInputError])
 		return
 	}
 
@@ -543,7 +543,7 @@ func migrateLiteratureList(w http.ResponseWriter, data []byte) {
 	answer, err := json.Marshal(Success{"OK"})
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 500, "Internal server error")
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 		return
 	}
 
@@ -555,7 +555,7 @@ func generateBibTexCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, e
 	body := r.Body
 	answer, err := ioutil.ReadAll(body)
 	if err != nil {
-		returnError(w, 400, "No JSON provided")
+		returnError(w, 400, common.ErrorMessages[common.NoJSONProvidedError])
 		return nil, err
 	}
 	return answer, nil
@@ -566,7 +566,7 @@ func generateBibTex(w http.ResponseWriter, data []byte) {
 	err := json.Unmarshal(data, &list)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 400, "Wrong JSON input")
+		returnError(w, 400, common.ErrorMessages[common.WrongJSONInputError])
 		return
 	}
 
@@ -577,7 +577,7 @@ func generateBibTex(w http.ResponseWriter, data []byte) {
 	books, err := postgres.SelectBooksInList(list)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
-		returnError(w, 400, "Wrong JSON input")
+		returnError(w, 400, common.ErrorMessages[common.WrongJSONInputError])
 		return
 	}
 
@@ -592,6 +592,6 @@ func handleDatabaseErrors(w http.ResponseWriter, err error) {
 	if ok {
 		returnError(w, 500, full.GetMessageForUser())
 	} else {
-		returnError(w, 500, "Internal server error")
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
 	}
 }

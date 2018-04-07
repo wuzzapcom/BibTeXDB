@@ -7,6 +7,26 @@ import (
 	"github.com/lib/pq"
 )
 
+// ErrorCode ..
+type ErrorCode int
+
+const (
+	InternalServerError ErrorCode = iota
+	ParsingParameterError
+	NoRequestProvidedError
+	NoJSONProvidedError
+	WrongJSONInputError
+)
+
+// ErrorMessages ..
+var ErrorMessages = map[ErrorCode]string{
+	InternalServerError:    "Internal server error",
+	ParsingParameterError:  "Parsing parameter error",
+	NoRequestProvidedError: "Provided no request",
+	NoJSONProvidedError:    "Provided no JSON",
+	WrongJSONInputError:    "Wrong JSON input",
+}
+
 // Error ..
 type Error struct {
 	Code          int
