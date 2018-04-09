@@ -16,6 +16,27 @@ urls.set("courseButton", ["addCourse", "getCourses", "getCoursePrototype"])
 urls.set("lecturerButton", ["addLecturer", "getLecturers", "getLecturerPrototype"])
 urls.set("departmentButton", ["addDepartment", "getDepartments", "getDepartmentPrototype"])
 
+function sendDataQuery(id) {
+    var x = new XMLHttpRequest()
+    x.open("POST", address + urls.get(id)[0], true)
+    x.onload = function () {
+        if (x.status != 200) {
+            var label = document.getElementById("uploadResultLabel")
+            label.className = label.className.replace("invisible", "visible")
+            label.className += " alert-danger"
+            label.innerText = x.status + ': ' + x.statusText
+
+            // alert(x.status + ': ' + x.statusText);
+        } else {
+            var label = document.getElementById("uploadResultLabel")
+            label.className = label.className.replace("invisible", "visible")
+            label.className += " alert-success"
+            label.innerText = x.responseText
+        }
+    }
+    x.send(document.getElementById("textarea").value)
+}
+
 function getDataQuery(id) {
     var x = new XMLHttpRequest()
     x.open("GET", address + urls.get(id)[1], true)
@@ -60,6 +81,13 @@ function addListenersForSettingButtonActiveAndUpdatingTextareaLabel(btnGroupID, 
             area.value = ""
         })
     }
+}
+
+function addListenerToUploadButton(btnID) {
+    var btn = document.getElementById(btnID)
+    btn.addEventListener("click", function () {
+        sendDataQuery(currentSelectedState)
+    })
 }
 
 function addListenerToGetButton(btnID) {
