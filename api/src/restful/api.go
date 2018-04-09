@@ -44,6 +44,12 @@ func getCoursePrototypeHandler(w http.ResponseWriter, r *http.Request) {
 	getCoursePrototype(w)
 }
 
+func getDepartmentPrototypeHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
+	getDepartmentPrototype(w)
+}
+
 func addDepartmentHandler(w http.ResponseWriter, r *http.Request) {
 	common.LogRequest(*r)
 	addHeaders(w)
@@ -61,6 +67,12 @@ func getDepartmentsHandler(w http.ResponseWriter, r *http.Request) {
 	getDepartments(w)
 }
 
+func getLecturerPrototypeHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
+	getLecturerPrototype(w)
+}
+
 func addLecturerHandler(w http.ResponseWriter, r *http.Request) {
 	common.LogRequest(*r)
 	addHeaders(w)
@@ -76,6 +88,12 @@ func getLecturersHandler(w http.ResponseWriter, r *http.Request) {
 	common.LogRequest(*r)
 	addHeaders(w)
 	getLecturers(w)
+}
+
+func getLiteratureListPrototypeHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
+	getLiteratureListPrototype(w)
 }
 
 func addLiteratureListHandler(w http.ResponseWriter, r *http.Request) {
@@ -104,6 +122,12 @@ func addLiteratureHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	addLiterature(w, body)
+}
+
+func getLiteraturePrototypeHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
+	getLiteraturePrototype(w)
 }
 
 func getLiteratureHandler(w http.ResponseWriter, r *http.Request) {
@@ -185,15 +209,19 @@ func Run(f fetchers.GoogleFetcher) {
 	http.HandleFunc("/addCourse", addCourseHandler)
 	http.HandleFunc("/getCourses", getCoursesHandler)
 
+	http.HandleFunc("/getDepartmentPrototype", getDepartmentPrototypeHandler)
 	http.HandleFunc("/addDepartment", addDepartmentHandler)
 	http.HandleFunc("/getDepartments", getDepartmentsHandler)
 
+	http.HandleFunc("/getLecturerPrototype", getLecturerPrototypeHandler)
 	http.HandleFunc("/addLecturer", addLecturerHandler)
 	http.HandleFunc("/getLecturers", getLecturersHandler)
 
+	http.HandleFunc("/getLiteratureListPrototype", getLiteratureListPrototypeHandler)
 	http.HandleFunc("/addLiteratureList", addLiteratureListHandler)
 	http.HandleFunc("/getLiteratureLists", getLiteratureListsHandler)
 
+	http.HandleFunc("/getLiteraturePrototype", getLiteraturePrototypeHandler)
 	http.HandleFunc("/addLiterature", addLiteratureHandler)
 	http.HandleFunc("/getLiterature", getLiteratureHandler)
 

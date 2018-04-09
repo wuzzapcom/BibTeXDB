@@ -139,6 +139,20 @@ func getCoursePrototype(w http.ResponseWriter) {
 
 }
 
+func getDepartmentPrototype(w http.ResponseWriter) {
+
+	data, err := json.Marshal(common.GetDepartmentExample())
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
+		return
+	}
+
+	w.WriteHeader(200)
+	w.Write(data)
+
+}
+
 func addDepartmentCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, error) {
 	body := r.Body
 	answer, err := ioutil.ReadAll(body)
@@ -202,6 +216,20 @@ func getDepartments(w http.ResponseWriter) {
 
 	w.WriteHeader(200)
 	w.Write(data)
+}
+
+func getLecturerPrototype(w http.ResponseWriter) {
+
+	data, err := json.Marshal(common.GetLecturerExample())
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
+		return
+	}
+
+	w.WriteHeader(200)
+	w.Write(data)
+
 }
 
 func addLecturerCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, error) {
@@ -269,6 +297,20 @@ func getLecturers(w http.ResponseWriter) {
 	w.Write(data)
 }
 
+func getLiteratureListPrototype(w http.ResponseWriter) {
+
+	data, err := json.Marshal(common.GetLiteratureListExample())
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
+		return
+	}
+
+	w.WriteHeader(200)
+	w.Write(data)
+
+}
+
 func addLiteratureListCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, error) {
 	body := r.Body
 	answer, err := ioutil.ReadAll(body)
@@ -332,6 +374,20 @@ func getLiteratureLists(w http.ResponseWriter) {
 
 	w.WriteHeader(200)
 	w.Write(data)
+}
+
+func getLiteraturePrototype(w http.ResponseWriter) {
+
+	data, err := json.Marshal(common.GetLiteratureExample())
+	if err != nil {
+		fmt.Printf("FATAL: %+v\n", err)
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
+		return
+	}
+
+	w.WriteHeader(200)
+	w.Write(data)
+
 }
 
 func addLiteratureCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, error) {
