@@ -4,12 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"wuzzapcom/Coursework/api/src/common"
 	"wuzzapcom/Coursework/api/src/fetchers"
 )
 
 var fetcher fetchers.GoogleFetcher
 
 func searchHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
 	parameters, err := searchCheckInput(w, r)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
@@ -19,6 +22,8 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func addBookHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
 	body, err := addBookCheckInput(w, r)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
@@ -27,15 +32,21 @@ func addBookHandler(w http.ResponseWriter, r *http.Request) {
 	addBook(w, body)
 }
 
-func getBooksHandler(w http.ResponseWriter, _ *http.Request) {
+func getBooksHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
 	getBooks(w)
 }
 
-func getCoursePrototypeHandler(w http.ResponseWriter, _ *http.Request) {
+func getCoursePrototypeHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
 	getCoursePrototype(w)
 }
 
 func addDepartmentHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
 	body, err := addDepartmentCheckInput(w, r)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
@@ -45,10 +56,14 @@ func addDepartmentHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getDepartmentsHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
 	getDepartments(w)
 }
 
 func addLecturerHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
 	body, err := addLecturerCheckInput(w, r)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
@@ -58,10 +73,14 @@ func addLecturerHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getLecturersHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
 	getLecturers(w)
 }
 
 func addLiteratureListHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
 	body, err := addLiteratureListCheckInput(w, r)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
@@ -71,10 +90,14 @@ func addLiteratureListHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getLiteratureListsHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
 	getLiteratureLists(w)
 }
 
 func addLiteratureHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
 	body, err := addLiteratureCheckInput(w, r)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
@@ -84,6 +107,8 @@ func addLiteratureHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getLiteratureHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
 	request, err := addLiteratureCheckInput(w, r)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
@@ -93,6 +118,8 @@ func getLiteratureHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func addCourseHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
 	body, err := addCourseCheckInput(w, r)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
@@ -102,10 +129,14 @@ func addCourseHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getCoursesHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
 	getCourses(w)
 }
 
 func migrateLiteratureListHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
 	body, err := migrateLiteratureListCheckInput(w, r)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
@@ -115,6 +146,8 @@ func migrateLiteratureListHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func generateBibTexHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
 	body, err := generateBibTexCheckInput(w, r)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
@@ -123,12 +156,18 @@ func generateBibTexHandler(w http.ResponseWriter, r *http.Request) {
 	generateBibTex(w, body)
 }
 
+func addHeaders(w http.ResponseWriter) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+}
+
 func returnError(w http.ResponseWriter, code int, message string) {
 	answer, err := json.Marshal(Error{message})
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
 		return
 	}
+
+	common.LogErrorResponseWriter(code, message)
 
 	w.WriteHeader(code)
 	w.Write(answer)
