@@ -1,4 +1,5 @@
-var currentSelectedState = "Textbook"
+var currentSelectedState = "textbookButton"
+const address = "http://localhost:8080/"
 var states = new Map() //Maps button ID to Text
 states.set("textbookButton", "Textbook")
 states.set("literatureButton", "Literature")
@@ -7,15 +8,40 @@ states.set("courseButton", "Course")
 states.set("lecturerButton", "Lecturer")
 states.set("departmentButton", "Department")
 
+var urls = new Map() //ID to RequestURL projection
+urls.set("textbookButton", ["addBook", "getBooks", "getBookPrototype"])
+urls.set("literatureButton", ["addLiterature", "getLiterature", "getLiteraturePrototype"])
+urls.set("literatureListButton", ["addLiteratureList", "getLiteratureLists", "getLiteratureListPrototype"])
+urls.set("courseButton", ["addCourse", "getCourses", "getCoursePrototype"])
+urls.set("lecturerButton", ["addLecturer", "getLecturers", "getLecturerPrototype"])
+urls.set("departmentButton", ["addDepartment", "getDepartments", "getDepartmentPrototype"])
 
-function testQuery() {
-    var x = new XMLHttpRequest();
-    x.open("GET", "https://jsonplaceholder.typicode.com/posts", true);
+function getDataQuery(id) {
+    var x = new XMLHttpRequest()
+    x.open("GET", address + urls.get(id)[1], true)
     x.onload = function () {
-        document.getElementById("textarea").value += "\n" + x.responseText
-
+        if (x.status != 200) {
+            alert(x.status + ': ' + x.statusText);
+        } else {
+            // вывести результат
+            document.getElementById("textarea").value = JSON.stringify(JSON.parse(x.responseText), null, 2)
+        }
     }
-    x.send(null);
+    x.send()
+}
+
+function getPrototypeQuery(id) {
+    var x = new XMLHttpRequest()
+    x.open("GET", address + urls.get(id)[2], true)
+    x.onload = function () {
+        if (x.status != 200) {
+            alert(x.status + ': ' + x.statusText);
+        } else {
+            // вывести результат
+            document.getElementById("textarea").value = JSON.stringify(JSON.parse(x.responseText), null, 2)
+        }
+    }
+    x.send()
 }
 
 function addListenersForSettingButtonActiveAndUpdatingTextareaLabel(btnGroupID, textareaLabelID, textareaID) {
@@ -30,18 +56,23 @@ function addListenersForSettingButtonActiveAndUpdatingTextareaLabel(btnGroupID, 
             }
             this.className += " active"
             label.textContent = this.textContent
-            currentSelectedState = label.textContent
+            currentSelectedState = this.id
             area.value = ""
         })
     }
 }
 
-function addListenerToGetPrototypeButton(btnID, textareaID) {
+function addListenerToGetButton(btnID) {
     var btn = document.getElementById(btnID)
-    var area = document.getElementById(textareaID)
     btn.addEventListener("click", function () {
-        area.value = currentSelectedState
-        testQuery()
+        getDataQuery(currentSelectedState)
+    })
+}
+
+function addListenerToGetPrototypeButton(btnID) {
+    var btn = document.getElementById(btnID)
+    btn.addEventListener("click", function () {
+        getPrototypeQuery(currentSelectedState)
     })
 }
 

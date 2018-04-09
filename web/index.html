@@ -46,8 +46,8 @@
                     <textarea class="form-control" rows="13" cols="90" id="textarea"></textarea>
                 </div>
                 <button id="loadPrototypeButton" type="button" class="btn btn-dark float-right btn-space">Load prototype</button>
-                <button id="GetButton" type="button" class="btn btn-dark float-right btn-space">Get</button>
-                <button id="UploadButton" type="button" class="btn btn-dark float-right btn-space">Upload</button>
+                <button id="getButton" type="button" class="btn btn-dark float-right btn-space">Get</button>
+                <button id="gploadButton" type="button" class="btn btn-dark float-right btn-space">Upload</button>
             </div>
         </div>
     </div>
@@ -58,7 +58,8 @@
 
     <!-- Инициализация -->
     <script>addListenersForSettingButtonActiveAndUpdatingTextareaLabel("tablesButtonGroup", "textareaLabel", "textarea")</script>
-    <script>addListenerToGetPrototypeButton("loadPrototypeButton", "textarea")</script>
+    <script>addListenerToGetPrototypeButton("loadPrototypeButton")</script>
+    <script>addListenerToGetButton("getButton")</script>
     <script>initTablesButtonGroup("tablesButtonGroup")</script>
 
 </body>
