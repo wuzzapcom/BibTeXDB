@@ -33,23 +33,48 @@
     <div id="uploadResultLabel" class="alert invisible" role="alert"></div>
 
     <div class="container">
-        <div class="row justify-content-md-center">
-            <div id="tablesButtonGroup" class="btn-group-vertical" role="group" aria-label="...">
-                <button id="textbookButton" type="button" class="btn btn-dark active">...</button>
-                <button id="literatureButton" type="button" class="btn btn-dark">...</button>
-                <button id="literatureListButton" type="button" class="btn btn-dark">...</button>
-                <button id="courseButton" type="button" class="btn btn-dark">...</button>
-                <button id="lecturerButton" type="button" class="btn btn-dark">...</button>
-                <button id="departmentButton" type="button" class="btn btn-dark">...</button>
-            </div>
-            <div class="col">
-                <div class="form-group">
-                    <label id="textareaLabel" for="comment">Textbook</label>
-                    <textarea class="form-control" rows="13" cols="90" id="textarea"></textarea>
+        <div class="col justify-content-md-center">
+            <div class="container">
+                <div class="row justify-content-md-center">
+                    <div id="tablesButtonGroupGet" class="btn-group-vertical" role="group" aria-label="...">
+                        <button id="textbookButtonGet" type="button" class="btn btn-dark active">...</button>
+                        <button id="literatureButtonGet" type="button" class="btn btn-dark">...</button>
+                        <button id="literatureListButtonGet" type="button" class="btn btn-dark">...</button>
+                        <button id="courseButtonGet" type="button" class="btn btn-dark">...</button>
+                        <button id="lecturerButtonGet" type="button" class="btn btn-dark">...</button>
+                        <button id="departmentButtonGet" type="button" class="btn btn-dark">...</button>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label id="textareaLabelGet" for="comment">Textbook</label>
+                            <textarea class="form-control" rows="13" cols="90" id="textareaGet" disabled></textarea>
+                        </div>
+                        <!-- <button id="loadPrototypeButton" type="button" class="btn btn-dark float-right btn-space">Load prototype</button> -->
+                        <button id="getButtonGet" type="button" class="btn btn-dark float-right btn-space">Get</button>
+                        <!-- <button id="uploadButton" type="button" class="btn btn-dark float-right btn-space">Upload</button> -->
+                    </div>
                 </div>
-                <button id="loadPrototypeButton" type="button" class="btn btn-dark float-right btn-space">Load prototype</button>
-                <button id="getButton" type="button" class="btn btn-dark float-right btn-space">Get</button>
-                <button id="uploadButton" type="button" class="btn btn-dark float-right btn-space">Upload</button>
+            </div>
+            <div class="container">
+                <div class="row justify-content-md-center">
+                    <div id="tablesButtonGroupUpload" class="btn-group-vertical" role="group" aria-label="...">
+                        <button id="textbookButtonUpload" type="button" class="btn btn-dark active">...</button>
+                        <button id="literatureButtonUpload" type="button" class="btn btn-dark">...</button>
+                        <button id="literatureListButtonUpload" type="button" class="btn btn-dark">...</button>
+                        <button id="courseButtonUpload" type="button" class="btn btn-dark">...</button>
+                        <button id="lecturerButtonUpload" type="button" class="btn btn-dark">...</button>
+                        <button id="departmentButtonUpload" type="button" class="btn btn-dark">...</button>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label id="textareaLabelUpload" for="comment">Textbook</label>
+                            <textarea class="form-control" rows="13" cols="90" id="textareaUpload"></textarea>
+                        </div>
+                        <button id="loadPrototypeButtonUpload" type="button" class="btn btn-dark float-right btn-space">Load prototype</button>
+                        <!-- <button id="getButton" type="button" class="btn btn-dark float-right btn-space">Get</button> -->
+                        <button id="uploadButtonUpload" type="button" class="btn btn-dark float-right btn-space">Upload</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -57,13 +82,17 @@
     <script src="js/bootstrap/jquery.min.js"></script>
     <script src="js/bootstrap/bootstrap.min.js"></script>
     <script src="js/my.code.js"></script>
+    <script src="js/get_textarea.js"></script>
+    <script src="js/upload_textarea.js"></script>
 
     <!-- Инициализация -->
-    <script>addListenersForSettingButtonActiveAndUpdatingTextareaLabel("tablesButtonGroup", "textareaLabel", "textarea")</script>
-    <script>addListenerToGetPrototypeButton("loadPrototypeButton")</script>
-    <script>addListenerToGetButton("getButton")</script>
-    <script>addListenerToUploadButton("uploadButton")</script>
-    <script>initTablesButtonGroup("tablesButtonGroup")</script>
+    <script>addListenersForSettingButtonActiveAndUpdatingTextareaLabelGet("tablesButtonGroupGet", "textareaLabelGet", "textareaGet")</script>
+    <script>addListenersForSettingButtonActiveAndUpdatingTextareaLabelUpload("tablesButtonGroupUpload", "textareaLabelUpload", "textareaUpload")</script>
+    <script>addListenerToGetPrototypeButton("loadPrototypeButtonUpload")</script>
+    <script>addListenerToGetButton("getButtonGet")</script>
+    <script>addListenerToUploadButton("uploadButtonUpload")</script>
+    <script>initTablesButtonGroup("tablesButtonGroupGet", statesGet)</script>
+    <script>initTablesButtonGroup("tablesButtonGroupUpload", statesUpload)</script>
 
 </body>
 
