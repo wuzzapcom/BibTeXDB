@@ -26,8 +26,8 @@ func searchCheckInput(w http.ResponseWriter, r *http.Request) (url.Values, error
 			return nil, err
 		}
 
-		w.WriteHeader(400)
-		w.Write(answer)
+		writeAnswer(w, 400, answer)
+
 	}
 	return parameters, nil
 }
@@ -51,8 +51,8 @@ func search(w http.ResponseWriter, values url.Values) {
 		return
 	}
 
-	w.WriteHeader(200)
-	w.Write(answer)
+	writeAnswer(w, 200, answer)
+
 }
 
 func addBookCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, error) {
@@ -96,8 +96,7 @@ func addBook(w http.ResponseWriter, body []byte) {
 		return
 	}
 
-	w.WriteHeader(200)
-	w.Write(answer)
+	writeAnswer(w, 200, answer)
 
 }
 
@@ -121,8 +120,8 @@ func getBooks(w http.ResponseWriter) {
 		return
 	}
 
-	w.WriteHeader(200)
-	w.Write(data)
+	writeAnswer(w, 200, data)
+
 }
 
 func getCoursePrototype(w http.ResponseWriter) {
@@ -134,8 +133,7 @@ func getCoursePrototype(w http.ResponseWriter) {
 		return
 	}
 
-	w.WriteHeader(200)
-	w.Write(data)
+	writeAnswer(w, 200, data)
 
 }
 
@@ -148,8 +146,7 @@ func getDepartmentPrototype(w http.ResponseWriter) {
 		return
 	}
 
-	w.WriteHeader(200)
-	w.Write(data)
+	writeAnswer(w, 200, data)
 
 }
 
@@ -191,8 +188,8 @@ func addDepartment(w http.ResponseWriter, data []byte) {
 		return
 	}
 
-	w.WriteHeader(200)
-	w.Write(answer)
+	writeAnswer(w, 200, answer)
+
 }
 
 func getDepartments(w http.ResponseWriter) {
@@ -214,8 +211,8 @@ func getDepartments(w http.ResponseWriter) {
 		return
 	}
 
-	w.WriteHeader(200)
-	w.Write(data)
+	writeAnswer(w, 200, data)
+
 }
 
 func getLecturerPrototype(w http.ResponseWriter) {
@@ -227,8 +224,7 @@ func getLecturerPrototype(w http.ResponseWriter) {
 		return
 	}
 
-	w.WriteHeader(200)
-	w.Write(data)
+	writeAnswer(w, 200, data)
 
 }
 
@@ -270,8 +266,8 @@ func addLecturer(w http.ResponseWriter, data []byte) {
 		return
 	}
 
-	w.WriteHeader(200)
-	w.Write(answer)
+	writeAnswer(w, 200, answer)
+
 }
 
 func getLecturers(w http.ResponseWriter) {
@@ -293,8 +289,8 @@ func getLecturers(w http.ResponseWriter) {
 		return
 	}
 
-	w.WriteHeader(200)
-	w.Write(data)
+	writeAnswer(w, 200, data)
+
 }
 
 func getLiteratureListPrototype(w http.ResponseWriter) {
@@ -306,8 +302,7 @@ func getLiteratureListPrototype(w http.ResponseWriter) {
 		return
 	}
 
-	w.WriteHeader(200)
-	w.Write(data)
+	writeAnswer(w, 200, data)
 
 }
 
@@ -349,8 +344,8 @@ func addLiteratureList(w http.ResponseWriter, data []byte) {
 		return
 	}
 
-	w.WriteHeader(200)
-	w.Write(answer)
+	writeAnswer(w, 200, answer)
+
 }
 
 func getLiteratureLists(w http.ResponseWriter) {
@@ -372,8 +367,8 @@ func getLiteratureLists(w http.ResponseWriter) {
 		return
 	}
 
-	w.WriteHeader(200)
-	w.Write(data)
+	writeAnswer(w, 200, data)
+
 }
 
 func getLiteraturePrototype(w http.ResponseWriter) {
@@ -385,9 +380,7 @@ func getLiteraturePrototype(w http.ResponseWriter) {
 		return
 	}
 
-	w.WriteHeader(200)
-	w.Write(data)
-
+	writeAnswer(w, 200, data)
 }
 
 func addLiteratureCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, error) {
@@ -428,8 +421,7 @@ func addLiterature(w http.ResponseWriter, data []byte) {
 		return
 	}
 
-	w.WriteHeader(200)
-	w.Write(answer)
+	writeAnswer(w, 200, answer)
 }
 
 func getLiteratureCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, error) {
@@ -467,8 +459,8 @@ func getLiterature(request []byte, w http.ResponseWriter) {
 			return
 		}
 
-		w.WriteHeader(200)
-		w.Write(data)
+		writeAnswer(w, 200, data)
+
 	} else {
 		var list common.LiteratureList
 		err := json.Unmarshal(request, &list)
@@ -491,8 +483,7 @@ func getLiterature(request []byte, w http.ResponseWriter) {
 			return
 		}
 
-		w.WriteHeader(200)
-		w.Write(data)
+		writeAnswer(w, 200, data)
 	}
 }
 
@@ -533,8 +524,8 @@ func addCourse(w http.ResponseWriter, data []byte) {
 		return
 	}
 
-	w.WriteHeader(200)
-	w.Write(answer)
+	writeAnswer(w, 200, answer)
+
 }
 
 func getCourses(w http.ResponseWriter) {
@@ -558,8 +549,7 @@ func getCourses(w http.ResponseWriter) {
 		return
 	}
 
-	w.WriteHeader(200)
-	w.Write(data)
+	writeAnswer(w, 200, data)
 
 }
 
@@ -603,8 +593,7 @@ func migrateLiteratureList(w http.ResponseWriter, data []byte) {
 		return
 	}
 
-	w.WriteHeader(200)
-	w.Write(answer)
+	writeAnswer(w, 200, answer)
 }
 
 func generateBibTexCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, error) {
@@ -638,8 +627,17 @@ func generateBibTex(w http.ResponseWriter, data []byte) {
 	}
 
 	report := reports.CreateReport(books)
-	w.WriteHeader(200)
-	w.Write([]byte(report))
+	writeAnswer(w, 200, []byte(report))
+}
+
+func writeAnswer(w http.ResponseWriter, code int, answer []byte) {
+	log.Printf(
+		"\n---------\nAnswer:\n\tCode: %d\n\tMessage: %s\n---------\n",
+		code,
+		string(answer),
+	)
+	w.WriteHeader(code)
+	w.Write(answer)
 }
 
 func handleDatabaseErrors(w http.ResponseWriter, err error) {
