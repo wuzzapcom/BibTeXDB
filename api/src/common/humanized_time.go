@@ -12,7 +12,7 @@ type HumanizedTime struct {
 }
 
 //TimeFormat is string that defines format of date for user
-const TimeFormat = "2006-02-02"
+const TimeFormat = "2006-01-02"
 
 var nilTime = (time.Time{}).UnixNano()
 
