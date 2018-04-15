@@ -7,7 +7,7 @@ CREATE SCHEMA schema;
 CREATE TABLE schema.textbook(
   textbook_id SERIAL PRIMARY KEY,
   textbook_ident VARCHAR(100) NOT NULL UNIQUE,
-  textbook_title VARCHAR(100) NOT NULL UNIQUE,
+  textbook_title VARCHAR(100) NOT NULL,
   textbook_author VARCHAR(100) NOT NULL,
   textbook_publisher VARCHAR(100) NOT NULL,
   textbook_year INTEGER NOT NULL,
