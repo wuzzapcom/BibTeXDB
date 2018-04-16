@@ -62,9 +62,19 @@ func (postgres *Postgres) Connect() error {
 //InsertTextbook ..
 func (postgres *Postgres) InsertTextbook(item common.Item) error {
 	result, err := postgres.getSQLExecutable().Exec(
-		"INSERT INTO schema.textbook(textbook_ident, textbook_title, "+
-			"textbook_author, textbook_publisher, textbook_year, textbook_isbn, "+
-			"textbook_url, textbook_timestamp) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+		`INSERT INTO schema.textbook(textbook_ident, textbook_title,
+			textbook_author, textbook_publisher, textbook_year, textbook_isbn,
+			textbook_url, textbook_timestamp) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+			ON CONFLICT (textbook_isbn) DO UPDATE SET
+				textbook_ident=EXCLUDED.textbook_ident,
+				textbook_title=EXCLUDED.textbook_title,
+				textbook_author=EXCLUDED.textbook_author,
+				textbook_publisher=EXCLUDED.textbook_publisher,
+				textbook_year=EXCLUDED.textbook_year,
+				textbook_url=EXCLUDED.textbook_url,
+				textbook_timestamp=EXCLUDED.textbook_timestamp,
+				textbook_is_deleted=FALSE;
+			`,
 		item.Ident,
 		item.Title,
 		item.Author,
@@ -125,7 +135,11 @@ func (postgres *Postgres) SelectTextbooks() (common.Items, error) {
 func (postgres *Postgres) InsertDepartment(department common.Department) error {
 	result, err := postgres.getSQLExecutable().Exec(`
 		INSERT INTO schema.department(department_title, department_timestamp) VALUES 
-		($1, $2)`,
+		($1, $2)
+		ON CONFLICT (department_title) DO UPDATE SET
+			department_title=EXCLUDED.department_title,
+			department_is_deleted=FALSE,
+			department_timestamp=EXCLUDED.department_timestamp`,
 		department.Title,
 		int32(time.Now().Unix()),
 	)
@@ -169,8 +183,15 @@ func (postgres *Postgres) InsertLecturer(lecturer common.Lecturer) error {
 		return common.CreateError(err)
 	}
 
-	result, err := postgres.getSQLExecutable().Exec("INSERT INTO schema.lecturer(lecturer_name, lecturer_date_of_birth, "+
-		"lecturer_department_id, lecturer_timestamp) VALUES ($1, $2, $3, $4)",
+	result, err := postgres.getSQLExecutable().Exec(`
+		INSERT INTO schema.lecturer(lecturer_name, lecturer_date_of_birth,
+			lecturer_department_id, lecturer_timestamp) 
+			VALUES ($1, $2, $3, $4)
+			ON CONFLICT(lecturer_name, lecturer_date_of_birth) DO UPDATE SET
+			lecturer_department_id=EXCLUDED.lecturer_department_id,
+			lecturer_timestamp=EXCLUDED.lecturer_timestamp,
+			lecturer_is_deleted=FALSE;
+		`,
 		lecturer.Name,
 		lecturer.DateOfBirth.Time,
 		id,
@@ -273,7 +294,15 @@ func (postgres *Postgres) InsertCourse(course common.Course) error {
 		return common.CreateError(err)
 	}
 	fmt.Println(lecturerID)
-	result, err := postgres.getSQLExecutable().Exec("INSERT INTO schema.course(course_title, course_lecturer_id, course_department_id, course_semester, course_timestamp) VALUES ($1, $2, $3, $4, $5)",
+	result, err := postgres.getSQLExecutable().Exec(`I
+		NSERT INTO schema.course(course_title, course_lecturer_id, 
+			course_department_id, course_semester, course_timestamp) 
+			VALUES ($1, $2, $3, $4, $5)
+			ON CONFLICT(course_title, course_department_id, course_semester) DO UPDATE SET
+			course_lecturer_id=EXCLUDED.course_lecturer_id,
+			course_timestamp=EXCLUDED.course_timestamp,
+			course_is_deleted=FALSE;
+			`,
 		course.Title,
 		lecturerID,
 		departmentID,
