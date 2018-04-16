@@ -294,8 +294,8 @@ func (postgres *Postgres) InsertCourse(course common.Course) error {
 		return common.CreateError(err)
 	}
 	fmt.Println(lecturerID)
-	result, err := postgres.getSQLExecutable().Exec(`I
-		NSERT INTO schema.course(course_title, course_lecturer_id, 
+	result, err := postgres.getSQLExecutable().Exec(`
+		INSERT INTO schema.course(course_title, course_lecturer_id, 
 			course_department_id, course_semester, course_timestamp) 
 			VALUES ($1, $2, $3, $4, $5)
 			ON CONFLICT(course_title, course_department_id, course_semester) DO UPDATE SET
