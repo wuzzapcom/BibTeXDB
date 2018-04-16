@@ -17,7 +17,7 @@ uploadUrls.set("lecturerButtonUpload", ["addLecturer", "getLecturerPrototype"])
 uploadUrls.set("departmentButtonUpload", ["addDepartment", "getDepartmentPrototype"])
 
 function getPrototypeQuery(id) {
-    alert(currentStateUpload)
+    // alert(currentStateUpload)
     var x = new XMLHttpRequest()
     x.open("GET", address + uploadUrls.get(id)[1], true)
     x.onload = function () {
@@ -79,7 +79,8 @@ function addListenersForSettingButtonActiveAndUpdatingTextareaLabelUpload(btnGro
             this.className += " active"
             label.textContent = this.textContent
             currentStateUpload = this.id
-            alert("update state with " + this.id)
+            getPrototypeQuery(this.id)
+            // alert("update state with " + this.id)
             // currentSelectedState = this.id
             area.value = ""
         })

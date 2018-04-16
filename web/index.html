@@ -24,6 +24,9 @@
                     <a class="nav-link" href="index.html">Tables</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="report.html">Report</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="help.html">Help</a>
                 </li>
             </ul>
@@ -70,7 +73,7 @@
                             <label id="textareaLabelUpload" for="comment">Textbook</label>
                             <textarea class="form-control" rows="13" cols="90" id="textareaUpload"></textarea>
                         </div>
-                        <button id="loadPrototypeButtonUpload" type="button" class="btn btn-dark float-right btn-space">Load prototype</button>
+                        <!-- <button id="loadPrototypeButtonUpload" type="button" class="btn btn-dark float-right btn-space">Load prototype</button> -->
                         <!-- <button id="getButton" type="button" class="btn btn-dark float-right btn-space">Get</button> -->
                         <button id="uploadButtonUpload" type="button" class="btn btn-dark float-right btn-space">Upload</button>
                     </div>
@@ -88,7 +91,7 @@
     <!-- Инициализация -->
     <script>addListenersForSettingButtonActiveAndUpdatingTextareaLabelGet("tablesButtonGroupGet", "textareaLabelGet", "textareaGet")</script>
     <script>addListenersForSettingButtonActiveAndUpdatingTextareaLabelUpload("tablesButtonGroupUpload", "textareaLabelUpload", "textareaUpload")</script>
-    <script>addListenerToGetPrototypeButton("loadPrototypeButtonUpload")</script>
+    <!-- <script>addListenerToGetPrototypeButton("loadPrototypeButtonUpload")</script> -->
     <script>addListenerToGetButton("getButtonGet")</script>
     <script>addListenerToUploadButton("uploadButtonUpload")</script>
     <script>initTablesButtonGroup("tablesButtonGroupGet", statesGet)</script>

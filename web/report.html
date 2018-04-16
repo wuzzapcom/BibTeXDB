@@ -5,12 +5,14 @@
     <meta charset="utf-8">
     <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge"> -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Help</title>
+    <title>Report</title>
     <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet">
     <link href="css/navbar-setup.css" rel="stylesheet">
 </head>
 
 <body>
+    <script src="js/bootstrap/popper.js"></script>
+
 
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
         <a class="navbar-brand" href="#">BibTeX</a>
@@ -23,26 +25,47 @@
                 <li class="nav-item">
                     <a class="nav-link" href="index.html">Tables</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item active">
                     <a class="nav-link" href="report.html">Report</a>
                 </li>
-                <li class="nav-item active">
+                <li class="nav-item">
                     <a class="nav-link" href="help.html">Help</a>
                 </li>
             </ul>
         </div>
     </nav>
 
-    <div class="content">
-        <h2>Help text</h2>
-        <p>Some help text lol</p>
+    <div class="container">
+        <div class="col justify-content-md-center">
+            <div class="dropdown">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="true">
+                    Table
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                    <li>
+                        <a href="#">Action</a>
+                    </li>
+                    <li>
+                        <a href="#">Another action</a>
+                    </li>
+                    <li>
+                        <a href="#">Something else here</a>
+                    </li>
+                </ul>
+            </div>
+            <button type="button" class="btn btn-dark">GET</button>
+        </div>
     </div>
 
-    <div class="alert alert-success invisible" role="alert">ALERT</div>
+
 
 
     <script src="js/bootstrap/jquery.min.js"></script>
     <script src="js/bootstrap/bootstrap.min.js"></script>
+
+    <!-- <script src="js/bootstrap/popper.js"></script> -->
 </body>
 
 </html>
