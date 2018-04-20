@@ -39,22 +39,20 @@
         <div class="col justify-content-md-center">
             <div class="container">
                 <div class="row justify-content-md-center">
-                    <div id="tablesButtonGroupGet" class="btn-group-vertical" role="group" aria-label="...">
-                        <button id="textbookButtonGet" type="button" class="btn btn-dark active">...</button>
-                        <button id="literatureButtonGet" type="button" class="btn btn-dark">...</button>
-                        <button id="literatureListButtonGet" type="button" class="btn btn-dark">...</button>
-                        <button id="courseButtonGet" type="button" class="btn btn-dark">...</button>
-                        <button id="lecturerButtonGet" type="button" class="btn btn-dark">...</button>
-                        <button id="departmentButtonGet" type="button" class="btn btn-dark">...</button>
+                    <div id="GetButtonGroup" class="btn-group-vertical" role="group" aria-label="...">
+                        <button id="TextbookInsertButtonID" type="button" class="btn btn-dark active">...</button>
+                        <button id="LiteratureInsertButtonID" type="button" class="btn btn-dark">...</button>
+                        <button id="LiteratureListInsertButtonID" type="button" class="btn btn-dark">...</button>
+                        <button id="CourseInsertButtonID" type="button" class="btn btn-dark">...</button>
+                        <button id="LecturerInsertButtonID" type="button" class="btn btn-dark">...</button>
+                        <button id="DepartmentInsertButtonID" type="button" class="btn btn-dark">...</button>
                     </div>
                     <div class="col">
                         <div class="form-group">
-                            <label id="textareaLabelGet" for="comment">Textbook</label>
-                            <textarea class="form-control" rows="13" cols="90" id="textareaGet" disabled></textarea>
+                            <label id="InputTextareaLabel" for="comment">Textbook</label>
+                            <textarea class="form-control" rows="13" cols="90" id="InputTextarea" disabled></textarea>
                         </div>
-                        <!-- <button id="loadPrototypeButton" type="button" class="btn btn-dark float-right btn-space">Load prototype</button> -->
-                        <button id="getButtonGet" type="button" class="btn btn-dark float-right btn-space">Get</button>
-                        <!-- <button id="uploadButton" type="button" class="btn btn-dark float-right btn-space">Upload</button> -->
+                        <button id="GetButton" type="button" class="btn btn-dark float-right btn-space">Get</button>
                     </div>
                 </div>
             </div>
@@ -73,8 +71,6 @@
                             <label id="textareaLabelUpload" for="comment">Textbook</label>
                             <textarea class="form-control" rows="13" cols="90" id="textareaUpload"></textarea>
                         </div>
-                        <!-- <button id="loadPrototypeButtonUpload" type="button" class="btn btn-dark float-right btn-space">Load prototype</button> -->
-                        <!-- <button id="getButton" type="button" class="btn btn-dark float-right btn-space">Get</button> -->
                         <button id="uploadButtonUpload" type="button" class="btn btn-dark float-right btn-space">Upload</button>
                     </div>
                 </div>
@@ -84,18 +80,10 @@
 
     <script src="js/bootstrap/jquery.min.js"></script>
     <script src="js/bootstrap/bootstrap.min.js"></script>
-    <script src="js/my.code.js"></script>
-    <script src="js/get_textarea.js"></script>
-    <script src="js/upload_textarea.js"></script>
+    <script src="src/main.js"></script>
 
-    <!-- Инициализация -->
-    <script>addListenersForSettingButtonActiveAndUpdatingTextareaLabelGet("tablesButtonGroupGet", "textareaLabelGet", "textareaGet")</script>
-    <script>addListenersForSettingButtonActiveAndUpdatingTextareaLabelUpload("tablesButtonGroupUpload", "textareaLabelUpload", "textareaUpload")</script>
-    <!-- <script>addListenerToGetPrototypeButton("loadPrototypeButtonUpload")</script> -->
-    <script>addListenerToGetButton("getButtonGet")</script>
-    <script>addListenerToUploadButton("uploadButtonUpload")</script>
-    <script>initTablesButtonGroup("tablesButtonGroupGet", statesGet)</script>
-    <script>initTablesButtonGroup("tablesButtonGroupUpload", statesUpload)</script>
+    <script>input.addListenersForSettingButtonActiveAndUpdatingTextareaLabelGet()</script>
+    <script>input.addListenerOnGetButton()</script>
 
 </body>
 

@@ -80,9 +80,9 @@ function addListenersForSettingButtonActiveAndUpdatingTextareaLabelUpload(btnGro
             label.textContent = this.textContent
             currentStateUpload = this.id
             getPrototypeQuery(this.id)
-            // alert("update state with " + this.id)
-            // currentSelectedState = this.id
             area.value = ""
+            if (currentStateUpload == "literatureListButtonUpload") {
+            }
         })
     }
 }
