@@ -8,7 +8,7 @@ type Literature struct {
 	Year            int
 	CourseTitle     string
 	DepartmentTitle string
-	Semester        int
+	Semester        int `json:"semester,omitempty"`
 }
 
 func (literature Literature) String() string {
@@ -23,5 +23,6 @@ func GetLiteratureExample() Literature {
 		CourseTitle:     "Компиляторы",
 		Year:            2017,
 		DepartmentTitle: "Прикладная математика и информатика",
+		Semester:        6,
 	}
 }

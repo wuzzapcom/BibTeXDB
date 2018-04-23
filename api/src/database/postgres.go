@@ -433,6 +433,7 @@ func (postgres *Postgres) SelectLiterature() ([]common.Literature, error) {
 		}
 		literature.CourseTitle = course.Title
 		literature.DepartmentTitle = course.Department
+		literature.Semester = course.Semester
 		literatures = append(literatures, *literature)
 	}
 

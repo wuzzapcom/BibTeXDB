@@ -22,5 +22,6 @@ func GetLiteratureListExample() LiteratureList {
 		Year:            2017,
 		DepartmentTitle: "Прикладная математика и информатика",
 		CourseTitle:     "Компиляторы",
+		Semester:        6,
 	}
 }
