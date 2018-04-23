@@ -12,5 +12,5 @@ func LogRequest(r http.Request) {
 
 // LogErrorResponseWriter ..
 func LogErrorResponseWriter(code int, message string) {
-	log.Printf("Return error(%d): %s\n", code, message)
+	log.Printf("Return error(%d): %s\n------------\n", code, message)
 }
