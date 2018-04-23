@@ -91,6 +91,9 @@ class Constants {
     }
 
     static saveFile(text: string) {
+        /*
+        https://aweirdimagination.net/2015/03/02/generate-and-download-file-in-typescript/
+        */
         var filename = "reports.txt";
         var filetype = "text/plain";
 
