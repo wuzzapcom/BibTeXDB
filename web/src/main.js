@@ -63,10 +63,11 @@ var Constants = /** @class */ (function () {
                 return Table.Literature;
             case "LiteratureListInsertButtonID":
                 return Table.LiteratureList;
+            default:
+                alert("Unknown id in getTableByUploadButtonID " + id);
         }
     };
     Constants.getTableByUploadButtonID = function (id) {
-        alert(id);
         switch (id) {
             case "TextbookUploadButtonID":
                 return Table.Textbook;
@@ -81,8 +82,22 @@ var Constants = /** @class */ (function () {
             case "LiteratureListUploadButtonID":
                 return Table.LiteratureList;
             default:
-                alert(id);
+                alert("Unknown id in getTableByUploadButtonID " + id);
         }
+    };
+    Constants.saveFile = function (text) {
+        var filename = "reports.txt";
+        var filetype = "text/plain";
+        var a = document.createElement("a");
+        var dataURI = "data:" + filetype +
+            ";base64," + btoa(text);
+        a.href = dataURI;
+        a['download'] = filename;
+        var e = document.createEvent("MouseEvents");
+        // Use of deprecated function to satisfy TypeScript.
+        e.initMouseEvent("click", true, false, document.defaultView, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+        a.dispatchEvent(e);
+        a.remove();
     };
     Constants.address = "http://localhost:8080/";
     return Constants;
@@ -142,10 +157,9 @@ var Input = /** @class */ (function () {
     }
     Input.prototype.addListenerOnGetButton = function () {
         var button = document.getElementById(this.getButtonID);
-        var state = Input.currentState;
         var textarea = document.getElementById(this.textareaID);
         button.onclick = function () {
-            HTTPWrapper.Get(Constants.getSelectURL(state), function (text) {
+            HTTPWrapper.Get(Constants.getSelectURL(Input.currentState), function (text) {
                 textarea.innerText = JSON.stringify(JSON.parse(text), null, 2);
             });
         };
@@ -228,11 +242,48 @@ var Output = /** @class */ (function () {
     Output.currentState = Table.Textbook;
     return Output;
 }());
-var input = new Input();
-input.initTablesButtonGroup();
-input.addListenersForSettingButtonActiveAndUpdatingTextareaLabelGet();
-input.addListenerOnGetButton();
-var output = new Output();
-output.initTablesButtonGroup();
-output.addListenerOnUploadButton();
-output.addListenersForSettingButtonActiveAndUpdatingTextareaLabelUpload();
+function initMain() {
+    var input = new Input();
+    input.initTablesButtonGroup();
+    input.addListenersForSettingButtonActiveAndUpdatingTextareaLabelGet();
+    input.addListenerOnGetButton();
+    var output = new Output();
+    output.initTablesButtonGroup();
+    output.addListenerOnUploadButton();
+    output.addListenersForSettingButtonActiveAndUpdatingTextareaLabelUpload();
+}
+var Report = /** @class */ (function () {
+    function Report() {
+        this.listID = "ll";
+    }
+    Report.prototype.createElement = function (withID, withText) {
+        var list = document.getElementById(this.listID);
+        var l = document.createElement("a");
+        var t = document.createTextNode(withText);
+        l.appendChild(t);
+        l.id = withID;
+        l.className = "list-group-item list-group-item-action";
+        var report = this;
+        l.addEventListener("click", function () {
+            console.log(report.fields[Number(this.id)].toString());
+            HTTPWrapper.Post("generateReport", report.fields[Number(this.id)].toString(), function (text) {
+                Constants.saveFile(text);
+            });
+        });
+        list.appendChild(l);
+    };
+    return Report;
+}());
+function initReport() {
+    var report = new Report();
+    HTTPWrapper.Get(Constants.getSelectURL(Table.LiteratureList), function (text) {
+        var obj = JSON.parse(text);
+        var i = 0;
+        report.fields = [];
+        obj.lists.forEach(function (elem) {
+            report.createElement(i.toString(), "Title: " + elem.CourseTitle + ", Semester: " + elem.Semester + ", Year: " + elem.Year + ", Department: " + elem.DepartmentTitle);
+            report.fields[report.fields.length] = JSON.stringify(elem);
+            i++;
+        });
+    });
+}

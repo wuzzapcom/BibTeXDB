@@ -89,6 +89,24 @@ class Constants {
                 alert("Unknown id in getTableByUploadButtonID " + id)
         }
     }
+
+    static saveFile(text: string) {
+        var filename = "reports.txt";
+        var filetype = "text/plain";
+
+        var a = document.createElement("a");
+        var dataURI = "data:" + filetype +
+            ";base64," + btoa(text);
+        a.href = dataURI;
+        a['download'] = filename;
+        var e = document.createEvent("MouseEvents");
+        // Use of deprecated function to satisfy TypeScript.
+        e.initMouseEvent("click", true, false,
+            document.defaultView, 0, 0, 0, 0, 0,
+            false, false, false, false, 0, null);
+        a.dispatchEvent(e);
+        a.remove()
+    }
 }
 
 class HTTPWrapper {
@@ -143,10 +161,9 @@ class Input {
 
     addListenerOnGetButton() {
         var button = document.getElementById(this.getButtonID)
-        var state = Input.currentState
         var textarea = document.getElementById(this.textareaID)
         button.onclick = function () {
-            HTTPWrapper.Get(Constants.getSelectURL(state), function (text: string) {
+            HTTPWrapper.Get(Constants.getSelectURL(Input.currentState), function (text: string) {
                 textarea.innerText = JSON.stringify(JSON.parse(text), null, 2)
             })
         }
@@ -231,12 +248,59 @@ class Output {
     }
 }
 
-var input = new Input()
-input.initTablesButtonGroup()
-input.addListenersForSettingButtonActiveAndUpdatingTextareaLabelGet()
-input.addListenerOnGetButton()
+function initMain() {
+    var input = new Input()
+    input.initTablesButtonGroup()
+    input.addListenersForSettingButtonActiveAndUpdatingTextareaLabelGet()
+    input.addListenerOnGetButton()
 
-var output = new Output()
-output.initTablesButtonGroup()
-output.addListenerOnUploadButton()
-output.addListenersForSettingButtonActiveAndUpdatingTextareaLabelUpload()
+    var output = new Output()
+    output.initTablesButtonGroup()
+    output.addListenerOnUploadButton()
+    output.addListenersForSettingButtonActiveAndUpdatingTextareaLabelUpload()
+}
+
+class Report {
+    listID: string = "ll"
+    fields: string[]
+
+    createElement(withID: string, withText: string) {
+        var list = document.getElementById(this.listID)
+
+        var l = document.createElement("a")
+        var t = document.createTextNode(withText)
+        l.appendChild(t)
+        l.id = withID
+        l.className = "list-group-item list-group-item-action"
+
+        var report = this
+
+        l.addEventListener("click", function () {
+            console.log(report.fields[Number(this.id)].toString())
+            HTTPWrapper.Post("generateReport", report.fields[Number(this.id)].toString(), function (text: string) {
+                Constants.saveFile(text)
+            })
+        })
+
+        list.appendChild(l)
+    }
+
+}
+
+function initReport() {
+    var report = new Report()
+
+    HTTPWrapper.Get(Constants.getSelectURL(Table.LiteratureList), function (text: string) {
+        let obj = JSON.parse(text)
+        var i: number = 0
+        report.fields = []
+
+        obj.lists.forEach(elem => {
+            report.createElement(i.toString(), `Title: ${elem.CourseTitle}, Semester: ${elem.Semester}, Year: ${elem.Year}, Department: ${elem.DepartmentTitle}`)
+            report.fields[report.fields.length] = JSON.stringify(elem)
+            i++
+        });
+    })
+}
+
+
