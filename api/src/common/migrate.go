@@ -21,6 +21,7 @@ func GetMigrateExample() Migrate {
 	return Migrate{
 		CourseTitle:     "Компиляторы",
 		DepartmentTitle: "Прикладная математика и информатика",
+		Semester:        6,
 		From:            2017,
 		To:              2018,
 	}

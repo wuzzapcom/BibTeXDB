@@ -37,6 +37,8 @@ export class Constants {
                 return "addLiterature"
             case Table.LiteratureList:
                 return "addLiteratureList"
+            case Table.Migrate:
+                return "migrateLiteratureList"
         }
     }
 
@@ -54,6 +56,8 @@ export class Constants {
                 return "getLiteraturePrototype"
             case Table.LiteratureList:
                 return "getLiteratureListPrototype"
+            case Table.Migrate:
+                return "getMigratePrototype"
         }
     }
 
@@ -90,6 +94,8 @@ export class Constants {
                 return Table.Literature
             case "LiteratureListUploadButtonID":
                 return Table.LiteratureList
+            case "MigrateUploadButtonID":
+                return Table.Migrate
             default:
                 alert("Unknown id in getTableByUploadButtonID " + id)
         }
@@ -142,6 +148,7 @@ enum Table {
     Course = "Course",
     Lecturer = "Lecturer",
     Department = "Department",
+    Migrate = "Migrate",
 }
 
 class Input {
@@ -222,6 +229,9 @@ class Output {
                 label.textContent = this.textContent
                 Output.currentState = Constants.getTableByUploadButtonID(this.id)
                 area.value = ""
+                if (Output.currentState == Table.Textbook) {
+                    return
+                }
                 HTTPWrapper.Get(Constants.getPrototypeURL(Output.currentState), function (text: string) {
                     area.value = JSON.stringify(JSON.parse(text), null, 2)
                 })
@@ -237,6 +247,7 @@ class Output {
         document.getElementById(Table.Literature + end).textContent = Table.Literature
         document.getElementById(Table.LiteratureList + end).textContent = Table.LiteratureList
         document.getElementById(Table.Lecturer + end).textContent = Table.Lecturer
+        document.getElementById(Table.Migrate + end).textContent = Table.Migrate
     }
 }
 

@@ -563,6 +563,18 @@ func getCourses(w http.ResponseWriter) {
 
 }
 
+func getMigratePrototype(w http.ResponseWriter) {
+
+	data, err := json.Marshal(common.GetMigrateExample())
+	if err != nil {
+		logError(err)
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
+		return
+	}
+
+	writeAnswer(w, 200, data)
+}
+
 func migrateLiteratureListCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, error) {
 	body := r.Body
 	answer, err := ioutil.ReadAll(body)

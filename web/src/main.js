@@ -35,6 +35,8 @@ var Constants = /** @class */ (function () {
                 return "addLiterature";
             case Table.LiteratureList:
                 return "addLiteratureList";
+            case Table.Migrate:
+                return "migrateLiteratureList";
         }
     };
     Constants.getPrototypeURL = function (forTable) {
@@ -51,6 +53,8 @@ var Constants = /** @class */ (function () {
                 return "getLiteraturePrototype";
             case Table.LiteratureList:
                 return "getLiteratureListPrototype";
+            case Table.Migrate:
+                return "getMigratePrototype";
         }
     };
     Constants.getTableByInsertButtonID = function (id) {
@@ -85,6 +89,8 @@ var Constants = /** @class */ (function () {
                 return Table.Literature;
             case "LiteratureListUploadButtonID":
                 return Table.LiteratureList;
+            case "MigrateUploadButtonID":
+                return Table.Migrate;
             default:
                 alert("Unknown id in getTableByUploadButtonID " + id);
         }
@@ -143,6 +149,7 @@ var Table;
     Table["Course"] = "Course";
     Table["Lecturer"] = "Lecturer";
     Table["Department"] = "Department";
+    Table["Migrate"] = "Migrate";
 })(Table || (Table = {}));
 var Input = /** @class */ (function () {
     function Input() {
@@ -220,6 +227,9 @@ var Output = /** @class */ (function () {
                 label.textContent = this.textContent;
                 Output.currentState = Constants.getTableByUploadButtonID(this.id);
                 area.value = "";
+                if (Output.currentState == Table.Textbook) {
+                    return;
+                }
                 HTTPWrapper.Get(Constants.getPrototypeURL(Output.currentState), function (text) {
                     area.value = JSON.stringify(JSON.parse(text), null, 2);
                 });
@@ -234,6 +244,7 @@ var Output = /** @class */ (function () {
         document.getElementById(Table.Literature + end).textContent = Table.Literature;
         document.getElementById(Table.LiteratureList + end).textContent = Table.LiteratureList;
         document.getElementById(Table.Lecturer + end).textContent = Table.Lecturer;
+        document.getElementById(Table.Migrate + end).textContent = Table.Migrate;
     };
     Output.currentState = Table.Textbook;
     return Output;

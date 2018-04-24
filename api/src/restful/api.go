@@ -158,6 +158,12 @@ func getCoursesHandler(w http.ResponseWriter, r *http.Request) {
 	getCourses(w)
 }
 
+func getMigratePrototypeHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
+	getMigratePrototype(w)
+}
+
 func migrateLiteratureListHandler(w http.ResponseWriter, r *http.Request) {
 	common.LogRequest(*r)
 	addHeaders(w)
@@ -225,6 +231,7 @@ func Run(f fetchers.GoogleFetcher) {
 	http.HandleFunc("/addLiterature", addLiteratureHandler)
 	http.HandleFunc("/getLiterature", getLiteratureHandler)
 
+	http.HandleFunc("/getMigratePrototype", getMigratePrototypeHandler)
 	http.HandleFunc("/migrateLiteratureList", migrateLiteratureListHandler)
 	http.HandleFunc("/generateReport", generateBibTexHandler)
 
