@@ -156,7 +156,7 @@ var Input = /** @class */ (function () {
         var textarea = document.getElementById(this.textareaID);
         button.onclick = function () {
             HTTPWrapper.Get(Constants.getSelectURL(Input.currentState), function (text) {
-                textarea.innerText = JSON.stringify(JSON.parse(text), null, 2);
+                textarea.value = JSON.stringify(JSON.parse(text), null, 2);
             });
         };
     };
@@ -173,7 +173,7 @@ var Input = /** @class */ (function () {
                 this.className += " active";
                 label.textContent = this.textContent;
                 Input.currentState = Constants.getTableByInsertButtonID(this.id);
-                area.innerText = "";
+                area.value = "";
             });
         }
     };
@@ -198,10 +198,10 @@ var Output = /** @class */ (function () {
     }
     Output.prototype.addListenerOnUploadButton = function () {
         var button = document.getElementById(this.uploadButtonID);
-        var state = Input.currentState;
         var textarea = document.getElementById(this.textareaID);
         button.onclick = function () {
-            HTTPWrapper.Post(Constants.getUploadURL(state), textarea.textContent, function (text) {
+            console.log("uploadButton: " + textarea.value);
+            HTTPWrapper.Post(Constants.getUploadURL(Output.currentState), textarea.value, function (text) {
                 alert(text);
             });
         };
@@ -219,9 +219,9 @@ var Output = /** @class */ (function () {
                 this.className += " active";
                 label.textContent = this.textContent;
                 Output.currentState = Constants.getTableByUploadButtonID(this.id);
-                area.innerText = "";
+                area.value = "";
                 HTTPWrapper.Get(Constants.getPrototypeURL(Output.currentState), function (text) {
-                    area.innerText = JSON.stringify(JSON.parse(text), null, 2);
+                    area.value = JSON.stringify(JSON.parse(text), null, 2);
                 });
             });
         }

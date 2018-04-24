@@ -153,10 +153,10 @@ class Input {
 
     addListenerOnGetButton() {
         var button = document.getElementById(this.getButtonID)
-        var textarea = document.getElementById(this.textareaID)
+        var textarea = <HTMLTextAreaElement>document.getElementById(this.textareaID)
         button.onclick = function () {
             HTTPWrapper.Get(Constants.getSelectURL(Input.currentState), function (text: string) {
-                textarea.innerText = JSON.stringify(JSON.parse(text), null, 2)
+                textarea.value = JSON.stringify(JSON.parse(text), null, 2)
             })
         }
     }
@@ -165,7 +165,7 @@ class Input {
         var buttonGroup = document.getElementById(this.buttonGroupID)
         var buttons = buttonGroup.getElementsByClassName("btn")
         var label = document.getElementById(this.textareaLabelID)
-        var area = document.getElementById(this.textareaID)
+        var area = <HTMLTextAreaElement>document.getElementById(this.textareaID)
         for (var i = 0; i < buttons.length; i++) {
             buttons[i].addEventListener("click", function () {
                 for (var i = 0; i < buttons.length; i++) {
@@ -174,7 +174,7 @@ class Input {
                 this.className += " active"
                 label.textContent = this.textContent
                 Input.currentState = Constants.getTableByInsertButtonID(this.id)
-                area.innerText = ""
+                area.value = ""
             })
         }
     }
@@ -199,10 +199,10 @@ class Output {
 
     addListenerOnUploadButton() {
         var button = document.getElementById(this.uploadButtonID)
-        var state = Input.currentState
-        var textarea = document.getElementById(this.textareaID)
+        var textarea = <HTMLTextAreaElement>document.getElementById(this.textareaID)
         button.onclick = function () {
-            HTTPWrapper.Post(Constants.getUploadURL(state), textarea.textContent, function (text: string) {
+            console.log("uploadButton: " + textarea.value)
+            HTTPWrapper.Post(Constants.getUploadURL(Output.currentState), textarea.value, function (text: string) {
                 alert(text)
             })
         }
@@ -212,7 +212,7 @@ class Output {
         var buttonGroup = document.getElementById(this.buttonGroupID)
         var buttons = buttonGroup.getElementsByClassName("btn")
         var label = document.getElementById(this.textareaLabelID)
-        var area = document.getElementById(this.textareaID)
+        var area = <HTMLTextAreaElement>document.getElementById(this.textareaID)
         for (var i = 0; i < buttons.length; i++) {
             buttons[i].addEventListener("click", function () {
                 for (var i = 0; i < buttons.length; i++) {
@@ -221,9 +221,9 @@ class Output {
                 this.className += " active"
                 label.textContent = this.textContent
                 Output.currentState = Constants.getTableByUploadButtonID(this.id)
-                area.innerText = ""
+                area.value = ""
                 HTTPWrapper.Get(Constants.getPrototypeURL(Output.currentState), function (text: string) {
-                    area.innerText = JSON.stringify(JSON.parse(text), null, 2)
+                    area.value = JSON.stringify(JSON.parse(text), null, 2)
                 })
             })
         }
