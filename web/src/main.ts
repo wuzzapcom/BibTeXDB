@@ -4,6 +4,7 @@ import * as FileSaver from "./dist/node_modules/file-saver/FileSaver"
 
 export class Constants {
     static address: string = "http://localhost:8080/"
+    static searchURL: string = "search?request="
 
     static getSelectURL(forTable: Table) {
         switch (forTable) {
@@ -239,6 +240,26 @@ class Output {
     }
 }
 
+class Search {
+
+    static searchLabelID: string = "SearchLabel"
+    static requestInputID: string = "RequestInput"
+    static submitButtonID: string = "SubmitButton"
+    static searchTextareaID: string = "SearchTextarea"
+
+    addHandlerOnSubmitButton() {
+        var submit = document.getElementById(Search.submitButtonID)
+        submit.addEventListener("click", function () {
+            var req = <HTMLInputElement>document.getElementById(Search.requestInputID)
+            var textarea = document.getElementById(Search.searchTextareaID)
+            textarea.innerText = req.value
+            HTTPWrapper.Get(Constants.searchURL + encodeURIComponent(req.value), function (text: string) {
+                textarea.innerText = JSON.stringify(JSON.parse(text), null, 2)
+            })
+        })
+    }
+}
+
 function initMain() {
     var input = new Input()
     input.initTablesButtonGroup()
@@ -249,6 +270,9 @@ function initMain() {
     output.initTablesButtonGroup()
     output.addListenerOnUploadButton()
     output.addListenersForSettingButtonActiveAndUpdatingTextareaLabelUpload()
+
+    var search = new Search()
+    search.addHandlerOnSubmitButton()
 }
 
 class Report {

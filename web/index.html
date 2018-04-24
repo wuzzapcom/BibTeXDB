@@ -75,9 +75,22 @@
                 </div>
             </div>
         </div>
+        <div class="row justify-content-md-center">
+            <form>
+                <div class="form-group">
+                    <label for="SearchLabel">Search request</label>
+                    <input type="text" class="form-control" id="RequestInput" aria-describedby="Request" placeholder="Enter request">
+                    <small id="emailHelp" class="form-text text-muted">Enter your request, find books and send them via Textbook upload</small>
+                </div>
+                <button id="SubmitButton" type="button" class="btn btn-primary btn-dark">Submit</button>
+            </form>
+            <div class="form-group">
+                <label id="SearchTextareaLabel" for="comment">Search</label>
+                <textarea class="form-control" rows="13" cols="82" id="SearchTextarea" disabled></textarea>
+            </div>
+        </div>
     </div>
 
-    <!-- <script> var exports = {}; </script> -->
     <script src="src/dist/node_modules/jquery/dist/jquery.min.js"></script>
     <script src="src/dist/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="src/dist/bundle.js"></script>

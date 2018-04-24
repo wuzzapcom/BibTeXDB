@@ -90,27 +90,11 @@ var Constants = /** @class */ (function () {
         }
     };
     Constants.saveFile = function (text) {
-        // /*
-        // https://aweirdimagination.net/2015/03/02/generate-and-download-file-in-typescript/
-        // */
-        // var filename = "reports.txt";
-        // var filetype = "text/plain";
-        // var a = document.createElement("a");
-        // var dataURI = "data:" + filetype +
-        //     ";base64," + btoa(text);
-        // a.href = dataURI;
-        // a['download'] = filename;
-        // var e = document.createEvent("MouseEvents");
-        // // Use of deprecated function to satisfy TypeScript.
-        // e.initMouseEvent("click", true, false,
-        //     document.defaultView, 0, 0, 0, 0, 0,
-        //     false, false, false, false, 0, null);
-        // a.dispatchEvent(e);
-        // a.remove()
-        var file = new File([text], "hello world.txt", { type: "text/plain;charset=utf-8" });
+        var file = new File([text], "report.txt", { type: "text/plain;charset=utf-8" });
         FileSaver.saveAs(file);
     };
     Constants.address = "http://localhost:8080/";
+    Constants.searchURL = "search?request=";
     return Constants;
 }());
 exports.Constants = Constants;
@@ -254,6 +238,26 @@ var Output = /** @class */ (function () {
     Output.currentState = Table.Textbook;
     return Output;
 }());
+var Search = /** @class */ (function () {
+    function Search() {
+    }
+    Search.prototype.addHandlerOnSubmitButton = function () {
+        var submit = document.getElementById(Search.submitButtonID);
+        submit.addEventListener("click", function () {
+            var req = document.getElementById(Search.requestInputID);
+            var textarea = document.getElementById(Search.searchTextareaID);
+            textarea.innerText = req.value;
+            HTTPWrapper.Get(Constants.searchURL + encodeURIComponent(req.value), function (text) {
+                textarea.innerText = JSON.stringify(JSON.parse(text), null, 2);
+            });
+        });
+    };
+    Search.searchLabelID = "SearchLabel";
+    Search.requestInputID = "RequestInput";
+    Search.submitButtonID = "SubmitButton";
+    Search.searchTextareaID = "SearchTextarea";
+    return Search;
+}());
 function initMain() {
     var input = new Input();
     input.initTablesButtonGroup();
@@ -263,6 +267,8 @@ function initMain() {
     output.initTablesButtonGroup();
     output.addListenerOnUploadButton();
     output.addListenersForSettingButtonActiveAndUpdatingTextareaLabelUpload();
+    var search = new Search();
+    search.addHandlerOnSubmitButton();
 }
 var Report = /** @class */ (function () {
     function Report() {
