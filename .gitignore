@@ -4,3 +4,4 @@ pkg
 *.tokens
 .idea/
 bin/
+dist/

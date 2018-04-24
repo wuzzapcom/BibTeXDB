@@ -1,3 +1,7 @@
+"use strict";
+exports.__esModule = true;
+var FileSaver = require("./dist/node_modules/file-saver/FileSaver");
+// var fileSaver = require('file-saver')
 var Constants = /** @class */ (function () {
     function Constants() {
     }
@@ -86,22 +90,30 @@ var Constants = /** @class */ (function () {
         }
     };
     Constants.saveFile = function (text) {
-        var filename = "reports.txt";
-        var filetype = "text/plain";
-        var a = document.createElement("a");
-        var dataURI = "data:" + filetype +
-            ";base64," + btoa(text);
-        a.href = dataURI;
-        a['download'] = filename;
-        var e = document.createEvent("MouseEvents");
-        // Use of deprecated function to satisfy TypeScript.
-        e.initMouseEvent("click", true, false, document.defaultView, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-        a.dispatchEvent(e);
-        a.remove();
+        // /*
+        // https://aweirdimagination.net/2015/03/02/generate-and-download-file-in-typescript/
+        // */
+        // var filename = "reports.txt";
+        // var filetype = "text/plain";
+        // var a = document.createElement("a");
+        // var dataURI = "data:" + filetype +
+        //     ";base64," + btoa(text);
+        // a.href = dataURI;
+        // a['download'] = filename;
+        // var e = document.createEvent("MouseEvents");
+        // // Use of deprecated function to satisfy TypeScript.
+        // e.initMouseEvent("click", true, false,
+        //     document.defaultView, 0, 0, 0, 0, 0,
+        //     false, false, false, false, 0, null);
+        // a.dispatchEvent(e);
+        // a.remove()
+        var file = new File([text], "hello world.txt", { type: "text/plain;charset=utf-8" });
+        FileSaver.saveAs(file);
     };
     Constants.address = "http://localhost:8080/";
     return Constants;
 }());
+exports.Constants = Constants;
 var HTTPWrapper = /** @class */ (function () {
     function HTTPWrapper() {
     }
@@ -287,3 +299,12 @@ function initReport() {
         });
     });
 }
+/*
+    Костыль, который позволяет вызывать методы из HTML. Как сделать лучше -- неизвестно.
+*/
+window['initMain'] = function () {
+    initMain();
+};
+window['initReport'] = function () {
+    initReport();
+};

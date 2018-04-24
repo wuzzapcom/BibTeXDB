@@ -6,12 +6,12 @@
     <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge"> -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Report</title>
-    <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="src/dist/node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/navbar-setup.css" rel="stylesheet">
 </head>
 
 <body>
-    <script src="js/bootstrap/popper.js"></script>
+    <script src="src/dist/node_modules/popper.js/dist/popper.min.js"></script>
 
 
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
@@ -39,11 +39,11 @@
     </div>
 
 
-    <script src="js/bootstrap/jquery.min.js"></script>
-    <script src="js/bootstrap/bootstrap.min.js"></script>
-    <script src="src/main.js"></script>
+    <script src="src/dist/node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="src/dist/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="src/dist/bundle.js"></script>
 
-    <script>initReport()</script>
+    <script>window['initReport']()</script>
 
 </body>
 

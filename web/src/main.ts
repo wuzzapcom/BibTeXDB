@@ -1,4 +1,8 @@
-class Constants {
+import * as FileSaver from "./dist/node_modules/file-saver/FileSaver"
+
+// var fileSaver = require('file-saver')
+
+export class Constants {
     static address: string = "http://localhost:8080/"
 
     static getSelectURL(forTable: Table) {
@@ -91,24 +95,26 @@ class Constants {
     }
 
     static saveFile(text: string) {
-        /*
-        https://aweirdimagination.net/2015/03/02/generate-and-download-file-in-typescript/
-        */
-        var filename = "reports.txt";
-        var filetype = "text/plain";
+        // /*
+        // https://aweirdimagination.net/2015/03/02/generate-and-download-file-in-typescript/
+        // */
+        // var filename = "reports.txt";
+        // var filetype = "text/plain";
 
-        var a = document.createElement("a");
-        var dataURI = "data:" + filetype +
-            ";base64," + btoa(text);
-        a.href = dataURI;
-        a['download'] = filename;
-        var e = document.createEvent("MouseEvents");
-        // Use of deprecated function to satisfy TypeScript.
-        e.initMouseEvent("click", true, false,
-            document.defaultView, 0, 0, 0, 0, 0,
-            false, false, false, false, 0, null);
-        a.dispatchEvent(e);
-        a.remove()
+        // var a = document.createElement("a");
+        // var dataURI = "data:" + filetype +
+        //     ";base64," + btoa(text);
+        // a.href = dataURI;
+        // a['download'] = filename;
+        // var e = document.createEvent("MouseEvents");
+        // // Use of deprecated function to satisfy TypeScript.
+        // e.initMouseEvent("click", true, false,
+        //     document.defaultView, 0, 0, 0, 0, 0,
+        //     false, false, false, false, 0, null);
+        // a.dispatchEvent(e);
+        // a.remove()
+        var file = new File([text], "hello world.txt", { type: "text/plain;charset=utf-8" });
+        FileSaver.saveAs(file)
     }
 }
 
@@ -306,4 +312,13 @@ function initReport() {
     })
 }
 
+/*
+    Костыль, который позволяет вызывать методы из HTML. Как сделать лучше -- неизвестно.
+*/
+window['initMain'] = function () {
+    initMain()
+}
 
+window['initReport'] = function () {
+    initReport()
+}
