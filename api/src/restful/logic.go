@@ -102,6 +102,37 @@ func addBook(w http.ResponseWriter, body []byte) {
 
 }
 
+func deleteBook(w http.ResponseWriter, body []byte) {
+	var addingBook common.Item
+
+	err := json.Unmarshal(body, &addingBook)
+	if err != nil {
+		logError(err)
+		returnError(w, 400, common.ErrorMessages[common.WrongJSONInputError])
+		return
+	}
+
+	postgres := database.Postgres{}
+	postgres.Connect()
+	defer postgres.Disconnect()
+
+	err = postgres.DeleteTextbook(addingBook.Ident)
+	if err != nil {
+		logError(err)
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
+		return
+	}
+
+	answer, err := json.Marshal(Success{"OK"})
+	if err != nil {
+		logError(err)
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
+		return
+	}
+
+	writeAnswer(w, 200, answer)
+}
+
 func getBooks(w http.ResponseWriter) {
 	postgres := &database.Postgres{}
 
@@ -137,6 +168,105 @@ func getCoursePrototype(w http.ResponseWriter) {
 
 	writeAnswer(w, 200, data)
 
+}
+
+func addCourseCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, error) {
+	body := r.Body
+	answer, err := ioutil.ReadAll(body)
+	if err != nil {
+		logError(err)
+		returnError(w, 400, common.ErrorMessages[common.NoJSONProvidedError])
+		return nil, err
+	}
+	return answer, nil
+}
+
+func addCourse(w http.ResponseWriter, data []byte) {
+	var course common.Course
+
+	err := json.Unmarshal(data, &course)
+	if err != nil {
+		logError(err)
+		returnError(w, 400, common.ErrorMessages[common.WrongJSONInputError])
+		return
+	}
+
+	postgres := database.Postgres{}
+	postgres.Connect()
+	defer postgres.Disconnect()
+
+	err = postgres.InsertCourse(course)
+	if err != nil {
+		logError(err)
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
+		return
+	}
+
+	answer, err := json.Marshal(Success{"OK"})
+	if err != nil {
+		logError(err)
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
+		return
+	}
+
+	writeAnswer(w, 200, answer)
+
+}
+
+func getCourses(w http.ResponseWriter) {
+
+	postgres := &database.Postgres{}
+
+	postgres.Connect()
+	defer postgres.Disconnect()
+
+	courses, err := postgres.SelectCourses()
+	if err != nil {
+		logError(err)
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
+		return
+	}
+
+	data, err := json.Marshal(Courses{courses})
+	if err != nil {
+		logError(err)
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
+		return
+	}
+
+	writeAnswer(w, 200, data)
+
+}
+
+func deleteCourse(w http.ResponseWriter, data []byte) {
+	var course common.Course
+
+	err := json.Unmarshal(data, &course)
+	if err != nil {
+		logError(err)
+		returnError(w, 400, common.ErrorMessages[common.WrongJSONInputError])
+		return
+	}
+
+	postgres := database.Postgres{}
+	postgres.Connect()
+	defer postgres.Disconnect()
+
+	err = postgres.DeleteCourse(course.Title, course.Department, course.Semester)
+	if err != nil {
+		logError(err)
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
+		return
+	}
+
+	answer, err := json.Marshal(Success{"OK"})
+	if err != nil {
+		logError(err)
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
+		return
+	}
+
+	writeAnswer(w, 200, answer)
 }
 
 func getDepartmentPrototype(w http.ResponseWriter) {
@@ -215,6 +345,38 @@ func getDepartments(w http.ResponseWriter) {
 	}
 
 	writeAnswer(w, 200, data)
+
+}
+
+func deleteDepartment(w http.ResponseWriter, data []byte) {
+	var department common.Department
+
+	err := json.Unmarshal(data, &department)
+	if err != nil {
+		logError(err)
+		returnError(w, 400, common.ErrorMessages[common.WrongJSONInputError])
+		return
+	}
+
+	postgres := database.Postgres{}
+	postgres.Connect()
+	defer postgres.Disconnect()
+
+	err = postgres.DeleteDepartment(department.Title)
+	if err != nil {
+		logError(err)
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
+		return
+	}
+
+	answer, err := json.Marshal(Success{"OK"})
+	if err != nil {
+		logError(err)
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
+		return
+	}
+
+	writeAnswer(w, 200, answer)
 
 }
 
@@ -297,6 +459,38 @@ func getLecturers(w http.ResponseWriter) {
 
 }
 
+func deleteLecturer(w http.ResponseWriter, data []byte) {
+	var lecturer common.Lecturer
+
+	err := json.Unmarshal(data, &lecturer)
+	if err != nil {
+		logError(err)
+		returnError(w, 400, common.ErrorMessages[common.WrongJSONInputError])
+		return
+	}
+
+	postgres := database.Postgres{}
+	postgres.Connect()
+	defer postgres.Disconnect()
+
+	err = postgres.DeleteLecturer(lecturer.Name, lecturer.DateOfBirth.Time)
+	if err != nil {
+		logError(err)
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
+		return
+	}
+
+	answer, err := json.Marshal(Success{"OK"})
+	if err != nil {
+		logError(err)
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
+		return
+	}
+
+	writeAnswer(w, 200, answer)
+
+}
+
 func getLiteratureListPrototype(w http.ResponseWriter) {
 
 	data, err := json.Marshal(common.GetLiteratureListExample())
@@ -373,6 +567,38 @@ func getLiteratureLists(w http.ResponseWriter) {
 	}
 
 	writeAnswer(w, 200, data)
+
+}
+
+func deleteLiteratureList(w http.ResponseWriter, data []byte) {
+	var literatureList common.LiteratureList
+
+	err := json.Unmarshal(data, &literatureList)
+	if err != nil {
+		logError(err)
+		returnError(w, 400, common.ErrorMessages[common.WrongJSONInputError])
+		return
+	}
+
+	postgres := database.Postgres{}
+	postgres.Connect()
+	defer postgres.Disconnect()
+
+	err = postgres.DeleteLiteratureList(literatureList)
+	if err != nil {
+		logError(err)
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
+		return
+	}
+
+	answer, err := json.Marshal(Success{"OK"})
+	if err != nil {
+		logError(err)
+		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
+		return
+	}
+
+	writeAnswer(w, 200, answer)
 
 }
 
@@ -495,21 +721,10 @@ func getLiterature(request []byte, w http.ResponseWriter) {
 	}
 }
 
-func addCourseCheckInput(w http.ResponseWriter, r *http.Request) ([]byte, error) {
-	body := r.Body
-	answer, err := ioutil.ReadAll(body)
-	if err != nil {
-		logError(err)
-		returnError(w, 400, common.ErrorMessages[common.NoJSONProvidedError])
-		return nil, err
-	}
-	return answer, nil
-}
+func deleteLiterature(w http.ResponseWriter, data []byte) {
+	var literature common.Literature
 
-func addCourse(w http.ResponseWriter, data []byte) {
-	var course common.Course
-
-	err := json.Unmarshal(data, &course)
+	err := json.Unmarshal(data, &literature)
 	if err != nil {
 		logError(err)
 		returnError(w, 400, common.ErrorMessages[common.WrongJSONInputError])
@@ -520,7 +735,7 @@ func addCourse(w http.ResponseWriter, data []byte) {
 	postgres.Connect()
 	defer postgres.Disconnect()
 
-	err = postgres.InsertCourse(course)
+	err = postgres.DeleteLiterature(literature)
 	if err != nil {
 		logError(err)
 		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
@@ -535,32 +750,6 @@ func addCourse(w http.ResponseWriter, data []byte) {
 	}
 
 	writeAnswer(w, 200, answer)
-
-}
-
-func getCourses(w http.ResponseWriter) {
-
-	postgres := &database.Postgres{}
-
-	postgres.Connect()
-	defer postgres.Disconnect()
-
-	courses, err := postgres.SelectCourses()
-	if err != nil {
-		logError(err)
-		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
-		return
-	}
-
-	data, err := json.Marshal(Courses{courses})
-	if err != nil {
-		logError(err)
-		returnError(w, 500, common.ErrorMessages[common.InternalServerError])
-		return
-	}
-
-	writeAnswer(w, 200, data)
-
 }
 
 func getMigratePrototype(w http.ResponseWriter) {

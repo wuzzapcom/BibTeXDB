@@ -39,6 +39,25 @@ var Constants = /** @class */ (function () {
                 return "migrateLiteratureList";
         }
     };
+    Constants.getDeleteURL = function (forTable) {
+        switch (forTable) {
+            case Table.Textbook:
+                return "deleteBook";
+            case Table.Course:
+                return "deleteCourse";
+            case Table.Department:
+                return "deleteDepartment";
+            case Table.Lecturer:
+                return "deleteLecturer";
+            case Table.Literature:
+                return "deleteLiterature";
+            case Table.LiteratureList:
+                return "deleteLiteratureList";
+            default:
+                alert("NOT FOUND");
+                break;
+        }
+    };
     Constants.getPrototypeURL = function (forTable) {
         switch (forTable) {
             case Table.Textbook:
@@ -201,14 +220,23 @@ var Output = /** @class */ (function () {
         this.textareaLabelID = "OutputTextareaLabel";
         this.textareaID = "OutputTextarea";
         this.uploadButtonID = "OutputButton";
+        this.deleteButtonID = "DeleteOutputButton";
         this.buttonGroupID = "OutputButtonGroup";
     }
     Output.prototype.addListenerOnUploadButton = function () {
         var button = document.getElementById(this.uploadButtonID);
         var textarea = document.getElementById(this.textareaID);
         button.onclick = function () {
-            console.log("uploadButton: " + textarea.value);
             HTTPWrapper.Post(Constants.getUploadURL(Output.currentState), textarea.value, function (text) {
+                alert(text);
+            });
+        };
+    };
+    Output.prototype.addListenerOnDeleteButton = function () {
+        var button = document.getElementById(this.deleteButtonID);
+        var textarea = document.getElementById(this.textareaID);
+        button.onclick = function () {
+            HTTPWrapper.Post(Constants.getDeleteURL(Output.currentState), textarea.value, function (text) {
                 alert(text);
             });
         };
@@ -278,6 +306,7 @@ function initMain() {
     output.initTablesButtonGroup();
     output.addListenerOnUploadButton();
     output.addListenersForSettingButtonActiveAndUpdatingTextareaLabelUpload();
+    output.addListenerOnDeleteButton();
     var search = new Search();
     search.addHandlerOnSubmitButton();
 }

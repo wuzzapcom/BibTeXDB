@@ -15,7 +15,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	addHeaders(w)
 	parameters, err := searchCheckInput(w, r)
 	if err != nil {
-		fmt.Printf("FATAL: %+v\n", err)
+		logError(err)
 		return
 	}
 	search(w, parameters)
@@ -26,7 +26,7 @@ func addBookHandler(w http.ResponseWriter, r *http.Request) {
 	addHeaders(w)
 	body, err := addBookCheckInput(w, r)
 	if err != nil {
-		fmt.Printf("FATAL: %+v\n", err)
+		logError(err)
 		return
 	}
 	addBook(w, body)
@@ -38,10 +38,49 @@ func getBooksHandler(w http.ResponseWriter, r *http.Request) {
 	getBooks(w)
 }
 
+func deleteBookHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
+	body, err := addBookCheckInput(w, r)
+	if err != nil {
+		logError(err)
+		return
+	}
+	deleteBook(w, body)
+}
+
 func getCoursePrototypeHandler(w http.ResponseWriter, r *http.Request) {
 	common.LogRequest(*r)
 	addHeaders(w)
 	getCoursePrototype(w)
+}
+
+func addCourseHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
+	body, err := addCourseCheckInput(w, r)
+	if err != nil {
+		logError(err)
+		return
+	}
+	addCourse(w, body)
+}
+
+func getCoursesHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
+	getCourses(w)
+}
+
+func deleteCourseHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
+	body, err := addCourseCheckInput(w, r)
+	if err != nil {
+		logError(err)
+		return
+	}
+	deleteCourse(w, body)
 }
 
 func getDepartmentPrototypeHandler(w http.ResponseWriter, r *http.Request) {
@@ -67,6 +106,17 @@ func getDepartmentsHandler(w http.ResponseWriter, r *http.Request) {
 	getDepartments(w)
 }
 
+func deleteDepartmentHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
+	body, err := addDepartmentCheckInput(w, r)
+	if err != nil {
+		logError(err)
+		return
+	}
+	deleteDepartment(w, body)
+}
+
 func getLecturerPrototypeHandler(w http.ResponseWriter, r *http.Request) {
 	common.LogRequest(*r)
 	addHeaders(w)
@@ -90,6 +140,17 @@ func getLecturersHandler(w http.ResponseWriter, r *http.Request) {
 	getLecturers(w)
 }
 
+func deleteLecturerHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
+	body, err := addLecturerCheckInput(w, r)
+	if err != nil {
+		logError(err)
+		return
+	}
+	deleteLecturer(w, body)
+}
+
 func getLiteratureListPrototypeHandler(w http.ResponseWriter, r *http.Request) {
 	common.LogRequest(*r)
 	addHeaders(w)
@@ -111,6 +172,17 @@ func getLiteratureListsHandler(w http.ResponseWriter, r *http.Request) {
 	common.LogRequest(*r)
 	addHeaders(w)
 	getLiteratureLists(w)
+}
+
+func deleteLiteratureListHandler(w http.ResponseWriter, r *http.Request) {
+	common.LogRequest(*r)
+	addHeaders(w)
+	body, err := addLiteratureListCheckInput(w, r)
+	if err != nil {
+		logError(err)
+		return
+	}
+	deleteLiteratureList(w, body)
 }
 
 func addLiteratureHandler(w http.ResponseWriter, r *http.Request) {
@@ -141,21 +213,15 @@ func getLiteratureHandler(w http.ResponseWriter, r *http.Request) {
 	getLiterature(request, w)
 }
 
-func addCourseHandler(w http.ResponseWriter, r *http.Request) {
+func deleteLiteratureHandler(w http.ResponseWriter, r *http.Request) {
 	common.LogRequest(*r)
 	addHeaders(w)
-	body, err := addCourseCheckInput(w, r)
+	body, err := addLiteratureCheckInput(w, r)
 	if err != nil {
-		fmt.Printf("FATAL: %+v\n", err)
+		logError(err)
 		return
 	}
-	addCourse(w, body)
-}
-
-func getCoursesHandler(w http.ResponseWriter, r *http.Request) {
-	common.LogRequest(*r)
-	addHeaders(w)
-	getCourses(w)
+	deleteLiterature(w, body)
 }
 
 func getMigratePrototypeHandler(w http.ResponseWriter, r *http.Request) {
@@ -210,26 +276,32 @@ func Run(f fetchers.GoogleFetcher) {
 	http.HandleFunc("/search", searchHandler)
 	http.HandleFunc("/addBook", addBookHandler)
 	http.HandleFunc("/getBooks", getBooksHandler)
+	http.HandleFunc("/deleteBook", deleteBookHandler)
 
 	http.HandleFunc("/getCoursePrototype", getCoursePrototypeHandler)
 	http.HandleFunc("/addCourse", addCourseHandler)
 	http.HandleFunc("/getCourses", getCoursesHandler)
+	http.HandleFunc("/deleteCourse", deleteCourseHandler)
 
 	http.HandleFunc("/getDepartmentPrototype", getDepartmentPrototypeHandler)
 	http.HandleFunc("/addDepartment", addDepartmentHandler)
 	http.HandleFunc("/getDepartments", getDepartmentsHandler)
+	http.HandleFunc("/deleteDepartment", deleteDepartmentHandler)
 
 	http.HandleFunc("/getLecturerPrototype", getLecturerPrototypeHandler)
 	http.HandleFunc("/addLecturer", addLecturerHandler)
 	http.HandleFunc("/getLecturers", getLecturersHandler)
+	http.HandleFunc("/deleteLecturer", deleteLecturerHandler)
 
 	http.HandleFunc("/getLiteratureListPrototype", getLiteratureListPrototypeHandler)
 	http.HandleFunc("/addLiteratureList", addLiteratureListHandler)
 	http.HandleFunc("/getLiteratureLists", getLiteratureListsHandler)
+	http.HandleFunc("/deleteLiteratureList", deleteLiteratureListHandler)
 
 	http.HandleFunc("/getLiteraturePrototype", getLiteraturePrototypeHandler)
 	http.HandleFunc("/addLiterature", addLiteratureHandler)
 	http.HandleFunc("/getLiterature", getLiteratureHandler)
+	http.HandleFunc("/deleteLiterature", deleteLiteratureHandler)
 
 	http.HandleFunc("/getMigratePrototype", getMigratePrototypeHandler)
 	http.HandleFunc("/migrateLiteratureList", migrateLiteratureListHandler)

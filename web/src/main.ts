@@ -42,6 +42,26 @@ export class Constants {
         }
     }
 
+    static getDeleteURL(forTable: Table) {
+        switch (forTable) {
+            case Table.Textbook:
+                return "deleteBook"
+            case Table.Course:
+                return "deleteCourse"
+            case Table.Department:
+                return "deleteDepartment"
+            case Table.Lecturer:
+                return "deleteLecturer"
+            case Table.Literature:
+                return "deleteLiterature"
+            case Table.LiteratureList:
+                return "deleteLiteratureList"
+            default:
+                alert("NOT FOUND")
+                break;
+        }
+    }
+
     static getPrototypeURL(forTable: Table) {
         switch (forTable) {
             case Table.Textbook:
@@ -202,14 +222,24 @@ class Output {
     textareaLabelID: string = "OutputTextareaLabel"
     textareaID: string = "OutputTextarea"
     uploadButtonID: string = "OutputButton"
+    deleteButtonID: string = "DeleteOutputButton"
     buttonGroupID: string = "OutputButtonGroup"
 
     addListenerOnUploadButton() {
         var button = document.getElementById(this.uploadButtonID)
         var textarea = <HTMLTextAreaElement>document.getElementById(this.textareaID)
         button.onclick = function () {
-            console.log("uploadButton: " + textarea.value)
             HTTPWrapper.Post(Constants.getUploadURL(Output.currentState), textarea.value, function (text: string) {
+                alert(text)
+            })
+        }
+    }
+
+    addListenerOnDeleteButton() {
+        var button = document.getElementById(this.deleteButtonID)
+        var textarea = <HTMLTextAreaElement>document.getElementById(this.textareaID)
+        button.onclick = function () {
+            HTTPWrapper.Post(Constants.getDeleteURL(Output.currentState), textarea.value, function (text: string) {
                 alert(text)
             })
         }
@@ -281,6 +311,7 @@ function initMain() {
     output.initTablesButtonGroup()
     output.addListenerOnUploadButton()
     output.addListenersForSettingButtonActiveAndUpdatingTextareaLabelUpload()
+    output.addListenerOnDeleteButton()
 
     var search = new Search()
     search.addHandlerOnSubmitButton()
