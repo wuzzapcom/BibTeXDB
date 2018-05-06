@@ -5,7 +5,7 @@ import "github.com/spf13/cobra"
 // LecturerCommand ..
 var LecturerCommand = &cobra.Command{
 	Use:   "lecturer",
-	Short: "Команда для работы с курсами",
+	Short: "Команда для работы с лекторами",
 }
 
 func init() {

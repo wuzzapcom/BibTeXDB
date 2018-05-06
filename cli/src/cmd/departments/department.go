@@ -5,7 +5,7 @@ import "github.com/spf13/cobra"
 // DepartmentCommand ..
 var DepartmentCommand = &cobra.Command{
 	Use:   "department",
-	Short: "Команда для работы с курсами",
+	Short: "Команда для работы с кафедрами",
 }
 
 func init() {
