@@ -13,8 +13,10 @@
 \usepackage{amsfonts}
 \usepackage{enumitem}
 \usepackage{cite}
+\usepackage{multirow} % улучшенное форматирование таблиц; источник - https://habr.com/post/144648/
 \usepackage{indentfirst} % Красная строка
 \usepackage[nottoc]{tocbibind}
+% \usepackage{flafter}% помещает флоат(изображение) ПОСЛЕ первой ссылки на него; источник - http://mydebianblog.blogspot.ru/2013/03/amorua-advanced-floats.html
 % Отображение списка литературы в содержании как section, а не chapter
 \makeatletter
 \renewenvironment{thebibliography}[1]
@@ -53,36 +55,37 @@
 
 \begin{document}
 
+\renewcommand{\figurename}{Рисунок} % Замена Figure на Рисунок в подписи изображений
+
 %Титульная страница
 \input{title}
-\pagebreak
+\clearpage
 % -----------------
 
 % Содержание
 \renewcommand{\contentsname}{Содержание}
 \tableofcontents
-\pagebreak
+\clearpage
 % -----------------
 
 % Введение
 \input{intro}
-\pagebreak
+\clearpage
 % -----------------
 
 % Глава 1
 \input{chapter1}
-\pagebreak
-\pagebreak
+\clearpage
 % -----------------
 
 % Глава 2
 \input{chapter2}
-\pagebreak
+\clearpage
 % -----------------
 
 % Вывод
 \input{conclusion}
-\pagebreak
+\clearpage
 % -----------------
 
 % Список литературы
