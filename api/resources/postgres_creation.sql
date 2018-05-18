@@ -4,6 +4,12 @@ DROP SCHEMA schema CASCADE;
 
 CREATE SCHEMA schema;
 
+ALTER TABLE schema.textbook ADD CONSTRAINT textbook_on_conflict_constraint UNIQUE (textbook_ident, textbook_isbn);
+ALTER TABLE schema.textbook DROP CONSTRAINT textbook_on_conflict_constraint;
+ALTER TABLE schema.textbook ADD UNIQUE (textbook_isbn);
+ALTER TABLE schema.lecturer ADD UNIQUE (lecturer_name, lecturer_date_of_birth);
+
+
 CREATE TABLE schema.textbook(
   textbook_id SERIAL PRIMARY KEY,
   textbook_ident VARCHAR(100) NOT NULL UNIQUE,
@@ -19,14 +25,14 @@ CREATE TABLE schema.textbook(
 
 CREATE TABLE schema.department(
   department_id SERIAL PRIMARY KEY,
-  department_title VARCHAR(40) UNIQUE NOT NULL,
+  department_title VARCHAR(100) UNIQUE NOT NULL,
   department_is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
   department_timestamp INTEGER NOT NULL
 );
 
 CREATE TABLE schema.lecturer(
   lecturer_id SERIAL PRIMARY KEY,
-  lecturer_name VARCHAR(40) NOT NULL,
+  lecturer_name VARCHAR(100) NOT NULL,
   lecturer_date_of_birth date NOT NULL,
   lecturer_department_id SERIAL REFERENCES schema.department,
   lecturer_is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
@@ -36,7 +42,7 @@ CREATE TABLE schema.lecturer(
 
 CREATE TABLE schema.course(
   course_id SERIAL PRIMARY KEY,
-  course_title VARCHAR(40) NOT NULL,
+  course_title VARCHAR(100) NOT NULL,
   course_lecturer_id SERIAL REFERENCES schema.lecturer,
   course_department_id SERIAL REFERENCES schema.department,
   course_semester INTEGER NOT NULL,
