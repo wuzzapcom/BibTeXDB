@@ -15,12 +15,14 @@
 в листингах, а с веб-версией -- снимками экрана. Причем в листингах знаком ">" будет обозначаться введенная
 bash-команда.
 
-Первым делом необходимо создать кафедру, на которой работает пользователь. Для наглядности будет рассмотрена
-кафедра <<Теоретическая информатика и компьютерные технологии>>.
+Для наглядности будет рассмотрен курс <<Базы данных>>, преподаваемый на кафедре <<Теоретическая информатика и компьютерные технологии>>
+Вишняковым Игорем Эдуардовичем.
 
-Необходимые действия, которые нужно сделать в приложении командной строки, приведены в листинге ~\ref{addDepartment}.
+Первым делом необходимо создать кафедру, на которой работает пользователь.
 
-\begin{lstlisting}[language=bash, caption = {Добавление кафедры}, captionpos=b, label={addDepartment}]
+Необходимые действия, которые нужно сделать в приложении командной строки, приведены в листинге ~\ref{cli_add_department}.
+
+\begin{lstlisting}[language=bash, caption = {Добавление кафедры}, captionpos=b, label={cli_add_department}]
 > cli department prototype
 Open department.txt and fill prototype struct with correct data
 > nano department.txt 
@@ -29,3 +31,93 @@ Open department.txt and fill prototype struct with correct data
 
 В файле department.txt будет находиться JSON-объект, для которого будет необходимо заполнить поле \texttt{title}
 необходимым значением.
+
+В случае работы с веб-приложением нужно выбрать необходимую таблицу, после чего в нее автоматически загрузится прототип
+искомой JSON-структуры, который следует модифицировать и отправить на сервер кнопкой \texttt{Upload}, расположенной справа снизу
+от поля ввода текста. Иллюстрацию можно видеть на рисунке ~\ref{web_add_department}.
+
+\begin{figure}[h!]
+	\center{\includegraphics[width=1\linewidth]{web_add_department.png}}
+	\caption{Добавление новой кафедры в веб-приложении}
+	\label{web_add_department}
+\end{figure}
+
+Следующее действие -- добавление лектора к только что введенной кафедре. Последовательность действий
+ничем не отличается от предыдущего шага и ее можно увидеть в листинге ~\ref{cli_add_lecturer} и рисунке
+~\ref{web_add_lecturer}.
+
+\begin{lstlisting}[language=bash, caption = {Добавление лектора}, captionpos=b, label={cli_add_lecturer}]
+> cli lecturer prototype
+Open lecturer.txt and fill prototype struct with correct data
+> nano lecturer.txt 
+> cli lecturer add
+\end{lstlisting}
+
+\begin{figure}[h!]
+	\center{\includegraphics[width=1\linewidth]{web_add_lecturer.png}}
+	\caption{Добавление нового лектора в веб-приложении}
+	\label{web_add_lecturer}
+\end{figure}
+
+На шаге добавления курса становится видно преимущество веб-версии по сравнению с приложением командной строки.
+Оно позволяет в двух разных окнах вводить информацию и делать запросы к базе данных. Иллюстрацию можно видеть
+на рисунке ~\ref{web_add_course}. В этом примере можно держать перед глазами список добавленных лекторов чтобы,
+например, не забыть дату рождения, и одновременно вводить данные об учебном курсе.
+
+\begin{figure}[h!]
+	\center{\includegraphics[width=1\linewidth]{web_add_course.png}}
+	\caption{Добавление учебного курса в веб-приложении}
+	\label{web_add_course}
+\end{figure}
+
+В то время как в приложении командной строки такой возможности нет. Как вариант, можно отдельно запросить список
+лекторов командой \texttt{cli lector get}, чтобы открыть его в отдельном окне терминала или текстовом редакторе, но этот вариант 
+явно проигрывает по удобству. Так что последовательность команд остается аналогичной и приведена в листинге ~\ref{cli_add_course}.
+
+\begin{lstlisting}[language=bash, caption = {Добавление лектора}, captionpos=b, label={cli_add_course}]
+> cli course prototype
+Open course.txt and fill prototype struct with correct data
+> nano course.txt 
+> cli course add
+\end{lstlisting}
+
+Этап добавления нового учебного курса ничем не отличается от всех предыдущих, так что имеет смысл перейти к добавлению книг в приложение.
+Как уже было сказано выше, для этого предусмотрен модуль, позволяющий использовать сервис Google Books для поиска информации о
+книгах. Но возможно и добавление книг вручную, если нужного учебника не нашлось в базе сервиса. 
+Для начала рассмотрим эту функцию в приложении командной строки из листинга ~\ref{cli_search}.
+
+\begin{lstlisting}[language=bash, caption = {Поиск книг по запросу SQL в сервисе Google Books в приложении командной строки.}, captionpos=b, label={cli_search}]
+> cli search --request="SQL"
+Open searchResults.txt, view results, remove wrong items and fix incorrect data.
+> nano searchResults.txt 
+> cli book prototype
+Open book.txt and fill prototype struct with correct data
+> nano book.txt
+> cli book add
+\end{lstlisting}
+
+Другими словами, необходимо сначала выполнить поиск, получить результат в файл, после чего скопировать нужную книгу в
+\texttt{book.txt} и добавить ее командой \texttt{cli book add}.
+
+Схожий принцип, но более удобный, используется и в веб-приложении, что можно видеть на рисунке ~\ref{web_search}.
+
+\begin{figure}[h!]
+	\center{\includegraphics[width=1\linewidth]{web_search.png}}
+	\caption{Поиск книг по запросу SQL в сервисе Google Books в веб-приложении.}
+	\label{web_search}
+\end{figure}
+
+Добавление книги в список литературы также является набором тех же самых действий, так что имеет смысл перейти сразу к дополнительной функции:
+миграции списков литературы. По своей сути, эта функция является абсолютно тем же заполнением нужной JSON-структуры, так что будет
+удобно привести только вариант веб-приложения. Его можно видеть на рисунке ~\ref{web_migrate}
+
+\begin{figure}[h!]
+	\center{\includegraphics[width=1\linewidth]{web_migrate.png}}
+	\caption{Демонстрация миграции списка литературы в веб-приложении.}
+	\label{web_migrate}
+\end{figure}
+
+Важной деталью, которую необходимо отметить и зафиксировать, является то, что необходимо создать заранее тот список литературы, в который
+будет производиться миграция.
+
+Наконец стало возможным перейти к основному и самому важному пункту -- генерации самого отчета.
