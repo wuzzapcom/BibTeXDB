@@ -1,13 +1,14 @@
 \section*{Тестирование}
 \addcontentsline{toc}{section}{Тестирование}
 
-Как уже отмечалось выше, потенциальная производительность данного приложения не является главной характеристикой
-разрабатываемого приложения, так как даже потенциально у приложения не будет больше десяти пользователей,
+При тестировании программы первым делом нужно определиться, по каким критериям будет
+оцениваться работоспособность прораммы. В случае данного приложения, потенциальная производительность не является его
+главной характеристикой, так как даже потенциально у приложения не будет больше десяти пользователей,
 подключенных одновременно. Это означает, что в данном разделе будет более целесообразно остановиться на
 рассмотрении того пользовательского опыта, который сможет получить человек при использовании разработанного
 приложения. Такое тестирование называется тестированием эргономичности или usability testing.
 
-Итак, основная цель, которую будет приследовать пользователь при использовании приложения -- это создание
+Итак, основная цель, которую будет преследовать пользователь при использовании приложения -- это создание
 текстового файла со списком использованной литературы, который можно импортировать в LaTeX-документ.
 
 Так как в проекте предусмотрено два различных и параллельных друг другу способа взаимодействия с приложением,
@@ -24,7 +25,8 @@ bash-команда.
 
 \begin{lstlisting}[language=bash, caption = {Добавление кафедры}, captionpos=b, label={cli_add_department}]
 > cli department prototype
-Open department.txt and fill prototype struct with correct data
+Open department.txt and fill prototype struct with 
+correct data
 > nano department.txt 
 > cli department add
 \end{lstlisting}
@@ -88,7 +90,8 @@ Open course.txt and fill prototype struct with correct data
 
 \begin{lstlisting}[language=bash, caption = {Поиск книг по запросу SQL в сервисе Google Books в приложении командной строки.}, captionpos=b, label={cli_search}]
 > cli search --request="SQL"
-Open searchResults.txt, view results, remove wrong items and fix incorrect data.
+Open searchResults.txt, view results, remove wrong 
+items and fix incorrect data.
 > nano searchResults.txt 
 > cli book prototype
 Open book.txt and fill prototype struct with correct data
@@ -99,7 +102,7 @@ Open book.txt and fill prototype struct with correct data
 Другими словами, необходимо сначала выполнить поиск, получить результат в файл, после чего скопировать нужную книгу в
 \texttt{book.txt} и добавить ее командой \texttt{cli book add}.
 
-Схожий принцип, но более удобный, используется и в веб-приложении, что можно видеть на рисунке ~\ref{web_search}.
+Схожий принцип, но более удобный, используется и в веб-приложении, что можно увидеть на рисунке ~\ref{web_search}.
 
 \begin{figure}[h!]
 	\center{\includegraphics[width=1\linewidth]{web_search.png}}
@@ -124,11 +127,12 @@ Open book.txt and fill prototype struct with correct data
 
 Для начала рассмотрим, как происходит генерация в приложении командной строки. Запрос необходимого отчета
 происходит через отправку на сервер нужного списка литературы. Таким образом, запросить отчет можно последовательностью
-действий из листинга ~\ref{cli_report}
+команд из листинга ~\ref{cli_report}.
 
 \begin{lstlisting}[language=bash, caption = {Запрос отчета в приложении командной строки.}, captionpos=b, label={cli_report}]
 > cli literatureList prototype
-Open literatureList.txt and fill prototype struct with correct data
+Open literatureList.txt and fill prototype struct 
+with correct data
 > nano literatureList.txt
 > cli report --outputFile="report.bib"
 \end{lstlisting}
@@ -136,9 +140,8 @@ Open literatureList.txt and fill prototype struct with correct data
 Как можно видеть, в команде \texttt{cli report} явным образом указан файл, в который будет записан результат. В случае
 отсутствия этого флага отчет будет выведен в стандартный поток вывода, о чем сказано в справке данной команды.
 
-Намного более удобно устроен весь процесс в веб-приложении. Специально для этого в веб-приложении сделано отдельное окно \texttt{Report}.
+Намного более удобно устроен весь процесс в веб-приложении. Специально для этого в нем сделано отдельное окно \texttt{Report}.
 В нем отображаются все списки литературы, по нажатию на которые браузером сохраняется текстовый файл \texttt{report.bib}.
-
 Рисунок ~\ref{web_report} демонстрирует данную функцию.
 
 \begin{figure}[h!]
