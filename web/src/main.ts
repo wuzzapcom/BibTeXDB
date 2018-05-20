@@ -122,7 +122,7 @@ export class Constants {
     }
 
     static saveFile(text: string) {
-        var file = new File([text], "report.txt", { type: "text/plain;charset=utf-8" });
+        var file = new File([text], "report.bib", { type: "text/plain;charset=utf-8" });
         FileSaver.saveAs(file)
     }
 }

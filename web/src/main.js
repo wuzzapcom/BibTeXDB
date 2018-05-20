@@ -115,7 +115,7 @@ var Constants = /** @class */ (function () {
         }
     };
     Constants.saveFile = function (text) {
-        var file = new File([text], "report.txt", { type: "text/plain;charset=utf-8" });
+        var file = new File([text], "report.bib", { type: "text/plain;charset=utf-8" });
         FileSaver.saveAs(file);
     };
     Constants.address = "http://localhost:8080/";
