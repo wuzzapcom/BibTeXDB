@@ -4,7 +4,7 @@
 \usepackage[T2A]{fontenc} % Поддержка русских букв
 \usepackage{ucs}
 \usepackage[russian, english]{babel}  % Включаем пакет для поддержки русского языка
-\usepackage[left=3cm,right=1.5cm,top=1cm,bottom=2cm]{geometry} % Размер отступов
+\usepackage[left=3cm,right=1cm,top=2cm,bottom=2cm]{geometry} % Размер отступов
 \usepackage{sectsty}
 \usepackage[pdftex]{graphicx}
 \usepackage{listings}
@@ -15,6 +15,7 @@
 \usepackage{cite}
 \usepackage{multirow} % улучшенное форматирование таблиц; источник - https://habr.com/post/144648/
 \usepackage{indentfirst} % Красная строка
+\usepackage{tocloft} %https://tex.stackexchange.com/questions/316626/list-of-listing-space-before-title
 \usepackage[nottoc]{tocbibind}
 % \usepackage{flafter}% помещает флоат(изображение) ПОСЛЕ первой ссылки на него; источник - http://mydebianblog.blogspot.ru/2013/03/amorua-advanced-floats.html
 % Отображение списка литературы в содержании как section, а не chapter
@@ -62,8 +63,9 @@
 \input{title}
 \clearpage
 % -----------------
-
+\setcounter{page}{2}
 % Содержание
+\setlength{\cftbeforetoctitleskip}{-2em} %https://tex.stackexchange.com/questions/46724/remove-vertical-space-before-table-of-contents-title
 \renewcommand{\contentsname}{Содержание}
 \tableofcontents
 \clearpage
@@ -85,8 +87,8 @@
 % -----------------
 
 % Глава 3
-\input{chapter3}
-\clearpage
+%\input{chapter3}
+%\clearpage
 % -----------------
 
 % Глава 4
@@ -102,8 +104,38 @@
 % Список литературы
 \renewcommand{\bibname}{Список использованной литературы}
 \addcontentsline{toc}{section}{Список используемой литературы}
-\bibliographystyle{unsrt}
-\bibliography{literature}
+\begin{thebibliography}{1}
+
+% Документация по Qt[Электрон. ресурс] // Режим доступа: http:// doc.qt.io/qt-5/, свободный. — Загл. с экрана.(Дата обращения 05.12.2017)
+% 1. Ландау Л.Д., Лифшиц Е.М. Механика. — Издание 4-е, исправленное. — М.: Наука, 1988. — 215с.
+
+\bibitem{RFC2616}
+Стандарт RFC 2616 протокола HTTP[Электрон. ресурс] // Режим доступа: https://tools.ietf.org/html/rfc2616, свободный. -- Загл. с экрана.(Дата обращения 16.06.2018)
+
+\bibitem{REST}
+Р.Т. Филдинг. Representational state transfer[Электрон. ресурс] // Режим доступа: http://www.ics.uci.edu/\textasciitilde fielding/pubs/dissertation/rest\_arch\_style.htmб
+свободный. -- Загл. с экрана.(Дата обращения 22.05.2018).
+
+\bibitem{Web-book}
+М. Макдональд. Веб-разработка. Исчерпывающее руководство -- Санкт-Петербург: Питер, 2017. - 638 с.
+
+\bibitem{GettingStartedWithNoSQL}
+V. Gaurav. Getting Started with NoSQL - Birmingham: Packt Publishing Ltd, 2013. - 118 с.
+
+\bibitem{MongoDBDocs}
+Документация СУБД MongoDB[Электрон. ресурс] // Режим доступа: https://docs.mongodb.com, свободный. -- Загл. с экрана.(Дата обращения 16.06.2018).
+
+\bibitem{TypeScript}
+Документация языка программирования TypeScript[Электрон. ресурс] // Режим доступа: https://www.typescriptlang.org/docs/home.html, свободный. 
+-- Загл. с экрана.(Дата обращения 16.06.2018).
+
+\bibitem{Access-Control-Allow-Origin}
+Документация для заголовка Access-Control-Allow-Origin[Электрон. ресурс] // Режим доступа: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin,
+свободный. -- Загл. с экрана.(Дата обращения 22.05.2018).
+
+\end{thebibliography}
+% \bibliographystyle{unsrt}
+% \bibliography{literature}
 % -----------------
 
 \end{document}
