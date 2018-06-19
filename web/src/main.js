@@ -285,9 +285,9 @@ var Search = /** @class */ (function () {
         submit.addEventListener("click", function () {
             var req = document.getElementById(Search.requestInputID);
             var textarea = document.getElementById(Search.searchTextareaID);
-            textarea.innerText = req.value;
+            textarea.value = req.value;
             HTTPWrapper.Get(Constants.searchURL + encodeURIComponent(req.value), function (text) {
-                textarea.innerText = JSON.stringify(JSON.parse(text), null, 2);
+                textarea.value = JSON.stringify(JSON.parse(text), null, 2);
             });
         });
     };

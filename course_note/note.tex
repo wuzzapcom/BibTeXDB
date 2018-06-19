@@ -63,14 +63,15 @@
 \input{title}
 \clearpage
 % -----------------
-\setcounter{page}{2}
+% \setcounter{page}{2}
 % Содержание
 \setlength{\cftbeforetoctitleskip}{-2em} %https://tex.stackexchange.com/questions/46724/remove-vertical-space-before-table-of-contents-title
 \renewcommand{\contentsname}{Содержание}
 \tableofcontents
+\thispagestyle{empty}
 \clearpage
 % -----------------
-
+\setcounter{page}{3}
 % Введение
 \input{intro}
 \clearpage
